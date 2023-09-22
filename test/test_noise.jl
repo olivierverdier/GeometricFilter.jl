@@ -3,8 +3,6 @@ using Test
 using GeometricFilter
 using Manifolds
 
-using Infiltrator
-
 import PDMats
 import Random
 

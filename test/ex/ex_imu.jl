@@ -1,6 +1,5 @@
 using GeometricFilter
 using Manifolds
-using Infiltrator
 
 
 import Random

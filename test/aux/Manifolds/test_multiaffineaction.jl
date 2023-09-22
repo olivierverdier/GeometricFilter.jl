@@ -1,8 +1,6 @@
 using Test
 using GeometricFilter
 
-using Infiltrator
-
 using Manifolds
 import Random: default_rng
 

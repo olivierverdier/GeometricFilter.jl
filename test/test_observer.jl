@@ -5,7 +5,6 @@ using Manifolds
 import Random: default_rng
 
 import Base.Iterators
-import Printf
 
 rng = default_rng()
 
@@ -128,11 +127,7 @@ end
         computed = GeometricFilter.get_tan_observer(ob, act, χ)(ξ)
         expected = compute_tan_action(act, ob, χ, ξ)
         @test computed ≈ expected
-        # Printf.@printf "\n👉\t%s\n👀\t%s\n" act ob
-        # @show expected
-        # @show computed
     end
-        
     # @show computed = GeometricFilter.get_tan_observer(obs, GA, χ)(ξ)
     # @show expected = compute_tan_action(GA, obs, χ, ξ)
 

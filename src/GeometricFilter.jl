@@ -1,7 +1,5 @@
 module GeometricFilter
 
-using Infiltrator
-
 # MultiAffine
 export MultiAffine,
     MultiDisplacement,

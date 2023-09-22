@@ -8,8 +8,6 @@ import PDMats
 
 import Random
 
-using Infiltrator
-
 rng = Random.default_rng()
 
 
