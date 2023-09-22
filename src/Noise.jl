@@ -50,7 +50,10 @@ function rescale_noise end
 # General Interface
 #--------------------------------
 Base.:*(s::Number, n::AbstractNoise) = rescale_noise(n, s)
+
 (noise::AbstractNoise)(rng::Random.AbstractRNG, x) = add_noise(noise, rng, x)
+
+get_basis_at(::AbstractNoise, ::Any) = DefaultOrthonormalBasis()
 
 get_covariance_at(n::AbstractNoise, x) = get_covariance_at(n, x, get_basis_at(n, x))
 

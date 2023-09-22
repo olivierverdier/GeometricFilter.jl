@@ -9,9 +9,8 @@ end
 
 sample_space(n::NoNoise) = n.manifold
 
-get_covariance_at(n::NoNoise, ::Any) = PDMats.ScalMat(manifold_dimension(sample_space(n)), 0.)
+get_covariance_at(n::NoNoise, ::Any, ::Any) = PDMats.ScalMat(manifold_dimension(sample_space(n)), 0.)
 
-get_basis_at(::NoNoise, ::Any) = DefaultOrhonormalBasis()
 
 add_noise(::NoNoise, ::Random.AbstractRNG, x) = x
 

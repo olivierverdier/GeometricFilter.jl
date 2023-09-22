@@ -27,8 +27,6 @@ rescale_noise(n::IsotropicNoise, scale) = IsotropicNoise(n.manifold, x -> scale*
 
 rescale_noise(n::IsotropicNoise{TA,TF}, scale) where{TA, TF<:ConstantFunction} = IsotropicNoise(n.manifold, scale*n.deviation)
 
-get_basis_at(noise::IsotropicNoise, x) = get_basis(sample_space(noise), x, DefaultOrthonormalBasis())
-
 
 function get_covariance_at(
     noise::IsotropicNoise,

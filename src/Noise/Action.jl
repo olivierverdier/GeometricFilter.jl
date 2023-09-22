@@ -70,10 +70,6 @@ rescale_noise(n::ActionNoise, scale) = ActionNoise(n.action, x -> scale^2*n.cova
 rescale_noise(n::ActionNoise{TA,TF,TB}, scale) where{TA,TF<:ConstantFunction,TB} = ActionNoise(n.action, scale^2*n.covariance, n.basis)
 
 
-
-
-get_basis_at(::ActionNoise{TA,TF,TB}, ::Any) where {TA,TF,TB} = DefaultOrthonormalBasis()
-
 _basis_error_message(B1, B2) = "Changing from basis\n\t$B1\nto\n\t$B2\nis not implemented"
 
 function get_lie_covariance_at(

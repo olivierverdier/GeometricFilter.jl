@@ -36,7 +36,7 @@ end
     @test N_ == N
     @test N__ == N
     # get_basis_at(N, Identity(G))
-    @show get_covariance_at(N, Identity(G), B)
+    @show get_covariance_at(N, Identity(G))
     sn = .5*N
     @show sc = get_covariance_at(sn, Identity(G), B)
 end
