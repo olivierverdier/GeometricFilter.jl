@@ -1,0 +1,140 @@
+
+"""
+A model of a map from a manifold to a covariance on a Lie algebra.
+"""
+abstract type AbstractActionNoise <: AbstractNoise end
+#--------------------------------
+# AbstractActionNoise Interface
+#--------------------------------
+"""
+    get_lie_covariance_at(
+      ::AbstractActionNoise,
+      x, # point in manifold M
+      B, # AbstractBasis of Alg(G)
+      ) :: AbstractPDMat
+
+Covariance on Alg(G), where G is the action group.
+"""
+function get_lie_covariance_at end
+
+"""
+    get_group(::AbstractActionNoise) :: AbstractDecoratedManifold
+
+The group on which this noise model is defined.
+"""
+function get_group end
+#--------------------------------
+
+"""
+    ActionNoise(
+        action, # group action G ⊂ Diff(M)
+        covariance, # function M -> AbstractPDMat
+        basis # fixed basis of Alg(G)
+    )
+
+Covariance defined on Lie algebra.
+The corresponding distribution centred at x₀ 
+is the push forward of the normal distribution on the Lie
+algebra by the function ξ ↦ exp(ξ)⋅x₀.
+"""
+struct ActionNoise{TA,TF<:Function,TB}  <: AbstractActionNoise
+    action::TA # group action G ⊂ Diff(M)
+    covariance::TF # function M -> AbstractPDMat
+    basis::TB # fixed basis of Alg(G)
+end
+
+get_group(a::ActionNoise{TA,TF,TB}) where {TA,TF,TB} = base_group(a.action)
+sample_space(a::ActionNoise{TA,TF,TB}) where {TA,TF,TB} = group_manifold(a.action)
+
+"""
+    ActionNoise(A::AbstractGroupAction, σ::Number)
+
+Convenience method to create an action noise with a constant, isotropic covariance
+with respect to the standard metric of the Lie algebra.
+"""
+function ActionNoise(
+    A::AbstractGroupAction,
+    σ::Number=1.0)
+    G = base_group(A)
+    dim = manifold_dimension(G)
+    return ActionNoise(A, ConstantFunction(PDMats.ScalMat(dim, σ)), DefaultOrthonormalBasis())
+end
+
+ActionNoise(
+    A::AbstractGroupAction,
+    covariance::PDMats.AbstractPDMat,
+    B) = ActionNoise(A, ConstantFunction(covariance), B)
+
+rescale_noise(n::ActionNoise, scale) = ActionNoise(n.action, x -> scale^2*n.covariance(x), n.basis)
+
+rescale_noise(n::ActionNoise{TA,TF,TB}, scale) where{TA,TF<:ConstantFunction,TB} = ActionNoise(n.action, scale^2*n.covariance, n.basis)
+
+
+
+
+get_basis_at(::ActionNoise{TA,TF,TB}, ::Any) where {TA,TF,TB} = DefaultOrthonormalBasis()
+
+_basis_error_message(B1, B2) = "Changing from basis\n\t$B1\nto\n\t$B2\nis not implemented"
+
+function get_lie_covariance_at(
+    noise::ActionNoise{TA,TF,TB}, # noise for action(M,G)
+    x, # on M
+    B::AbstractBasis, # basis of Alg(G)
+    ) where {TA,TF,TB}
+    if !is_point(sample_space(noise), x)
+        throw(ErrorException("x should be a point on the manifold"))
+    end
+    if B != noise.basis
+        throw(ErrorException(_basis_error_message(B, noise.basis)))
+    end
+    return noise.covariance(x)
+end
+
+function get_covariance_at(
+    noise::ActionNoise{TA,TF,TB},
+    x, # point on Manifold M
+    B::AbstractBasis # basis of T_xM
+    ) where {TA,TF,TB}
+    A = noise.action
+    Σ = noise.covariance(x)
+    BG = noise.basis
+    P = get_proj_matrix(A, x, BG, B)
+    return PDMats.PDMat(PDMats.X_A_Xt(Σ, P))
+end
+
+function get_covariance_at(
+    noise::ActionNoise{TA,TF,TB},
+    ::Identity,
+    B::AbstractBasis
+    ) where {TA<:GroupOperationAction,TF,TB}
+    if B != noise.basis
+        throw(ErrorException(_basis_error_message(B, noise.basis)))
+    end
+    G = base_group(noise.action)
+    return noise.covariance(Identity(G))
+end
+
+function add_noise(
+    noise::ActionNoise,
+    rng::Random.AbstractRNG,
+    point)
+    cov = noise.covariance(point)
+    dist = ProjLogNormal(noise.action, point, cov, noise.basis)
+    return rand(rng, dist)
+end
+
+
+
+
+
+"""
+Obsolete: in this basis, the covariance matrix is the identity.
+"""
+function get_adapted_basis_at(noise::ActionNoise{TA,TF,TB}, x) where {TA,TF,TB}
+    A = noise.action
+    BM = get_basis(group_manifold(A), x, DefaultOrthonormalBasis())
+    L = get_proj_matrix(A, x, noise.basis, BM)
+    res = LinearAlgebra.svd(L)
+    vec_mat = res.U .* res.S'
+    return CachedBasis(DefaultOrthonormalBasis(), collect(eachcol(vec_mat)))
+end
