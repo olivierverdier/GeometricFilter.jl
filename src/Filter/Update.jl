@@ -25,16 +25,22 @@ function _update(
     noise, # Observation noise
     measurement, # Actual measurement
     )
-    Σ_, pred, H, G = prepare_correction(prior, observer, noise)
     x = Distributions.mean(prior)
-    N = get_manifold(observer)
+    pred = observer(x)
+
+    obs_basis = get_basis_at(noise, pred)
+
+    H = get_obs_matrix(prior, observer, pred, obs_basis)
+    Σ_, gain = prepare_correction(prior, H, noise, pred)
+    x = Distributions.mean(prior)
+    N = observation_space(observer)
     B = prior.B
     action = get_action(prior)
 
     innovation = log(N, pred, measurement)
     obs_basis = get_basis_at(noise, pred)
     innovec = get_coordinates(N, pred, innovation, obs_basis)
-    x_ = point_correction(x, action, G, B, innovec)
+    x_ = point_correction(x, action, gain, B, innovec)
     return update_mean_cov(prior, x_, Σ_)
 end
 
@@ -47,37 +53,40 @@ update(prior, ::EmptyObservation) = prior
 # Update Helpers
 #--------------------------------
 
-function prepare_correction(
-    prior::AbstractProjLogNormal, # prior from forecasting
-    observer, # Observer
-    noise, # observation noise
-    )
+function get_obs_matrix(prior, observer, pred, obs_basis)
     x = Distributions.mean(prior)
-    pred = observer(x)
-
     action = get_action(prior)
     G = base_group(action)
 
     obs_op = get_tan_observer(observer, action, x, pred)
-    # TODO: create a simpler get_obs_matrix tailored for observations?
-    basis = prior.B
-    obs_basis = get_basis_at(noise, pred)
-    H = get_op_matrix(G, get_manifold(observer), pred, obs_op, basis, obs_basis)
 
+    basis = prior.B
+    H = get_op_matrix(G, observation_space(observer), pred, obs_op, basis, obs_basis)
+    return H
+end
+
+function prepare_correction(
+    prior::AbstractProjLogNormal, # prior from forecasting
+    obs_matrix,
+    noise, # observation noise
+    pred,
+)
     Σ = Distributions.cov(prior)
-    Σy = get_covariance_at(noise, pred, obs_basis)
+    Σy = get_covariance_at(noise, pred)
+
+    H = obs_matrix
 
     # obs_cov = H*Σ*H' + Σy
     obs_cov = PDMats.X_A_Xt(Σ, H) + Σy
 
-    G = Σ*H'*inv(obs_cov)
+    Gain = Σ*H'*inv(obs_cov)
 
-    A = LinearAlgebra.I - G*H
+    A = LinearAlgebra.I - Gain*H
 
-    # Σ_ = A*Σ*A' + G*Σy*G'
-    Σ_ = PDMats.PDMat(PDMats.X_A_Xt(Σ,A) + PDMats.X_A_Xt(Σy, G))
+    # Σ_ = A*Σ*A' + Gain*Σy*Gain'
+    Σ_ = PDMats.PDMat(PDMats.X_A_Xt(Σ,A) + PDMats.X_A_Xt(Σy, Gain))
 
-    return Σ_, pred, H, G
+    return Σ_, Gain
 end
 
 # TODO: compute observation and tangent obs at the same time?

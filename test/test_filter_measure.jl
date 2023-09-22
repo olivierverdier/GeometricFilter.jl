@@ -62,7 +62,7 @@ obs = setup_action_observer(rng, RotationAction(V,G, RightAction()), 10)
 # obs = IdentityObserver(G)
 m = obs(x0)
 
-onoise = IsotropicNoise(get_manifold(obs), 1.)
+onoise = IsotropicNoise(observation_space(obs), 1.)
 
 
 run_filter(D0, N) = accumulate(1:N; init=D0) do D, i

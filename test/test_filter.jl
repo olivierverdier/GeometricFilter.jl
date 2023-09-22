@@ -31,7 +31,7 @@ rng = Random.default_rng()
     # pnoise = ActionNoise(A, x->PDMats.PDiagMat([1.,3.]), DefaultOrthonormalBasis())
     pnoise = ActionNoise(A, PDMats.PDiagMat([1.,3.]), DefaultOrthonormalBasis())
     observer = LinearObserver([1. 0])
-    onoise = IsotropicNoise(get_manifold(observer), sqrt(10.))
+    onoise = IsotropicNoise(observation_space(observer), sqrt(10.0))
 
     # D0 = ProjLogNormal(A, x0, 5*PDMats.PDiagMat([1.,1.]), DefaultOrthonormalBasis())
     D0 = ProjLogNormal(A, x0, PDMats.ScalMat(2, 5.0), DefaultOrthonormalBasis())
@@ -88,7 +88,7 @@ end
     motion = FlatAffineMotion([0. 1.;0 0 ], [0.,0])
     pnoise = ActionNoise(get_action(motion), 1.)
     observer = LinearObserver([1. 0])
-    onoise = IsotropicNoise(get_manifold(observer), 1.)
+    onoise = IsotropicNoise(observation_space(observer), 1.)
     D0 = ProjLogNormal(get_action(motion), [0., 0], 1.)
     T = 10
     selector(i, N) = (i % N) == 0
@@ -135,16 +135,16 @@ end
     ref = identity_element(G)
 
     A = MultiAffineAction(G)
-    obmod = PositionObserver(A)
-    measure = obmod(signal[3])
-    tobs = GeometricFilter.get_tan_observer(obmod, action, x, measure)
-    Mobs = GeometricFilter.get_manifold(obmod)
+    observer = PositionObserver(A)
+    measure = observer(signal[3])
+    tobs = GeometricFilter.get_tan_observer(observer, action, x, measure)
+    Mobs = observation_space(observer)
     B = get_basis(G, identity_element(G), DefaultOrthonormalBasis())
-    H = GeometricFilter.get_op_matrix(G, GeometricFilter.get_manifold(obmod), measure, tobs, DefaultOrthonormalBasis(), DefaultOrthonormalBasis())
+    H = GeometricFilter.get_op_matrix(G, observation_space(observer), measure, tobs, DefaultOrthonormalBasis(), DefaultOrthonormalBasis())
     # @show H
     # what should H look like?
     ob_noise = IsotropicNoise(Mobs, x -> .1)
-    observations = [obmod(s) for s in signal]
+    observations = [observer(s) for s in signal]
     pobs = [ob_noise(rng, ob) for ob in observations]
 
     # start new test set here?
@@ -159,10 +159,11 @@ end
 
     obnoise = IsotropicNoise(group_manifold(A), x -> .1)
 
-    Σ_, pred, H, G = GeometricFilter.prepare_correction(clean, obmod, obnoise)
+    # Σ_, pred, H, G = GeometricFilter.prepare_correction(clean, observer, obnoise)
+    Σ_, G = GeometricFilter.prepare_correction(clean, H, obnoise, measure)
 
 
-    update(clean, Observation(obmod, obnoise, measure))
+    update(clean, Observation(observer, obnoise, measure))
 
 end
 
