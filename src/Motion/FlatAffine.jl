@@ -22,7 +22,7 @@ end
 
 FlatAffineMotion(linear, translation) = FlatAffineMotion{typeof(_get_flat_action_from_translation(translation)), typeof(linear), typeof(translation)}(linear, translation)
 
-
+Base.show(io::IO, m::FlatAffineMotion) = print(io, "FlatAffineMotion($(m.linear), $(m.translation))")
 
 """
     get_flat_action(d)

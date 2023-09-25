@@ -43,6 +43,9 @@ struct ActionNoise{TA,TF<:Function,TB}  <: AbstractActionNoise
     basis::TB # fixed basis of Alg(G)
 end
 
+Base.show(io::IO, n::ActionNoise) = print(io, "ActionNoise($(n.action), $(n.covariance), $(n.basis))")
+
+
 get_group(a::ActionNoise{TA,TF,TB}) where {TA,TF,TB} = base_group(a.action)
 sample_space(a::ActionNoise{TA,TF,TB}) where {TA,TF,TB} = group_manifold(a.action)
 

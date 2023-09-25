@@ -14,6 +14,8 @@ struct IdentityObserver{TM} <: AbstractObserver
     M::TM # the manifold on which observation is done
 end
 
+Base.show(io::IO, obs::IdentityObserver) = print(io, "IdentityObserver($(obs.M))")
+
 observation_space(obs::IdentityObserver) = obs.M
 
 get_measurement(::IdentityObserver, x) =  x

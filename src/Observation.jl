@@ -15,6 +15,8 @@ struct Observation{TO,TN,TM} <: AbstractObservation
     measurement::TM
 end
 
+Base.show(io::IO, obs::Observation) = print(io, "Observation($(obs.observer), $(obs.noise), $(obs.measurement))")
+
 """
     noisy_observation(rng::Random.AbstractRNG,
       obs::AbstractObserver,
@@ -34,6 +36,8 @@ the state's uncertainty.
 """
 struct EmptyObservation <: AbstractObservation
 end
+
+Base.show(io::IO, ::EmptyObservation) = print(io, "Observation()")
 
 # So that AbstractObservation can be used in sparse vectors
 Base.zero(::AbstractObservation) = EmptyObservation()

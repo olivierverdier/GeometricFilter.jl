@@ -44,6 +44,8 @@ struct StochasticMotion{TNM,TM,TN} <: AbstractStochasticMotion{TNM}
     noise::TN
 end
 
+Base.show(io::IO, sm::StochasticMotion{TNM}) where {TNM} = print(io, "StochasticMotion($(sm.motion), $(sm.noise), $TNM())")
+
 @doc raw"""
     StochasticMotion(motion::Motion, noise::Noise, mode=PositionMode())
 

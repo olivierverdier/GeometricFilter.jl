@@ -4,6 +4,8 @@ struct MultiAffineMotion{TA, TG,TM,TAD<:ActionDirection} <: AbstractAffineMotion
     M::TM # Array{𝔽, 2}; size×size array
 end
 
+Base.show(io::IO, m::MultiAffineMotion{TA,TG,TM,TAD}) where {TA,TG,TM,TAD} = print(io, "MultiAffineMotion($(m.G), $(m.M), $TAD())")
+
 @doc raw"""
     MultiAffineMotion(G::DecoratedManifold,M::Array{𝔽, 2},conv::ActionDirection)
 

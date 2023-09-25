@@ -12,6 +12,8 @@ struct IsotropicNoise{TM,TF<:Function} <: AbstractNoise
     deviation::TF # function M -> [0, +∞)
 end
 
+Base.show(io::IO, n::IsotropicNoise) = print(io, "IsotropicNoise($(n.manifold), $(n.deviation))")
+
 sample_space(n::IsotropicNoise) = n.manifold
 
 """

@@ -4,6 +4,8 @@ struct RigidMotion{TA,TV} <: AbstractAffineMotion{TA}
     vel::TV # in Alg(G)
 end
 
+Base.show(io::IO, m::RigidMotion) = print(io, "RigidMotion($(m.A), $(m.vel))")
+
 get_dynamics(m::RigidMotion, u) = copy(m.vel)
 
 function get_lin(m::RigidMotion)

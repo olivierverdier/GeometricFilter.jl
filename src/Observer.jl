@@ -46,6 +46,8 @@ struct ProductObserver{TO<:Tuple} <: AbstractObserver
     observers::TO
 end
 
+Base.show(io::IO, obs::ProductObserver) = print(io, "ProductObserver("* join([repr(o) for o in obs.observers], ", ") *")")
+
 """
     ProductObserver(observers::AbstractObserver...)
 

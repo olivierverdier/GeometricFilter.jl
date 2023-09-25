@@ -100,6 +100,8 @@ struct ZeroMotion{TA} <: AbstractAffineMotion{TA}
     A::TA
 end
 
+Base.show(io::IO, m::ZeroMotion) = print(io, "ZeroMotion($(m.A))")
+
 function get_dynamics(m::ZeroMotion, ::Any)
     G = base_group(get_action(m))
     return zero_vector(G, identity_element(G))

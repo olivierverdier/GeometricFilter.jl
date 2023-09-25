@@ -80,6 +80,8 @@ end
 (c::ConstantFunction)(::Any) = c.value
 Base.:*(s, c::ConstantFunction) = ConstantFunction(s*c.value)
 
+Base.show(io::IO, f::ConstantFunction) = print(io, "$(f.value)")
+
 #--------------------------------
 # Specific Noises
 #--------------------------------

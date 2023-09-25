@@ -12,9 +12,7 @@ struct DualGroupOperationAction{G} <: AbstractGroupAction{LeftAction}
     group::G
 end
 
-function Base.show(io::IO, A::DualGroupOperationAction)
-    return print(io, "DualGroupOperationAction($(A.group), $(direction(A)))")
-end
+Base.show(io::IO, A::DualGroupOperationAction) = print(io, "DualGroupOperationAction($(A.group), $(direction(A)))")
 
 Manifolds.base_group(A::DualGroupOperationAction) = A.group
 

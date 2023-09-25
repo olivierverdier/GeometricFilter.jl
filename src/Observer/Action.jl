@@ -16,6 +16,8 @@ struct ActionObserver{TAD<:ActionDirection, TA<:AbstractGroupAction{TAD}} <: Abs
     ActionObserver(A::AbstractGroupAction{TAD}, ref) where {TAD} = is_point(group_manifold(A),ref) ? new{TAD, typeof(A)}(A,ref) : error("ref must be in manifold")
 end
 
+Base.show(io::IO, obs::ActionObserver) = print(io, "ActionObserver($(obs.action), $(obs.ref))")
+
 get_action(obs::ActionObserver) = obs.action
 get_ref(obs::ActionObserver) = obs.ref
 observation_space(obs::ActionObserver) = group_manifold(get_action(obs))

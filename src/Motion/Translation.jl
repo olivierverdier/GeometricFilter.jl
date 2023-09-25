@@ -4,6 +4,8 @@ struct TranslationMotion{TA, TG,TV,TAD<:ActionDirection} <: AbstractAffineMotion
     vel::TV # in Alg(G)
 end
 
+Base.show(io::IO, m::TranslationMotion) = print(io, "TranslationMotion($(m.G), $(m.vel))")
+
 @doc raw"""
     TranslationMotion(G,vel,dir=LeftAction())
 

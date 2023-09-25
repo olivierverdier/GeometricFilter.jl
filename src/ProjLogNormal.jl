@@ -42,6 +42,7 @@ struct ProjLogNormal{TA<:AbstractGroupAction{LeftAction},TM,TN<:PDMats.AbstractP
     end
 end
 
+Base.show(io::IO, dist::ProjLogNormal) = print(io, "ProjLogNormal($(dist.action), $(dist.μ), $(dist.Σ), $(dist.B))")
 
 function ProjLogNormal(
     A, # action
