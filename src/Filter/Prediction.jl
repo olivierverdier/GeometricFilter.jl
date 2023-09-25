@@ -21,6 +21,9 @@ predict(distribution::AbstractProjLogNormal{TA}, sm::AbstractStochasticMotion{TN
     predict(distribution::ProjLogNormal, motion::Motion, process_noise::ActionNoise) :: ProjLogNormal
 
 Updates the distribution according to the motion and the process noise.
+
+The noise `process_noise` must implement `get_lie_covariance_at`,
+so must be of type `AbstractActionNoise`.
 """
 function predict(
     distribution::AbstractProjLogNormal{TA}, # filtering distribution
@@ -29,9 +32,6 @@ function predict(
     dt=0.1, # discretisation time step
     ) where {TA}
     assert_equal_actions(distribution, motion, "Different distribution and motion actions")
-    # if get_action(distribution) != get_action(motion)
-    #     throw(ErrorException("Different actions"))
-    # end
     x = Distributions.mean(distribution)
 
     sol = integrate_lift(motion, x, dt)
@@ -56,9 +56,9 @@ end
 """
     add_process_noise(dist::AbstractProjLogNormal, noise::AbstractActionNoise)
 
+[Deprecated]
+
 Add process noise to a distribution of type `AbstractProjLogNormal`.
-The noise must implement `get_lie_covariance_at`,
-so must be of type `AbstractActionNoise`.
 """
 function add_process_noise(
     distribution::AbstractProjLogNormal,
