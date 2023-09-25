@@ -9,11 +9,11 @@ If it is a *left* action, the corresponding observation is χ ↦ χ ⋅ x₀, w
 
 If it is a *right* action, the corresponding observation is ``χ ↦ χ^{-1} ⋅ x₀``, where ``x₀ ∈ N`` is a reference point. This often corresponds to the distance and bearing measurement of a fixed landmark.
 """
-struct ActionObserver{TAD<:ActionDirection, TA<:AbstractGroupAction{TAD}} <: AbstractObserver
+struct ActionObserver{TAD<:ActionDirection, TA<:AbstractGroupAction{TAD}, TV} <: AbstractObserver
     action::TA  # action G ⊂ Diff(N)
-    ref # point in N
+    ref::TV # point in N
 
-    ActionObserver(A::AbstractGroupAction{TAD}, ref) where {TAD} = is_point(group_manifold(A),ref) ? new{TAD, typeof(A)}(A,ref) : error("ref must be in manifold")
+    ActionObserver(A::AbstractGroupAction{TAD}, ref) where {TAD} = is_point(group_manifold(A),ref) ? new{TAD, typeof(A), typeof(ref)}(A,ref) : error("ref must be in manifold")
 end
 
 Base.show(io::IO, obs::ActionObserver) = print(io, "ActionObserver($(obs.action), $(obs.ref))")
