@@ -13,14 +13,7 @@ include_test("test_observer.jl")
 include_test("test_projlognormal.jl")
 include_test("test_grouptools.jl")
 include_test("test_filter_measure.jl")
+include_test("test_examples.jl")
 
-@info "Example Code"
-@testset "Example Code" begin
-  include("ex/ex_flatfilter.jl")
-  # include("ex/ex_imu.jl")
-  include("ex/ex_localisation.jl")
-  include("ex/ex_simple_loc.jl")
-  include("ex/ex_testbed.jl")
-end
 
 
