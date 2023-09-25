@@ -82,6 +82,8 @@ struct AffineMotion{TA<:AbstractGroupAction{LeftAction},TF,TL} <: AbstractAffine
     lin::TL # linear part: operator Alg(G) ⊗ Alg(G)*
 end
 
+Base.show(io::IO, m::AffineMotion) = print(io, "AffineMotion($(m.A), [...])")
+
 get_dynamics(m::AffineMotion, x) = m.f(x)
 
 @doc raw"""
