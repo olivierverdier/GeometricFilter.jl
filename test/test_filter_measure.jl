@@ -32,12 +32,15 @@ function setup_action_observer(rng, OA, N=10)
 end
 
 
-run_filter(D0, N, observer, onoise, measure) =
-    accumulate(1:N; init=D0) do D, i
-        return update(D, Observation(observer, onoise, measure))
+run_filter(D0, N, observation) =
+    foldl(1:N; init=D0) do D, i
+        return update(D, observation)
     end
 
-@testset "Observer action $OA\nAction $A\nObserver $(typeof(observer)):" for OA in [
+display_obs_type(::ProductObserver) = "ProductObserver"
+display_obs_type(::IdentityObserver) = "IdentityObserver"
+
+@testset "Observer action: $OA; Action $A; Observer: $(display_obs_type(observer))" for OA in [
     GroupOperationAction(SpecialOrthogonal(3)),
     DualGroupOperationAction(SpecialOrthogonal(3)),
     MultiAffineAction(MultiDisplacement(2), LeftAction()),
@@ -70,15 +73,17 @@ run_filter(D0, N, observer, onoise, measure) =
     x1 = noise(rng, x0)
     D1 = update_mean(D0, x1)
 
-    Ds = run_filter(D1, 2^5, observer, onoise, m)
+    D_ = run_filter(D1, 2^5, Observation(observer, onoise, m))
 
     # gdist = [distance(group_manifold(A), D0.μ, D.μ) for D in Ds]
-    dists = [distance(group_manifold(A), D0.μ, D.μ) for D in [first(Ds), last(Ds)]]
+    # dists = [distance(group_manifold(A), D0.μ, D.μ) for D in [first(Ds), last(Ds)]]
+    dists = [distance(group_manifold(A), D0.μ, D.μ) for D in [D1, D_]]
 
     improvement_dB = -10*log10(last(dists) / first(dists))
-
     @test improvement_dB >= 10
 end
 
 # why is the error not exponential as in the localisation test?!?
 
+
+"⚡"
