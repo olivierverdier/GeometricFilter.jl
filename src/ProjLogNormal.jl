@@ -1,6 +1,6 @@
 abstract type ManifoldVariate{TM} <: Distributions.VariateForm end
 
-abstract type AbstractProjLogNormal <: Distributions.Sampleable{ManifoldVariate{AbstractManifold}, Distributions.Continuous} end
+abstract type AbstractProjLogNormal{TA<:AbstractGroupAction{LeftAction}} <: Distributions.Sampleable{ManifoldVariate{AbstractManifold}, Distributions.Continuous} end
 
 #--------------------------------
 # AbstractProjLogNormal Interface
@@ -31,7 +31,7 @@ function get_lie_basis end
 
 Wrapped exponential distribution on the space of the given action.
 """
-struct ProjLogNormal{TA<:AbstractGroupAction{LeftAction},TM,TN<:PDMats.AbstractPDMat,TB} <: AbstractProjLogNormal
+struct ProjLogNormal{TA<:AbstractGroupAction{LeftAction},TM,TN<:PDMats.AbstractPDMat,TB} <: AbstractProjLogNormal{TA}
     action::TA # left group action G ⊂ Diff(M)
     μ::TM # mean: element of M
     Σ::TN # centred normal distribution on Alg(G) (in basis B)

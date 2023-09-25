@@ -9,7 +9,7 @@ abstract type NoiseMode end
 struct MotionMode <: NoiseMode end
 struct PositionMode <: NoiseMode end
 
-abstract type AbstractStochasticMotion{TNM} end
+abstract type AbstractStochasticMotion{TNM, TA<:AbstractGroupAction{LeftAction}} end
 
 #--------------------------------
 # AbstractStochasticMotion Interface
@@ -39,7 +39,7 @@ uncertainty, so this does not do anything.
 function apply_noise end
 #--------------------------------
 
-struct StochasticMotion{TNM,TM,TN} <: AbstractStochasticMotion{TNM}
+struct StochasticMotion{TNM,TM,TN,TA} <: AbstractStochasticMotion{TNM,TA}
     motion::TM
     noise::TN
 end
@@ -51,7 +51,7 @@ Base.show(io::IO, sm::StochasticMotion{TNM}) where {TNM} = print(io, "Stochastic
 
 Encapsulate the idea of a stochastic dynamical system on a manifold ``\mathcal{M}``, defined by a motion ``φ \colon \mathcal{M}→\mathfrak{g}``, and a noise model on the manifold.
 """
-StochasticMotion(motion, noise, mode::NoiseMode=PositionMode()) = StochasticMotion{typeof(mode),typeof(motion),typeof(noise)}(motion, noise)
+StochasticMotion(motion::AbstractMotion{TA}, noise, mode::NoiseMode=PositionMode()) where {TA} = StochasticMotion{typeof(mode),typeof(motion),typeof(noise), TA}(motion, noise)
 
 get_motion(s::StochasticMotion) = s.motion
 get_noise(s::StochasticMotion) = s.noise

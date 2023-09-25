@@ -12,7 +12,7 @@ predict(
     process_noise,
 )
 
-predict(distribution::AbstractProjLogNormal, sm::StochasticMotion) = predict(distribution, sm.motion, sm.noise)
+predict(distribution::AbstractProjLogNormal{TA}, sm::AbstractStochasticMotion{TNM,TA}) where {TNM,TA} = predict(distribution, sm.motion, sm.noise)
 
 #--------------------------------
 # Prediction Helpers
@@ -23,11 +23,11 @@ predict(distribution::AbstractProjLogNormal, sm::StochasticMotion) = predict(dis
 Updates the distribution according to the motion and the process noise.
 """
 function predict(
-    distribution::AbstractProjLogNormal, # filtering distribution
-    motion, # abstract model with the relevant motion
+    distribution::AbstractProjLogNormal{TA}, # filtering distribution
+    motion::AbstractMotion{TA}, # abstract model with the relevant motion
     process_noise=nothing;
     dt=0.1, # discretisation time step
-    )
+    ) where {TA}
     assert_equal_actions(distribution, motion, "Different distribution and motion actions")
     # if get_action(distribution) != get_action(motion)
     #     throw(ErrorException("Different actions"))

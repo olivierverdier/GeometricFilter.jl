@@ -121,7 +121,7 @@ end
     T = 10
     process_noise = ActionNoise(action, 0.5)
     stoch_motion = StochasticMotion(rm, process_noise)
-    @test_throws ErrorException predict(ProjLogNormal(DualGroupOperationAction(G), x0, 1.), stoch_motion)
+    @test_throws MethodError predict(ProjLogNormal(DualGroupOperationAction(G), x0, 1.), stoch_motion)
     sms = fill(stoch_motion, T)
     rng = Random.default_rng()
     signal = generate_signal(rng, sms, x0)
