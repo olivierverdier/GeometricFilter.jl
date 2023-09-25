@@ -1,5 +1,5 @@
 
-struct RigidMotion{TA,TV} <: AbstractAffineMotion
+struct RigidMotion{TA,TV} <: AbstractAffineMotion{TA}
     A::TA # action G ⊂ Diff(M)
     vel::TV # in Alg(G)
 end

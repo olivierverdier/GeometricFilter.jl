@@ -21,6 +21,8 @@ import LinearAlgebra
     # submanifold_component(vel, 1) .= 0
     # rm = make_rigid_motion(action, vel)
     rm = RigidMotion(action, vel)
+    rm + ZeroMotion(GroupOperationAction(G))
+    @test_throws TypeError RigidMotion(GroupOperationAction(G,RightAction()), vel)
     # @show rm'(identity_element(G))
     sol = GeometricFilter.integrate_lift(1.0*rm, identity_element(G), .01)
     # test that sol(1) ≡ exp(ξ), for a rigid motion ξ
@@ -165,9 +167,10 @@ end
     A = RotationAction(M, G)
     m = ZeroMotion(A)
     x = [1., 0, 0]
-    @show m(x)
+    @test m(x) ≈ zero_vector(G, identity_element(G))
     # @show m*x
-    @show m'
+    y = rand(M)
+    @test isapprox(M, m'(x)(y), y)
 end
 
 "⚡"

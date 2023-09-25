@@ -15,10 +15,14 @@ x1 = integrate(motion, x0)
 [12., 10]
 ```
 """
-struct FlatAffineMotion{TM,TV} <: AbstractAffineMotion
+struct FlatAffineMotion{TA,TM,TV} <: AbstractAffineMotion{TA}
     linear::TM
     translation::TV
 end
+
+FlatAffineMotion(linear, translation) = FlatAffineMotion{typeof(_get_flat_action_from_translation(translation)), typeof(linear), typeof(translation)}(linear, translation)
+
+
 
 """
     get_flat_action(d)
@@ -32,7 +36,9 @@ function get_flat_action(dim)
     return TranslationAction(V,G)
 end
 
-get_action(m::FlatAffineMotion) = get_flat_action(size(m.translation, 1))
+_get_flat_action_from_translation(translation) = get_flat_action(size(translation, 1))
+
+get_action(m::FlatAffineMotion) = _get_flat_action_from_translation(m.translation)
 
 get_dynamics(m::FlatAffineMotion, x) = m.linear*x + m.translation
 

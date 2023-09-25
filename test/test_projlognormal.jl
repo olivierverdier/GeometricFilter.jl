@@ -21,6 +21,7 @@ rng = Random.default_rng()
     D = ProjLogNormal(A, μ, Σ)
     apply!(D.action, similar(D.μ), identity_element(G), D.μ)
     rand(D)
+    @test_throws TypeError ProjLogNormal(switch_direction(A), μ, Σ)
 end
 
 @testset "ProjLogNormal" begin

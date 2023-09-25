@@ -21,6 +21,10 @@ Manifolds.base_group(A::DualGroupOperationAction) = A.group
 Manifolds.group_manifold(A::DualGroupOperationAction) = A.group
 
 
+_get_group_operation_action(G, ::LeftAction) = GroupOperationAction(G, LeftAction())
+_get_group_operation_action(G, ::RightAction) = DualGroupOperationAction(G)
+
+
 
 
 Manifolds.apply(A::DualGroupOperationAction, a, p) = inverse_translate(A.group, a, p, RightAction())

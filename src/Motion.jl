@@ -18,7 +18,7 @@ integrate(φ, x) # solution of x'=φ(x)⋅x
 ```
 """
 
-abstract type AbstractMotion end
+abstract type AbstractMotion{TA<:AbstractGroupAction{LeftAction}} end
 
 
 """
@@ -53,7 +53,7 @@ function get_lin_at end
 
 Base.adjoint(m::AbstractMotion) = x -> get_lin_at(m, x)
 
-abstract type AbstractAffineMotion <: AbstractMotion end
+abstract type AbstractAffineMotion{TA} <: AbstractMotion{TA} end
 
 get_lin_at(m::AbstractAffineMotion, ::Any) = get_lin(m)
 
@@ -76,7 +76,7 @@ a dynamics ``f \colon G \to \mathfrak{g}``,
  and the corresponding constant linear part `lin`,
 a linear endormorphism of ``\mathfrak{g}``.
 """
-struct AffineMotion{TA<:AbstractGroupAction{LeftAction},TF,TL} <: AbstractAffineMotion
+struct AffineMotion{TA<:AbstractGroupAction{LeftAction},TF,TL} <: AbstractAffineMotion{TA}
     A::TA # action G -> Diff(M)
     f::TF # motion: M -> Alg(G)
     lin::TL # linear part: operator Alg(G) ⊗ Alg(G)*
@@ -96,7 +96,7 @@ get_lin(m::AffineMotion) = m.lin
 
 Trivial affine motion equal to zero everywhere.
 """
-struct ZeroMotion{TA} <: AbstractAffineMotion
+struct ZeroMotion{TA} <: AbstractAffineMotion{TA}
     A::TA
 end
 
@@ -104,20 +104,13 @@ function get_dynamics(m::ZeroMotion, ::Any)
     G = base_group(get_action(m))
     return zero_vector(G, identity_element(G))
 end
-get_lin(m::ZeroMotion) = x -> x
+get_lin(::ZeroMotion) = x -> x
 
 
-function Base.:+(m1::AbstractAffineMotion, m2::AbstractAffineMotion) 
-    assert_equal_actions(m1, m2, "Cannot add motion with different actions")
+function Base.:+(m1::AbstractAffineMotion{TA}, m2::AbstractAffineMotion{TA})  where {TA}
+    # assert_equal_actions(m1, m2, "Cannot add motion with different actions")
     a1 = get_action(m1)
-    a2 = get_action(m2)
-    # if a1 != a2
-    #     throw(ErrorException("Cannot add motion with different actions:\n\t$a1\n≠\n\t$a2"))
-    # end
-    # d1 = get_dynamics(m1)
-    # d2 = get_dynamics(m2)
     function f(u)
-        # return d1(u) + d2(u)
         return get_dynamics(m1, u) + get_dynamics(m2, u)
     end
     l1 = get_lin(m1)
