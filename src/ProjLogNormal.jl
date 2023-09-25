@@ -31,7 +31,7 @@ function get_lie_basis end
 
 Wrapped exponential distribution on the space of the given action.
 """
-struct ProjLogNormal{TA,TM,TN<:PDMats.AbstractPDMat,TB} <: AbstractProjLogNormal
+struct ProjLogNormal{TA<:AbstractGroupAction{LeftAction},TM,TN<:PDMats.AbstractPDMat,TB} <: AbstractProjLogNormal
     action::TA # left group action G ⊂ Diff(M)
     μ::TM # mean: element of M
     Σ::TN # centred normal distribution on Alg(G) (in basis B)

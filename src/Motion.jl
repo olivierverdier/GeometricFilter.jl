@@ -76,7 +76,7 @@ a dynamics ``f \colon G \to \mathfrak{g}``,
  and the corresponding constant linear part `lin`,
 a linear endormorphism of ``\mathfrak{g}``.
 """
-struct AffineMotion{TA,TF,TL} <: AbstractAffineMotion
+struct AffineMotion{TA<:AbstractGroupAction{LeftAction},TF,TL} <: AbstractAffineMotion
     A::TA # action G -> Diff(M)
     f::TF # motion: M -> Alg(G)
     lin::TL # linear part: operator Alg(G) ⊗ Alg(G)*
