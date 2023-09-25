@@ -37,7 +37,7 @@ rng = Random.default_rng()
     D0__ = ProjLogNormal(A, x0, 5, DefaultOrthonormalBasis())
     dt = .02
     predict(D0, dt*motion, pnoise)
-    update(D0, Observation(observer, onoise, 1.))
+    update(D0, Observation(observer, onoise, [1.]))
     update(D0, EmptyObservation())
     update(D0, Observation())
 end

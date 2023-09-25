@@ -13,6 +13,16 @@ struct Observation{TO,TN,TM} <: AbstractObservation
     observer::TO
     noise::TN
     measurement::TM
+    function Observation(observer, noise, measurement)
+        M = observation_space(observer)
+        if M != sample_space(noise)
+            throw(ErrorException("Observation and noise manifolds should be the same"))
+        end
+        if !is_point(M, measurement)
+            throw(ErrorException("Point should be on observation manifold"))
+        end
+        return new{typeof(observer), typeof(noise), typeof(measurement)}(observer, noise, measurement)
+    end
 end
 
 Base.show(io::IO, obs::Observation) = print(io, "Observation($(obs.observer), $(obs.noise), $(obs.measurement))")
