@@ -98,7 +98,7 @@ function get_covariance_at(
     Σ = noise.covariance(x)
     BG = noise.basis
     P = get_proj_matrix(A, x, BG, B)
-    return PDMats.PDMat(PDMats.X_A_Xt(Σ, P))
+    return PDMats.AbstractPDMat(PDMats.X_A_Xt(Σ, P))
 end
 
 function get_covariance_at(

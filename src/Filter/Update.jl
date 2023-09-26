@@ -84,7 +84,7 @@ function prepare_correction(
     A = LinearAlgebra.I - Gain*H
 
     # Σ_ = A*Σ*A' + Gain*Σy*Gain'
-    Σ_ = PDMats.PDMat(PDMats.X_A_Xt(Σ,A) + PDMats.X_A_Xt(Σy, Gain))
+    Σ_ = PDMats.AbstractPDMat(PDMats.X_A_Xt(Σ,A) + PDMats.X_A_Xt(Σy, Gain))
 
     return Σ_, Gain
 end

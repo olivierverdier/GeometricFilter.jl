@@ -72,8 +72,6 @@ function PDMats.X_A_Xt(a::Covariance, x::AbstractMatrix)
     return Covariance(x * a.trafo)
 end
 
-PDMats.PDMat(a::Covariance) = a
-
 # function Xt_A_X(a::PDMat, x::AbstractMatrix)
 #     @check_argdims a.dim == size(x, 1)
 #     z = chol_upper(a.chol) * x

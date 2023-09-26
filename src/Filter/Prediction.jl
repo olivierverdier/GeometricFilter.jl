@@ -45,7 +45,7 @@ function predict(
         Σ_ = Σ + get_lie_covariance_at(process_noise, x_, distribution.B)
     end
     Σ__ = PDMats.X_A_Xt(Σ_, morph)
-    return update_mean_cov(distribution, x_, PDMats.PDMat(Σ__))
+    return update_mean_cov(distribution, x_, PDMats.AbstractPDMat(Σ__))
 end
 
 """
@@ -61,6 +61,6 @@ function add_process_noise(
 )
     x = Distributions.mean(distribution)
     Σ = Distributions.cov(distribution)
-    Σ_ = PDMats.PDMat(Σ + get_lie_covariance_at(process_noise, x, distribution.B))
+    Σ_ = PDMats.AbstractPDMat(Σ + get_lie_covariance_at(process_noise, x, distribution.B))
     return update_mean_cov(distribution, x, Σ_)
 end
