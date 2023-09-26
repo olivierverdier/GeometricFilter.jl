@@ -29,25 +29,20 @@ function predict(
     distribution::AbstractProjLogNormal{TA}, # filtering distribution
     motion::AbstractMotion{TA}, # abstract model with the relevant motion
     process_noise=nothing;
-    dt=0.1, # discretisation time step
-    ) where {TA}
+    dt=0.1 # discretisation time step
+) where {TA}
     assert_equal_actions(distribution, motion, "Different distribution and motion actions")
     x = Distributions.mean(distribution)
 
-    sol = integrate_lift(motion, x, dt)
-    χ = sol(1.)
-    action = get_action(motion)
-    x_ = apply(action, χ, x)
+    χ, morph = compute_morphism(motion, x, distribution.B; dt=dt)
 
-    B = distribution.B
+    x_ = apply(get_action(motion), χ, x)
+
     Σ = Distributions.cov(distribution)
-    G = base_group(action)
-    mm = get_lin_mat(motion, x, B)
-    morph = compose_adjoint(G, inv(G, χ), exp(mm), B)
     if process_noise === nothing
         Σ_ = Σ
     else
-        Σ_ = Σ + get_lie_covariance_at(process_noise, x_, B)
+        Σ_ = Σ + get_lie_covariance_at(process_noise, x_, distribution.B)
     end
     Σ__ = PDMats.X_A_Xt(Σ_, morph)
     return update_mean_cov(distribution, x_, PDMats.PDMat(Σ__))
