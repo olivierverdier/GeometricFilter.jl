@@ -15,6 +15,13 @@ function observation_space end
 @deprecate get_manifold(obs::AbstractObserver) observation_space(obs)
 
 """
+    observation_space(obs::AbstractObserver) :: AbstractManifold
+
+The manifold which is observed
+"""
+function observed_space end
+
+"""
    get_measurement(::AbstractObserver, x) :: [point in observation manifold]
 
 The actual observer function, mapping a point ``x`` in the state space to a point in the measurement manifold.
@@ -68,6 +75,7 @@ function ProductObserver(observers::AbstractObserver...)
 end
 
 observation_space(obs::ProductObserver) = ProductManifold([observation_space(o) for o in obs.observers]...)
+observed_space(obs::ProductObserver) = observed_space(first(obs.observers))
 
 get_measurement(obs::ProductObserver, x) = ArrayPartition([ob(x) for ob in obs.observers]...)
 

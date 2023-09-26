@@ -43,7 +43,7 @@ export AbstractObserver,
     PositionObserver,
     LinearObserver,
     IdentityObserver,
-    observation_space
+    observation_space, observed_space
     # get_tan_observer,
     # get_manifold,
     # get_action

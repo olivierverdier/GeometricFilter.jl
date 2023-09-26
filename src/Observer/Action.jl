@@ -21,6 +21,7 @@ Base.show(io::IO, obs::ActionObserver) = print(io, "ActionObserver($(obs.action)
 get_action(obs::ActionObserver) = obs.action
 get_ref(obs::ActionObserver) = obs.ref
 observation_space(obs::ActionObserver) = group_manifold(get_action(obs))
+observed_space(obs::ActionObserver) = base_group(get_action(obs))
 
 get_measurement(obs::ActionObserver, χ) = apply(get_action(obs), χ, get_ref(obs))
 

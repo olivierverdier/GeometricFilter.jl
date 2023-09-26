@@ -9,24 +9,33 @@ import Base.Iterators
 rng = default_rng()
 
 @testset "Observer init" begin
-    G = MultiDisplacement(2,2)
-    A = MultiAffineAction(G, [1.,0])
+    G = MultiDisplacement(2, 2)
+    A = MultiAffineAction(G, [1.0, 0])
+    # ref must be on the manifold:
     @test_throws ErrorException ActionObserver(A, zeros(3))
+    @test observed_space(ActionObserver(A, [1, 0])) == G
     # O(identity_element(G))
 end
 
+@testset "observed_space" begin
+    M = Sphere(2)
+    obs = IdentityObserver(M)
+    @test observed_space(obs) == M
+end
+
 @testset "Test Observers" begin
-    G = MultiDisplacement(2,2)
+    G = MultiDisplacement(2, 2)
     M = G
     A = GroupOperationAction(G)
     # obs = PositionObserver(MultiAffineAction(G))
-    obs = ActionObserver(MultiAffineAction(G, [1.,0]), [1., 0])
+    obs = ActionObserver(MultiAffineAction(G, [1.0, 0]), [1.0, 0])
     x = identity_element(G)
     @show obs(x)
     H = GeometricFilter.get_tan_observer(obs, A, x)
     # @infiltrate
     @show H(x)
     oobs = ProductObserver(obs, obs)
+    @test observed_space(oobs) == G
     @show oobs(x)
     HH = GeometricFilter.get_tan_observer(oobs, A, x)
     @show HH(x)
