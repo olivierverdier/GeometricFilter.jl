@@ -36,7 +36,7 @@ struct ProjLogNormal{TA<:AbstractGroupAction{LeftAction},TM,TN<:PDMats.AbstractP
     μ::TM # mean: element of M
     Σ::TN # centred normal distribution on Alg(G) (in basis B)
     B::TB # basis of Alg(G)
-    function ProjLogNormal(action::TA, μ::TM, Σ::TN, B::TB) where {TA,TM,TN, TB}
+    function ProjLogNormal(action::TA, μ::TM, Σ::TN, B::TB=DefaultOrthonormalBasis()) where {TA,TM,TN, TB}
         @assert is_point(group_manifold(action), μ)
         return new{TA,TM,TN,TB}(action, μ, Σ, B)
     end
@@ -48,16 +48,13 @@ function ProjLogNormal(
     A, # action
     x, # in M
     σ :: Number, # isotropic variance
-    B :: AbstractBasis
+    B=DefaultOrthonormalBasis() :: AbstractBasis
     )
     G = base_group(A)
     dim = manifold_dimension(G)
     Σ = PDMats.ScalMat(dim, σ)
     return ProjLogNormal(A, x, Σ, B)
 end
-
-ProjLogNormal(A, x, σ::Number) = ProjLogNormal(A, x, σ, DefaultOrthonormalBasis())
-ProjLogNormal(A, x, Σ::PDMats.AbstractPDMat) = ProjLogNormal(A, x, Σ, DefaultOrthonormalBasis())
 
 
 Distributions.cov(d::ProjLogNormal) = d.Σ
