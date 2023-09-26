@@ -1,5 +1,4 @@
 
-Manifolds.apply!(A::Manifolds.RotationAction{TM,TG,RightAction}, q, a, p) where {TM,TG} = Manifolds.apply!(switch_direction(A), q, inv(base_group(A),a), p)
 
 function Manifolds.apply_diff_group(
     A::Manifolds.RotationActionOnVector{N,F,RightAction},
@@ -18,3 +17,7 @@ function Manifolds.apply_diff_group(
 ) where {N,F}
     return X * p
 end
+
+Manifolds.apply!(::RotationAction{TM,TG,LeftAction}, q, a, p) where {TM,TG} = LinearAlgebra.mul!(q, a, p)
+
+Manifolds.apply!(A::Manifolds.RotationAction{TM,TG,RightAction}, q, a, p) where {TM,TG} = Manifolds.apply!(switch_direction(A), q, inv(base_group(A), a), p)

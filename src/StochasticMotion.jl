@@ -51,7 +51,7 @@ Base.show(io::IO, sm::StochasticMotion{TNM}) where {TNM} = print(io, "Stochastic
 
 Encapsulate the idea of a stochastic dynamical system on a manifold ``\mathcal{M}``, defined by a motion ``φ \colon \mathcal{M}→\mathfrak{g}``, and a noise model on the manifold.
 """
-StochasticMotion(motion::AbstractMotion{TA}, noise, mode::NoiseMode=PositionMode()) where {TA} = StochasticMotion{typeof(mode),typeof(motion),typeof(noise), TA}(motion, noise)
+StochasticMotion(motion::AbstractMotion{TA}, noise::AbstractActionNoise{TA}, mode::NoiseMode=PositionMode()) where {TA} = StochasticMotion{typeof(mode),typeof(motion),typeof(noise), TA}(motion, noise)
 
 get_motion(s::StochasticMotion) = s.motion
 get_noise(s::StochasticMotion) = s.noise

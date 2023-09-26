@@ -2,7 +2,7 @@
 """
 A model of a map from a manifold to a covariance on a Lie algebra.
 """
-abstract type AbstractActionNoise <: AbstractNoise end
+abstract type AbstractActionNoise{TA<:AbstractGroupAction{LeftAction}} <: AbstractNoise end
 #--------------------------------
 # AbstractActionNoise Interface
 #--------------------------------
@@ -37,7 +37,7 @@ The corresponding distribution centred at x₀
 is the push forward of the normal distribution on the Lie
 algebra by the function ξ ↦ exp(ξ)⋅x₀.
 """
-struct ActionNoise{TA,TF<:Function,TB}  <: AbstractActionNoise
+struct ActionNoise{TA,TF<:Function,TB}  <: AbstractActionNoise{TA}
     action::TA # group action G ⊂ Diff(M)
     covariance::TF # function M -> AbstractPDMat
     basis::TB # fixed basis of Alg(G)

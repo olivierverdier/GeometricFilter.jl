@@ -14,6 +14,7 @@ include_test("test_projlognormal.jl")
 include_test("test_grouptools.jl")
 include_test("test_filter_measure.jl")
 include_test("test_examples.jl")
+include_test("test_stochastic_motion.jl")
 
 
 
