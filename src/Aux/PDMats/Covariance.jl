@@ -7,7 +7,7 @@ struct Covariance{T, TM<:AbstractMatrix{T}} <: PDMats.AbstractPDMat{T}
     trafo::TM
 end
 
-# TODO: onvert to PDMats or cholesky when trafo matrix becomes wide?
+# TODO: convert to PDMats or cholesky when trafo matrix becomes wide?
 
 Covariance(M::LinearAlgebra.Symmetric{T,TM}) where {T,TM} = PDMats.chol_lower(cholesky(M))
 Covariance(M::PDMats.PDMat) = Covariance(PDMats.chol_lower(M))
@@ -71,6 +71,8 @@ function PDMats.X_A_Xt(a::Covariance, x::AbstractMatrix)
     PDMats.@check_argdims get_dim(a) == size(x, 2)
     return Covariance(x * a.trafo)
 end
+
+PDMats.PDMat(a::Covariance) = a
 
 # function Xt_A_X(a::PDMat, x::AbstractMatrix)
 #     @check_argdims a.dim == size(x, 1)
