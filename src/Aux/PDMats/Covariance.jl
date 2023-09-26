@@ -42,10 +42,11 @@ Base.getindex(a::Covariance, I::Vararg{Int, N}) where {N} = getindex(get_mat(a),
 ### Arithmetics
 
 Base.:+(a::Covariance, b::Covariance) = Covariance(hcat(a.trafo, b.trafo))
-# function pdadd!(r::Matrix, a::Matrix, b::PDMat, c)
-#     @check_argdims size(r) == size(a) == size(b)
-#     PDMats._addscal!(r, a, get_mat(b), c)
-# end
+
+function PDMats.pdadd!(r::Matrix, a::Matrix, b::Covariance, c)
+    PDMats.@check_argdims size(r) == size(a) == size(b)
+    PDMats._addscal!(r, a, get_mat(b), c)
+end
 
 Base.:*(c::Real, a::Covariance) = Covariance(a.trafo * sqrt(c))
 Base.:*(a::Covariance, c::Real) = c*a

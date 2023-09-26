@@ -6,6 +6,7 @@ end
 
 include_test("aux/Manifolds/test_multiaffine.jl")
 include_test("aux/Manifolds/test_multiaffineaction.jl")
+include_test("aux/PDMats/test_covariance.jl")
 include_test("test_motion.jl")
 include_test("test_noise.jl")
 include_test("test_filter.jl")
