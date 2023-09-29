@@ -3,15 +3,19 @@ import PDMats, LinearAlgebra, Random
 Encode a general covariance as a linear transformation A.
 The covariance is then Σ = A*A'.
 """
-struct Covariance{T, TM<:AbstractMatrix{T}} <: PDMats.AbstractPDMat{T}
+struct Covariance{T, TM} <: PDMats.AbstractPDMat{T}
     trafo::TM
 end
 
+covariance_from(trafo::AbstractArray{T,2}) where {T} = Covariance{T, typeof(trafo)}(trafo)
+
+
 # TODO: convert to PDMats or cholesky when trafo matrix becomes wide?
 
-Covariance(M::LinearAlgebra.Symmetric{T,TM}) where {T,TM} = PDMats.chol_lower(cholesky(M))
-Covariance(M::PDMats.PDMat) = Covariance(PDMats.chol_lower(M))
-Covariance(M::PDMats.PDiagMat) = Covariance(sqrt.(M))
+Covariance(M::LinearAlgebra.Symmetric) = covariance_from(PDMats.chol_lower(LinearAlgebra.cholesky(M)))
+Covariance(M::PDMats.PDMat) = covariance_from(PDMats.chol_lower(M))
+Covariance(M::PDMats.PDiagMat) = covariance_from(LinearAlgebra.diagm(sqrt.(M.diag)))
+Covariance(M::PDMats.ScalMat) = covariance_from(LinearAlgebra.diagm(sqrt(M.value)*ones(M.dim)))
 
 # Base.:*(M::AbstractMatrix, c::Covariance) = Covariance(M*c.trafo)
 
@@ -31,7 +35,6 @@ Base.convert(::Type{AbstractArray{T}}, a::Covariance{T}) where {T<:Real} = a
 
 Base.size(a::Covariance) = (get_dim(a), get_dim(a))
 Base.Matrix(a::Covariance) = get_mat(a)
-LinearAlgebra.diag(a::Covariance) = LinearAlgebra.diag(get_mat(a))
 # LinearAlgebra.cholesky(a::PDMat) = a.chol
 
 ### Inheriting from AbstractMatrix
@@ -41,14 +44,14 @@ Base.getindex(a::Covariance, I::Vararg{Int, N}) where {N} = getindex(get_mat(a),
 
 ### Arithmetics
 
-Base.:+(a::Covariance, b::Covariance) = Covariance(hcat(a.trafo, b.trafo))
+Base.:+(a::Covariance, b::Covariance) = covariance_from(hcat(a.trafo, b.trafo))
 
 function PDMats.pdadd!(r::Matrix, a::Matrix, b::Covariance, c)
     PDMats.@check_argdims size(r) == size(a) == size(b)
     PDMats._addscal!(r, a, get_mat(b), c)
 end
 
-Base.:*(c::Real, a::Covariance) = Covariance(a.trafo * sqrt(c))
+Base.:*(c::Real, a::Covariance) = covariance_from(a.trafo * sqrt(c))
 Base.:*(a::Covariance, c::Real) = c*a
 Base.:*(a::Covariance, x::AbstractVector) = a.trafo*(a.trafo' * x)
 Base.:*(a::Covariance, x::AbstractMatrix) = a.trafo * (a.trafo' * x)
@@ -70,7 +73,7 @@ Base.:*(a::Covariance, x::AbstractMatrix) = a.trafo * (a.trafo' * x)
 
 function PDMats.X_A_Xt(a::Covariance, x::AbstractMatrix)
     PDMats.@check_argdims get_dim(a) == size(x, 2)
-    return Covariance(x * a.trafo)
+    return covariance_from(x * a.trafo)
 end
 
 # function Xt_A_X(a::PDMat, x::AbstractMatrix)

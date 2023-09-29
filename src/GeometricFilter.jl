@@ -57,7 +57,7 @@ export AbstractNoise,
     ConstantFunction,
     get_basis_at, get_covariance_at
 
-export Covariance
+export Covariance, covariance_from
 export AbstractProjLogNormal, ProjLogNormal,
     action_noise, scaled_distance,
     update_mean_cov, update_mean
