@@ -46,8 +46,8 @@ end
 Base.show(io::IO, n::ActionNoise) = print(io, "ActionNoise($(n.action), $(n.covariance), $(n.basis))")
 
 
-get_group(a::ActionNoise{TA,TF,TB}) where {TA,TF,TB} = base_group(a.action)
-sample_space(a::ActionNoise{TA,TF,TB}) where {TA,TF,TB} = group_manifold(a.action)
+get_group(a::ActionNoise)  = base_group(a.action)
+sample_space(a::ActionNoise)  = group_manifold(a.action)
 
 """
     ActionNoise(A::AbstractGroupAction, σ::Number)
@@ -70,16 +70,16 @@ ActionNoise(
 
 rescale_noise(n::ActionNoise, scale) = ActionNoise(n.action, x -> scale^2*n.covariance(x), n.basis)
 
-rescale_noise(n::ActionNoise{TA,TF,TB}, scale) where{TA,TF<:ConstantFunction,TB} = ActionNoise(n.action, scale^2*n.covariance, n.basis)
+rescale_noise(n::ActionNoise{<:Any,TF}, scale) where{TF<:ConstantFunction} = ActionNoise(n.action, scale^2*n.covariance, n.basis)
 
 
 _basis_error_message(B1, B2) = "Changing from basis\n\t$B1\nto\n\t$B2\nis not implemented"
 
 function get_lie_covariance_at(
-    noise::ActionNoise{TA,TF,TB}, # noise for action(M,G)
+    noise::ActionNoise, # noise for action(M,G)
     x, # on M
     B::AbstractBasis, # basis of Alg(G)
-    ) where {TA,TF,TB}
+    ) 
     if !is_point(sample_space(noise), x)
         throw(ErrorException("x should be a point on the manifold"))
     end
@@ -90,10 +90,10 @@ function get_lie_covariance_at(
 end
 
 function get_covariance_at(
-    noise::ActionNoise{TA,TF,TB},
+    noise::ActionNoise,
     x, # point on Manifold M
-    B::AbstractBasis # basis of T_xM
-    ) where {TA,TF,TB}
+    B # basis of T_xM
+    ) 
     A = noise.action
     Σ = noise.covariance(x)
     BG = noise.basis
@@ -102,10 +102,10 @@ function get_covariance_at(
 end
 
 function get_covariance_at(
-    noise::ActionNoise{TA,TF,TB},
+    noise::ActionNoise{TA},
     ::Identity,
-    B::AbstractBasis
-    ) where {TA<:GroupOperationAction,TF,TB}
+    B
+    ) where {TA<:GroupOperationAction}
     if B != noise.basis
         throw(ErrorException(_basis_error_message(B, noise.basis)))
     end
@@ -129,7 +129,7 @@ end
 """
 Obsolete: in this basis, the covariance matrix is the identity.
 """
-function get_adapted_basis_at(noise::ActionNoise{TA,TF,TB}, x) where {TA,TF,TB}
+function get_adapted_basis_at(noise::ActionNoise, x)
     A = noise.action
     BM = get_basis(group_manifold(A), x, DefaultOrthonormalBasis())
     L = get_proj_matrix(A, x, noise.basis, BM)

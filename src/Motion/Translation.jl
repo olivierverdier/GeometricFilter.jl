@@ -18,13 +18,11 @@ In both cases, the linear part is the zero operator.
 """
 TranslationMotion(G, vel, conv=LeftAction()) = TranslationMotion{typeof(_get_group_operation_action(G, conv)), typeof(G),typeof(vel),typeof(conv)}(G, vel)
 
-# get_action(m::TranslationMotion{TG,TV,LeftAction}) where {TG,TV} = GroupOperationAction(m.G)
-# get_action(m::TranslationMotion{TG,TV,RightAction}) where {TG,TV} = DualGroupOperationAction(m.G)
-get_action(m::TranslationMotion{TA,TG,TV,TAD}) where {TA,TG,TV,TAD} = _get_group_operation_action(m.G, TAD())
+get_action(m::TranslationMotion{<:Any,<:Any,<:Any,TAD}) where {TAD} = _get_group_operation_action(m.G, TAD())
 
-get_dynamics(m::TranslationMotion{TA,TG,TV,LeftAction}, u) where {TA,TG,TV} =  -adjoint_action(m.G, u, m.vel)
+get_dynamics(m::TranslationMotion{<:Any,<:Any,<:Any,LeftAction}, u) =  -adjoint_action(m.G, u, m.vel)
 # TODO: should be inverse adjoint action here?
-get_dynamics(m::TranslationMotion{TA,TG,TV,RightAction}, u) where {TA,TG,TV} =  -adjoint_action(m.G, inv(m.G, u), m.vel)
+get_dynamics(m::TranslationMotion{<:Any,<:Any,<:Any,RightAction}, u) =  -adjoint_action(m.G, inv(m.G, u), m.vel)
 
 function get_lin(m::TranslationMotion)
     G = base_group(get_action(m))

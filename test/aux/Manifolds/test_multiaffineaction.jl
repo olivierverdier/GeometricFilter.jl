@@ -14,6 +14,7 @@ rng = default_rng()
     k = rand(rng, eachindex(sel))
     sel[k] = 1.
     A = MultiAffineAction(G, sel)
+    @test repr(A) == "MultiAffineAction(MultiDisplacement(3, 2), [1.0, 0.0], LeftAction())"
     p = zeros(dim)
     χ = identity_element(G)
     χ.x[1][:,:] = randn(rng, dim, size)

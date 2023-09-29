@@ -62,7 +62,7 @@ Distributions.mean(d::ProjLogNormal) = d.μ
 get_action(d::ProjLogNormal) = d.action
 get_lie_basis(d::ProjLogNormal) = d.B
 
-update_mean_cov(d::ProjLogNormal{TA,TM,TN,TB}, μ::TM, Σ) where {TA,TM,TN,TB} = ProjLogNormal(d.action, μ, Σ, d.B)
+update_mean_cov(d::ProjLogNormal{<:Any,TM}, μ::TM, Σ) where {TM}  = ProjLogNormal(d.action, μ, Σ, d.B)
 
 update_mean(d::ProjLogNormal, x) = update_mean_cov(d, x, Distributions.cov(d))
 
@@ -74,8 +74,8 @@ end
 function rand!(
     rng::Random.AbstractRNG,
     d::AbstractProjLogNormal,
-    out::AbstractArray{F},
-    ) where {F}
+    out::AbstractArray,
+    ) 
     rc = sample(rng, Distributions.cov(d))
     G = base_group(d.action)
     ξ = get_vector_lie(G, rc, d.B)

@@ -12,7 +12,7 @@ predict(
     process_noise,
 )
 
-predict(distribution::AbstractProjLogNormal{TA}, sm::AbstractStochasticMotion{TNM,TA}) where {TNM,TA} = predict(distribution, sm.motion, sm.noise)
+predict(distribution::AbstractProjLogNormal{TA}, sm::AbstractStochasticMotion{<:Any,TA}) where {TA} = predict(distribution, sm.motion, sm.noise)
 
 #--------------------------------
 # Prediction Helpers

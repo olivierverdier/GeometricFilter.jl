@@ -228,11 +228,11 @@ the new operator is defined by
 and the function returns the corresponding matrix.
 """
 function compose_adjoint(
-    G::TG,
+    G,
     elt,
     morph_mat,
     B::AbstractBasis
-    ) where {TG<:AbstractDecoratorManifold}
+    ) 
     op(ξ) = adjoint_action(G, elt, ξ)
     return compose_lie_matrix_op(G, op, morph_mat, B)
 end

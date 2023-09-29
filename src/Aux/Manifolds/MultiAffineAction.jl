@@ -15,7 +15,7 @@ struct MultiAffineAction{TH,dim,size,𝔽,TAD<:ActionDirection,TS<:AbstractVecto
     selector::TS # vector of length `size`
 end
 
-Base.show(io::IO, A::MultiAffineAction{TH,dim,size,𝔽,TAD,TS}) where {TH,dim,size,𝔽,TAD,TS} = print(io, "MultiAffineAction($(A.group), $(A.selector), $TAD())")
+Base.show(io::IO, A::MultiAffineAction{<:Any,<:Any,<:Any,<:Any,TAD}) where {TAD} = print(io, "MultiAffineAction($(A.group), $(A.selector), $TAD())")
 
 function MultiAffineAction(
     group::MultiAffine{TH, dim, size, 𝔽},

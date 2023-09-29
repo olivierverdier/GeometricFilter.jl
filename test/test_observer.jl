@@ -65,11 +65,11 @@ end
 ξ⋅ob(χ)
 """
 function compute_tan_action(
-    A::GroupOperationAction{TG,LeftAction},
+    ::GroupOperationAction{<:Any,LeftAction},
     O::ActionObserver{LeftAction},
     χ,
     ξ
-    ) where{TG}
+    )
     return inf_action(O, χ, ξ)
 end
 
@@ -77,11 +77,11 @@ end
 -(χ⁻¹⋆ξ)⋅ob(χ)
 """
 function compute_tan_action(
-    A::GroupOperationAction{TG,LeftAction},
+    A::GroupOperationAction{<:Any,LeftAction},
     O::ActionObserver{RightAction},
     χ,
     ξ
-    ) where {TG}
+    )
     G = base_group(A)
     return inf_action(O, χ, adjoint_action(G, inv(G, χ), ξ))
 end
@@ -90,11 +90,11 @@ end
 -(χ⋆ξ)⋅ob(χ)
 """
 function compute_tan_action(
-    A::DualGroupOperationAction{TG},
+    A::DualGroupOperationAction,
     O::ActionObserver{LeftAction},
     χ,
     ξ
-    ) where{TG}
+    )
     G = base_group(A)
     return -inf_action(O, χ, adjoint_action(G, χ, ξ))
 end
@@ -103,11 +103,11 @@ end
 ξ⋅ob(χ)
 """
 function compute_tan_action(
-    A::DualGroupOperationAction{TG},
+    ::DualGroupOperationAction,
     O::ActionObserver{RightAction},
     χ,
     ξ
-    ) where {TG}
+    )
     return -inf_action(O, χ, ξ)
 end
 

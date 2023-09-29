@@ -27,15 +27,15 @@ IsotropicNoise(M, std::Number) = IsotropicNoise(M, ConstantFunction(std))
 
 rescale_noise(n::IsotropicNoise, scale) = IsotropicNoise(n.manifold, x -> scale*n.deviation(x))
 
-rescale_noise(n::IsotropicNoise{TA,TF}, scale) where{TA, TF<:ConstantFunction} = IsotropicNoise(n.manifold, scale*n.deviation)
+rescale_noise(n::IsotropicNoise{<:Any,TF}, scale) where{TF<:ConstantFunction} = IsotropicNoise(n.manifold, scale*n.deviation)
 
 
 function get_covariance_at(
     noise::IsotropicNoise,
     point,
-    ::Union{CachedBasis{F, DefaultOrthonormalBasis{F, TV}, TD},
-             DefaultOrthonormalBasis{F, TV}}
-    ) where {F,TV,TD}
+    ::Union{CachedBasis{𝔽,DefaultOrthonormalBasis{𝔽}},
+             DefaultOrthonormalBasis}
+) where {𝔽}
     dim = manifold_dimension(sample_space(noise))
     return PDMats.ScalMat(dim, noise.deviation(point)^2)
 end

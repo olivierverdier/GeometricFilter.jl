@@ -34,10 +34,7 @@ and ``X`` is a ``n × k`` matrix.
 If we denote such an element by ``[X,g]``,
 the multiplication law is ``[X,g] [X',g'] = [X+gX';gg']``.
 """
-function MultiAffine(G::Manifolds.GeneralUnitaryMultiplicationGroup{dim,𝔽,S}, size::Integer=1) where {dim, 𝔽, S}
-    # where {dim<:Integer,𝔽<:AbstractNumbers, S}
-    # space = PowerGroup(PowerManifold(TranslationGroup(dim; field=𝔽), size))
-    # space = Euclidean(dim,size; field=𝔽)
+function MultiAffine(G::Manifolds.GeneralUnitaryMultiplicationGroup{dim,𝔽}, size::Integer=1) where {dim, 𝔽}
     space = TranslationGroup(dim,size;field=𝔽)
     action = Manifolds.ColumnwiseMultiplicationAction(space, G)
     group = GroupManifold(ProductManifold(space, G), Manifolds.SemidirectProductOperation(action))
@@ -45,21 +42,21 @@ function MultiAffine(G::Manifolds.GeneralUnitaryMultiplicationGroup{dim,𝔽,S},
 end
 
 
-Base.show(io::IO, ::MultiAffine{G, dim,size, F}) where {G, dim,size, F} = print(io, "MultiAffine($(G),$(size))")
+Base.show(io::IO, ::MultiAffine{G, <:Any,size}) where {G, size} = print(io, "MultiAffine($(G), $(size))")
 
-_get_representation_dim(G::MultiAffine{TH,dim,size,𝔽}
-                        ) where {TH,dim,size,𝔽} = dim+size
+_get_representation_dim(G::MultiAffine{<:Any,dim,size}
+                        ) where {dim,size} = dim+size
 
 
-function Manifolds.allocate_result(G::MultiAffine{TH,dim,size,𝔽}, ::Union{typeof(affine_matrix),typeof(screw_matrix)}, Xis...) where {TH,dim,size,𝔽}
+function Manifolds.allocate_result(G::MultiAffine, ::Union{typeof(affine_matrix),typeof(screw_matrix)}, Xis...) 
     d = _get_representation_dim(G)
     return allocate(Xis[1], Manifolds.Size(d,d))
 end
 
 Base.@propagate_inbounds function Manifolds._padvector!(
-    ::MultiAffine{TH,dim,size,𝔽},
+    ::MultiAffine{<:Any, <:Any, size},
     X::AbstractMatrix,
-) where {TH,dim,size,𝔽}
+) where {size}
     for i in Base.Iterators.take(axes(X, 1), size)
         for j in axes(X, 2)
             X[i, j] = 0
@@ -69,9 +66,9 @@ Base.@propagate_inbounds function Manifolds._padvector!(
 end
 
 Base.@propagate_inbounds function Manifolds._padpoint!(
-    G::MultiAffine{TH,dim,size,𝔽},
+    G::MultiAffine{<:Any,<:Any,size},
     q::AbstractMatrix,
-) where {TH,dim,size,𝔽}
+) where {size}
     Manifolds._padvector!(G, q)
     for (i,j) in Base.Iterators.take(zip(axes(q)...), size)
         q[i,j] = 1
@@ -81,9 +78,9 @@ end
 
 
 function Manifolds.affine_matrix(
-    G::MultiAffine{TH,dim,size,𝔽},
+    G::MultiAffine,
     p
-    ) where {TH,dim,size,𝔽}
+    ) 
     pis = submanifold_components(G, p)
     pmat = allocate_result(G, affine_matrix, pis...)
     map(copyto!, submanifold_components(G, pmat), pis)
@@ -109,7 +106,7 @@ function Manifolds.zero_vector(
 end
 
 
-function Manifolds.screw_matrix(G::MultiAffine{TH, dim, size, 𝔽}, X) where {TH, dim, size, 𝔽}
+function Manifolds.screw_matrix(G::MultiAffine, X) 
     Xis = submanifold_components(G, X)
     Xmat = allocate_result(G, screw_matrix, Xis...)
     map(copyto!, submanifold_components(G, Xmat), Xis)
@@ -119,10 +116,10 @@ end
 
 
 Base.@propagate_inbounds function Manifolds.submanifold_component(
-    ::MultiAffine{TH,dim,size,𝔽},
+    ::MultiAffine{<:Any,dim,size},
     p::AbstractMatrix,
     ::Val{1},
-    ) where {TH, dim,size, 𝔽}
+    ) where {dim,size}
     return view(p,
                 last(axes(p,1), dim),
                 first(axes(p,2), size)
@@ -130,10 +127,10 @@ Base.@propagate_inbounds function Manifolds.submanifold_component(
 end
 
 Base.@propagate_inbounds function Manifolds.submanifold_component(
-    ::MultiAffine{TH,dim,size,𝔽},
+    ::MultiAffine{<:Any,dim},
     p::AbstractMatrix,
     ::Val{2},
-    ) where {TH, dim, size, 𝔽}
+    ) where {dim}
     return view(p,
                 last(axes(p,1), dim),
                 last(axes(p,2), dim)
@@ -141,9 +138,9 @@ Base.@propagate_inbounds function Manifolds.submanifold_component(
 end
 
 function Manifolds.submanifold_components(
-    G::MultiAffine{TH,dim,size,𝔽},
+    G::MultiAffine,
     p::AbstractMatrix,
-    ) where {TH,dim,size,𝔽}
+    ) 
     d = _get_representation_dim(G)
     @assert Base.size(p) == (d,d)
     @inbounds t = submanifold_component(G, p, Val(1))
@@ -171,12 +168,12 @@ end
 # Alternative option: use the standard definition of adjoint_action
 # should do it with matrices as well
 # then could use this function for testing
-function Manifolds.adjoint_action(G::MultiAffine{TH,dim,size,𝔽}, p, X) where {TH,dim,size,𝔽}
+function Manifolds.adjoint_action(G::MultiAffine, p, X) 
     tmp = allocate_result(G, adjoint_action, X)
     return adjoint_action!(G, tmp, p, X)
 end
 
-function Manifolds.adjoint_action!(G::MultiAffine{TH,dim,size,𝔽}, tmp, p, X) where {TH,dim,size,𝔽}
+function Manifolds.adjoint_action!(G::MultiAffine, tmp, p, X)
     mat = affine_matrix(G, p)
     matinv = affine_matrix(G, inv(G,p))
     res = mat * screw_matrix(G,X) * matinv
@@ -185,14 +182,14 @@ function Manifolds.adjoint_action!(G::MultiAffine{TH,dim,size,𝔽}, tmp, p, X) 
 end
 
 
-function Manifolds.apply_diff(A::Manifolds.ColumnwiseMultiplicationAction{N,F,LeftAction}, a, ::Any, X) where {N,F}
+function Manifolds.apply_diff(A::Manifolds.ColumnwiseMultiplicationAction{<:Any,<:Any,LeftAction}, a, ::Any, X) 
     return apply(A, a, X)
 end
 
 
 
 
-function Manifolds.translate_diff!(G::MultiAffine{TH,dim,size,𝔽}, Y, p, q, X, dir::RightAction) where {TH,dim,size,𝔽}
+function Manifolds.translate_diff!(G::MultiAffine, Y, p, q, X, dir::RightAction) 
     np, hp = submanifold_components(G, p)
     nq, hq = submanifold_components(G, q)
     nX, hX = submanifold_components(G, X)
@@ -206,12 +203,12 @@ end
 
 
 
-function Manifolds.lie_bracket(G::MultiAffine{TH,dim,size,𝔽}, v1, v2, ) where {TH,dim,size,𝔽}
+function Manifolds.lie_bracket(G::MultiAffine, v1, v2, )
     res = allocate_result(G, lie_bracket)
     return lie_bracket!(G, res, v1, v2)
 end
 
-function Manifolds.lie_bracket!(G::MultiAffine{TH,dim,size,𝔽}, res, v1, v2, ) where {TH,dim,size,𝔽}
+function Manifolds.lie_bracket!(G::MultiAffine, res, v1, v2, ) 
     A = G.op.action
     n1, h1 = submanifold_components(v1)
     n2, h2 = submanifold_components(v2)
@@ -225,15 +222,15 @@ end
 # 0 -> V -> G -> H -> 0
 
 # fix this stupid use of multiple dispatch; only allow lists of columns?
-function _fill_in(G::MultiAffine{TH,dim,size,𝔽},
-                  ts::AbstractArray{T,1}, x) where {TH,dim,size,𝔽,T}
+function _fill_in(G::MultiAffine,
+                  ts::AbstractArray{<:Any,1}, x) 
     mat = submanifold_component(G, x, 1)
     map(copyto!, eachcol(mat), ts)
     return x
 end
 
-function _fill_in(G::MultiAffine{TH,dim,size,𝔽},
-                  ts::AbstractArray{T,2}, x) where {TH,dim,size,𝔽,T}
+function _fill_in(G::MultiAffine,
+                  ts::AbstractArray{<:Any,2}, x)
     return _fill_in(G, eachcol(ts), x)
 end
 

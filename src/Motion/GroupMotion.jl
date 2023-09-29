@@ -4,10 +4,10 @@
 
 Swap from standard to dual group action, while preserving the same dynamics.
 """
-swap_group_motion(m::RigidMotion{TA,TV}) where {TA<:GroupOperationAction, TV} = TranslationMotion(base_group(get_action(m)), m.vel, RightAction())
-swap_group_motion(m::TranslationMotion{TA,TG,TV,RightAction}) where {TA, TG, TV} = RigidMotion(GroupOperationAction(m.G), m.vel)
-swap_group_motion(m::RigidMotion{TA,TV}) where {TA<:DualGroupOperationAction, TV} = TranslationMotion(base_group(get_action(m)), m.vel, LeftAction())
-swap_group_motion(m::TranslationMotion{TA, TG,TV,LeftAction}) where {TA,TG, TV} = RigidMotion(DualGroupOperationAction(m.G), m.vel)
+swap_group_motion(m::RigidMotion{TA}) where {TA<:GroupOperationAction} = TranslationMotion(base_group(get_action(m)), m.vel, RightAction())
+swap_group_motion(m::TranslationMotion{<:Any,<:Any,<:Any,RightAction}) = RigidMotion(GroupOperationAction(m.G), m.vel)
+swap_group_motion(m::RigidMotion{TA}) where {TA<:DualGroupOperationAction} = TranslationMotion(base_group(get_action(m)), m.vel, LeftAction())
+swap_group_motion(m::TranslationMotion{<:Any, <:Any,<:Any,LeftAction}) = RigidMotion(DualGroupOperationAction(m.G), m.vel)
 
 # _swap_inv(::GroupOperationAction, G, χ) = inv(G,χ)
 # _swap_inv(::DualGroupOperationAction, G, χ) = χ
@@ -27,4 +27,4 @@ function _swap_group_motion(m::AbstractAffineMotion)
     return AffineMotion(_swap_group_action(A), new_f, new_lin)
 end
 
-swap_group_motion(m::AffineMotion{TA,TF,TL}) where {TA<:Union{GroupOperationAction,DualGroupOperationAction},TF,TL} = _swap_group_motion(m)
+swap_group_motion(m::AffineMotion{TA}) where {TA<:Union{GroupOperationAction,DualGroupOperationAction}} = _swap_group_motion(m)

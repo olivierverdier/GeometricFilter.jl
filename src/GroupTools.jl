@@ -2,18 +2,12 @@
 """
 The identity matrix on Lie algebra.
 """
-function get_id_matrix_lie(G::TG) where {TG<:AbstractDecoratorManifold}
+function get_id_matrix_lie(G) 
     dim = manifold_dimension(G)
     T = ManifoldsBase.allocate_result_type(G, typeof(get_id_matrix_lie), ())
     return Matrix{T}(LinearAlgebra.I, dim, dim)
 end
 
-# function get_basis_lie(G::TG, B::AbstractBasis) where {TG<:AbstractDecoratorManifold}
-#     imat = get_id_matrix_lie(G)
-#     basis = [get_vector_lie(G, coord, B)
-#              for coord in eachcol(imat)]
-#     return basis
-# end
 
 """
 Compose a matrix `mat` of a linear endomorphism of Alg(G)
