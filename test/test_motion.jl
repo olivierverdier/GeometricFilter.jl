@@ -11,6 +11,18 @@ import LinearAlgebra
 
 # TODO: test scalar * motion
 
+@testset "Zero Motion" begin
+    G = SpecialOrthogonal(3)
+    M = Sphere(2)
+    A = RotationAction(M, G)
+    m = ZeroMotion(A)
+    x = [1., 0, 0]
+    @test m(x) ≈ zero_vector(G, identity_element(G))
+    # @show m*x
+    ξ = rand(G; vector_at=Identity(G))
+    @test isapprox(G, m'(x)(ξ), zero_vector(G, identity_element(G)))
+end
+
 @testset "Motion" begin
     # G = SpecialOrthogonal(4)
     G = MultiDisplacement(4,2)
@@ -21,7 +33,8 @@ import LinearAlgebra
     # submanifold_component(vel, 1) .= 0
     # rm = make_rigid_motion(action, vel)
     rm = RigidMotion(action, vel)
-    rm + ZeroMotion(GroupOperationAction(G))
+    rm0 = rm + ZeroMotion(GroupOperationAction(G))
+
     @test_throws TypeError RigidMotion(GroupOperationAction(G,RightAction()), vel)
     # @show rm'(identity_element(G))
     sol = GeometricFilter.integrate_lift(1.0*rm, identity_element(G), .01)
@@ -161,16 +174,5 @@ end
     end
 end
 
-@testset "Zero Motion" begin
-    G = SpecialOrthogonal(3)
-    M = Sphere(2)
-    A = RotationAction(M, G)
-    m = ZeroMotion(A)
-    x = [1., 0, 0]
-    @test m(x) ≈ zero_vector(G, identity_element(G))
-    # @show m*x
-    y = rand(M)
-    @test isapprox(M, m'(x)(y), y)
-end
 
 "⚡"

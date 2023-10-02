@@ -108,7 +108,10 @@ function get_dynamics(m::ZeroMotion, ::Any)
     G = base_group(get_action(m))
     return zero_vector(G, identity_element(G))
 end
-get_lin(::ZeroMotion) = x -> x
+function get_lin(m::ZeroMotion)
+    G = base_group(get_action(m))
+    return ξ -> zero_vector(G, identity_element(G))
+end
 
 
 function Base.:+(m1::AbstractAffineMotion{TA}, m2::AbstractAffineMotion{TA})  where {TA}
