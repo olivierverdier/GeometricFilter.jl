@@ -55,8 +55,10 @@ Base.getindex(a::Covariance, I::Vararg{Int, N}) where {N} = getindex(get_mat(a),
 
 ### Arithmetics
 
+Base.:+(a::Covariance, b::PDMats.AbstractPDMat) = b+a
 Base.:+(a::Covariance, b::Covariance) = covariance_from(hcat(a.trafo, b.trafo))
 
+# TODO: double check that:
 function PDMats.pdadd!(r::Matrix, a::Matrix, b::Covariance, c)
     PDMats.@check_argdims size(r) == size(a) == size(b)
     PDMats._addscal!(r, a, get_mat(b), c)

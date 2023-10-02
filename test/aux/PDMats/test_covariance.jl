@@ -4,6 +4,7 @@ using Test
 using GeometricFilter
 using LinearAlgebra
 using Random
+using SparseArrays
 
 rng = Random.default_rng()
 
@@ -20,6 +21,11 @@ rng = Random.default_rng()
     sum = c + complement
     @test sum isa Covariance
     @test sum ≈ Matrix(c) + Matrix(complement)
+
+    A = rand(2,2)
+    M = PDMat(A*A')
+    @test M + c isa AbstractPDMat
+    @test c + M isa AbstractPDMat
 end
 
 @testset "Conversion to Covariance" begin
