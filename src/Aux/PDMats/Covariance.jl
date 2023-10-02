@@ -1,4 +1,6 @@
 import PDMats, LinearAlgebra, Random
+import SparseArrays
+
 """
 Encode a general covariance as a linear transformation A.
 The covariance is then Σ = A*A'.
@@ -13,8 +15,17 @@ covariance_from(trafo::AbstractArray{T,2}) where {T} = Covariance{T, typeof(traf
 # TODO: convert to PDMats or cholesky when trafo matrix becomes wide?
 
 Covariance(M::LinearAlgebra.Symmetric) = covariance_from(PDMats.chol_lower(LinearAlgebra.cholesky(M)))
+# TODO: convert from PDMat{SparseVector} instead
 Covariance(M::PDMats.PDMat) = covariance_from(PDMats.chol_lower(M))
 Covariance(M::PDMats.PDiagMat) = covariance_from(LinearAlgebra.diagm(sqrt.(M.diag)))
+function Covariance(D::PDMats.PDiagMat{T, <:SparseArrays.AbstractSparseVector{T}}) where {T<:Real}
+    nz = SparseArrays.findnz(D.diag)
+    trafo = zeros(D.dim, length(first(nz)))
+    for (j, (i,v)) in enumerate(zip(nz...))
+        trafo[i,j] = sqrt(v)
+    end
+    return covariance_from(trafo)
+end
 Covariance(M::PDMats.ScalMat) = covariance_from(LinearAlgebra.diagm(sqrt(M.value)*ones(M.dim)))
 
 # Base.:*(M::AbstractMatrix, c::Covariance) = Covariance(M*c.trafo)

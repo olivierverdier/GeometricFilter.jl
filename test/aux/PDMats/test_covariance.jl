@@ -3,6 +3,9 @@ using PDMats
 using Test
 using GeometricFilter
 using LinearAlgebra
+using Random
+
+rng = Random.default_rng()
 
 @testset "Add" begin
     c = covariance_from([1; 0;;])
@@ -31,6 +34,19 @@ end
         @test mat ≈ Covariance(mat)
     end
 
+    @testset "Conversion from sparse diagonal" begin
+        N = 20
+        k = 4
+        zdiag = rand(N) .+ 1
+        zdiag[collect(Iterators.take(axes(zdiag, 1), k))] .= 0
+        shuffle!(rng, zdiag)
+        D0 = PDiagMat(sparsevec(zdiag))
+        C = Covariance(D0)
+        @test GeometricFilter.depth(C) == N-k
+        @test C ≈ D0
+        D1 = PDiagMat(zdiag)
+        @test GeometricFilter.depth(Covariance(D1)) == N
+    end
 end
 
 @testset "Multiplications" begin
