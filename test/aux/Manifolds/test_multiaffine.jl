@@ -129,12 +129,12 @@ function test_multi_affine(rng, G::MultiAffine{TH,dim,size,𝔽}
           @test isapprox(G, z, z_)
       end
       @testset "from/to" begin
-          ts = [rand(rng, dim) for i in 1:size]
-          χ1 = from_normal_grp(G, ts)
-          χ2 = from_normal_grp(G, reduce(hcat, ts))
+          ts = randn(rng, dim, size)
+          χ1 = from_normal_grp(G, eachcol(ts)...)
+          χ2 = from_normal_grp(G, ts)
           @test isapprox(G, χ1, χ2)
-          ξ1 = from_normal_alg(G, ts)
-          ξ2 = from_normal_alg(G, reduce(hcat,ts))
+          ξ1 = from_normal_alg(G, eachcol(ts)...)
+          ξ2 = from_normal_alg(G, ts)
           @test isapprox(G, Identity(G), ξ1, ξ2)
       end
       @testset "Lie Bracket & matrix" begin

@@ -3,8 +3,6 @@
 
 
 const MultiColumnwiseMultiplicationAction{G,dim,size,𝔽} = Manifolds.ColumnwiseMultiplicationAction{
-    # MultiTranslation{dim,size,𝔽},
-    # Euclidean{Tuple{dim,size},𝔽},
     TranslationGroup{Tuple{dim,size},𝔽},
     G,
     LeftAction
@@ -12,7 +10,6 @@ const MultiColumnwiseMultiplicationAction{G,dim,size,𝔽} = Manifolds.Columnwis
 
 const MultiAffine{G,dim,size,𝔽} = SemidirectProductGroup{
     𝔽,
-    # MultiTranslation{dim,size,𝔽},
     TranslationGroup{Tuple{dim,size},𝔽},
     G,
     MultiColumnwiseMultiplicationAction{G,dim,size,𝔽}
@@ -48,7 +45,7 @@ _get_representation_dim(G::MultiAffine{<:Any,dim,size}
                         ) where {dim,size} = dim+size
 
 
-function Manifolds.allocate_result(G::MultiAffine, ::Union{typeof(affine_matrix),typeof(screw_matrix)}, Xis...) 
+function Manifolds.allocate_result(G::MultiAffine, ::Union{typeof(affine_matrix),typeof(screw_matrix)}, Xis...)
     d = _get_representation_dim(G)
     return allocate(Xis[1], Manifolds.Size(d,d))
 end
@@ -80,7 +77,7 @@ end
 function Manifolds.affine_matrix(
     G::MultiAffine,
     p
-    ) 
+    )
     pis = submanifold_components(G, p)
     pmat = allocate_result(G, affine_matrix, pis...)
     map(copyto!, submanifold_components(G, pmat), pis)
@@ -106,7 +103,7 @@ function Manifolds.zero_vector(
 end
 
 
-function Manifolds.screw_matrix(G::MultiAffine, X) 
+function Manifolds.screw_matrix(G::MultiAffine, X)
     Xis = submanifold_components(G, X)
     Xmat = allocate_result(G, screw_matrix, Xis...)
     map(copyto!, submanifold_components(G, Xmat), Xis)
@@ -140,7 +137,7 @@ end
 function Manifolds.submanifold_components(
     G::MultiAffine,
     p::AbstractMatrix,
-    ) 
+    )
     d = _get_representation_dim(G)
     @assert Base.size(p) == (d,d)
     @inbounds t = submanifold_component(G, p, Val(1))
@@ -168,7 +165,7 @@ end
 # Alternative option: use the standard definition of adjoint_action
 # should do it with matrices as well
 # then could use this function for testing
-function Manifolds.adjoint_action(G::MultiAffine, p, X) 
+function Manifolds.adjoint_action(G::MultiAffine, p, X)
     tmp = allocate_result(G, adjoint_action, X)
     return adjoint_action!(G, tmp, p, X)
 end
@@ -182,14 +179,14 @@ function Manifolds.adjoint_action!(G::MultiAffine, tmp, p, X)
 end
 
 
-function Manifolds.apply_diff(A::Manifolds.ColumnwiseMultiplicationAction{<:Any,<:Any,LeftAction}, a, ::Any, X) 
+function Manifolds.apply_diff(A::Manifolds.ColumnwiseMultiplicationAction{<:Any,<:Any,LeftAction}, a, ::Any, X)
     return apply(A, a, X)
 end
 
 
 
 
-function Manifolds.translate_diff!(G::MultiAffine, Y, p, q, X, dir::RightAction) 
+function Manifolds.translate_diff!(G::MultiAffine, Y, p, q, X, dir::RightAction)
     np, hp = submanifold_components(G, p)
     nq, hq = submanifold_components(G, q)
     nX, hX = submanifold_components(G, X)
@@ -208,7 +205,7 @@ function Manifolds.lie_bracket(G::MultiAffine, v1, v2, )
     return lie_bracket!(G, res, v1, v2)
 end
 
-function Manifolds.lie_bracket!(G::MultiAffine, res, v1, v2, ) 
+function Manifolds.lie_bracket!(G::MultiAffine, res, v1, v2, )
     A = G.op.action
     n1, h1 = submanifold_components(v1)
     n2, h2 = submanifold_components(v2)
@@ -221,30 +218,23 @@ end
 # The two morphisms corresponding to the sequence
 # 0 -> V -> G -> H -> 0
 
-# fix this stupid use of multiple dispatch; only allow lists of columns?
-function _fill_in(G::MultiAffine,
-                  ts::AbstractArray{<:Any,1}, x) 
-    mat = submanifold_component(G, x, 1)
-    map(copyto!, eachcol(mat), ts)
+function _fill_in!(G::MultiAffine, x, ts)
+    X = submanifold_component(G, x, 1)
+    copyto!(X, ts)
     return x
 end
 
-function _fill_in(G::MultiAffine,
-                  ts::AbstractArray{<:Any,2}, x)
-    return _fill_in(G, eachcol(ts), x)
-end
+_fill_in!(G::MultiAffine, x, ts...) = _fill_in!(G, x, hcat(ts...))
 
-function from_normal_grp(G::MultiAffine,
-                         ts::AbstractArray)
+function from_normal_grp(G::MultiAffine, ts...)
     x = identity_element(G)
-    return _fill_in(G, ts, x)
+    return _fill_in!(G, x, ts...)
 end
 
 
-function from_normal_alg(G::MultiAffine,
-                         ts::AbstractArray)
+function from_normal_alg(G::MultiAffine, ts...)
     x = zero_vector(G, identity_element(G))
-    return _fill_in(G, ts, x)
+    return _fill_in!(G, x, ts...)
 end
 
 function to_factor(G::MultiAffine, pt)
@@ -259,30 +249,5 @@ function to_factor_alg(G::MultiAffine, pt)
     return to_factor(G, pt)
 end
 
-# action on affine space?
-
-# function apply_diff_group(
-#     A::GroupOperationAction{MultiDisplacement{dim,size},LeftAction},
-#     id::Identity,
-#     X,
-#     p
-# ) where {dim,size}
-#     G = base_group(A)
-#     res = allocate_result(G, apply_diff_group)
-#     return apply_diff_group!(A,res,id,X,p)
-# end
-
-
-# function apply_diff_group!(
-#     A::GroupOperationAction{MultiDisplacement{dim,size},LeftAction},
-#     res,
-#     ::Identity,
-#     X,
-#     p
-# ) where {dim,size}
-#     G = base_group(A)
-#     mat_res = screw_matrix(G, X) * affine_matrix(G, p)
-#     # folloowing is wrong, because tangent vector at H is stored as an element in the Lie algebra
-#     map(copyto!, submanifold_components(G, res), submanifold_components(G, mat_res))
-#     return res
-# end
+normal_indices(::MultiAffine{<:Any, dim}, idx; pos=0) where {dim} = collect(Iterators.take(Iterators.drop(idx, pos*dim), dim))
+factor_indices(::MultiAffine{<:Any, dim, size}, idx) where {dim,size} = collect(Iterators.drop(idx, size * dim))
