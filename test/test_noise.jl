@@ -28,7 +28,8 @@ end
     A = GroupOperationAction(G)
     B = DefaultOrthonormalBasis()
     σ = 4.0
-    N = ActionNoise(A, PDMats.ScalMat(manifold_dimension(G), σ),  B)
+    N = ActionNoise(A, PDMats.ScalMat(manifold_dimension(G), σ))
+    N = ActionNoise(A, PDMats.ScalMat(manifold_dimension(G), σ), B)
     N_ = ActionNoise(A, σ)
     N__ = sqrt(σ)*ActionNoise(A)
     @test N_ == N

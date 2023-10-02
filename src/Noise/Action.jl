@@ -50,17 +50,27 @@ get_group(a::ActionNoise)  = base_group(a.action)
 sample_space(a::ActionNoise)  = group_manifold(a.action)
 
 """
-    ActionNoise(A::AbstractGroupAction, σ::Number)
+    ActionNoise(A::GroupAction, Σ::PDMat)
 
-Convenience method to create an action noise with a constant, isotropic covariance
-with respect to the standard metric of the Lie algebra.
+Convenience method to create an action noise with a constant covariance Σ, by deflault with respect to the standard metric of the Lie algebra.
+"""
+ActionNoise(
+    A::AbstractGroupAction,
+    Σ::PDMats.AbstractPDMat,
+    B=DefaultOrthonormalBasis()) = ActionNoise(A, ConstantFunction(Σ), B)
+
+"""
+    ActionNoise(A::GroupAction, σ::Number)
+
+Convenience method to create an action noise with a constant, isotropic covariance, by default with respect to the standard metric of the Lie algebra.
 """
 function ActionNoise(
     A::AbstractGroupAction,
-    σ::Number=1.0)
+    σ::Number=1.0,
+    B=DefaultOrthonormalBasis())
     G = base_group(A)
     dim = manifold_dimension(G)
-    return ActionNoise(A, ConstantFunction(PDMats.ScalMat(dim, σ)), DefaultOrthonormalBasis())
+    return ActionNoise(A, PDMats.ScalMat(dim, σ), B)
 end
 
 ActionNoise(
