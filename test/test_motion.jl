@@ -21,6 +21,7 @@ import LinearAlgebra
     # @show m*x
     ξ = rand(G; vector_at=Identity(G))
     @test isapprox(G, m'(x)(ξ), zero_vector(G, identity_element(G)))
+    @test RigidMotion(A) isa ZeroMotion
 end
 
 @testset "Motion" begin

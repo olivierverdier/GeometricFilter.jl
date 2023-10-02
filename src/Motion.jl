@@ -93,26 +93,6 @@ The linear part of the motion, a linear endomorphism of ``\mathfrak{G}``.
 """
 get_lin(m::AffineMotion) = m.lin
 
-"""
-    ZeroMotion
-
-Trivial affine motion equal to zero everywhere.
-"""
-struct ZeroMotion{TA} <: AbstractAffineMotion{TA}
-    A::TA
-end
-
-Base.show(io::IO, m::ZeroMotion) = print(io, "ZeroMotion($(m.A))")
-
-function get_dynamics(m::ZeroMotion, ::Any)
-    G = base_group(get_action(m))
-    return zero_vector(G, identity_element(G))
-end
-function get_lin(m::ZeroMotion)
-    G = base_group(get_action(m))
-    return ξ -> zero_vector(G, identity_element(G))
-end
-
 
 function Base.:+(m1::AbstractAffineMotion{TA}, m2::AbstractAffineMotion{TA})  where {TA}
     # assert_equal_actions(m1, m2, "Cannot add motion with different actions")
