@@ -62,8 +62,18 @@ Distributions.mean(d::ProjLogNormal) = d.μ
 get_action(d::ProjLogNormal) = d.action
 get_lie_basis(d::ProjLogNormal) = d.B
 
+"""
+    update_mean_cov(d::ProjLogNormal, μ, Σ)
+
+Return new `ProjLogNormal` object with new mean ``μ`` and covariance ``Σ``.
+"""
 update_mean_cov(d::ProjLogNormal{<:Any,TM}, μ::TM, Σ) where {TM}  = ProjLogNormal(d.action, μ, Σ, d.B)
 
+"""
+    update_mean_cov(d::ProjLogNormal, μ)
+
+Return new `ProjLogNormal` object with new mean ``μ``.
+"""
 update_mean(d::ProjLogNormal, x) = update_mean_cov(d, x, Distributions.cov(d))
 
 function Base.length(d::ProjLogNormal)
