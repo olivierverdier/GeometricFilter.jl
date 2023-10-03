@@ -77,7 +77,8 @@ struct ConstantFunction{T} <: Function
     value::T
 end
 
-(c::ConstantFunction)(::Any) = c.value
+(c::ConstantFunction)(::Any) = c()
+(c::ConstantFunction)() = c.value
 Base.:*(s, c::ConstantFunction) = ConstantFunction(s*c.value)
 
 Base.show(io::IO, f::ConstantFunction) = print(io, "$(f.value)")

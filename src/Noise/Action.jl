@@ -127,7 +127,7 @@ function add_noise(
     return rand(rng, dist)
 end
 
-
+add_noise(noise::ActionNoise{<:Any, <:ConstantFunction}, rng::Random.AbstractRNG, point) = rand(rng, ProjLogNormal(point, noise))
 
 
 

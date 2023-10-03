@@ -31,18 +31,18 @@ function get_lie_basis end
 
 Wrapped exponential distribution on the space of the given action.
 """
-struct ProjLogNormal{TA<:AbstractGroupAction{LeftAction},TM,TN,TB} <: AbstractProjLogNormal{TA}
-    action::TA # left group action G ⊂ Diff(M)
+struct ProjLogNormal{TA<:AbstractGroupAction{LeftAction},TM,TN} <: AbstractProjLogNormal{TA}
     μ::TM # mean: element of M
-    Σ::TN # centred normal distribution on Alg(G) (in basis B)
-    B::TB # basis of Alg(G)
-    function ProjLogNormal(action::TA, μ::TM, Σ::TN, B::TB=DefaultOrthonormalBasis()) where {TA,TM,TN, TB}
-        @assert is_point(group_manifold(action), μ)
-        return new{TA,TM,TN,TB}(action, μ, PDMats.AbstractPDMat(Σ), B)
+    noise::TN
+    function ProjLogNormal(μ::TM, noise::TN) where {TM,TN}
+        @assert is_point(sample_space(noise), μ)
+        return new{typeof(noise.action), TM, TN}(μ, noise)
     end
 end
 
-Base.show(io::IO, dist::ProjLogNormal) = print(io, "ProjLogNormal($(dist.action), $(dist.μ), $(dist.Σ), $(dist.B))")
+Base.show(io::IO, dist::ProjLogNormal) = print(io, "ProjLogNormal($(dist.μ), $(dist.noise))")
+
+ProjLogNormal(action, μ, Σ, B=DefaultOrthonormalBasis()) = ProjLogNormal(μ, ActionNoise(action, PDMats.AbstractPDMat(Σ), B))
 
 function ProjLogNormal(
     A, # action
@@ -57,17 +57,17 @@ function ProjLogNormal(
 end
 
 
-Distributions.cov(d::ProjLogNormal) = d.Σ
+Distributions.cov(d::ProjLogNormal) = d.noise.covariance()
 Distributions.mean(d::ProjLogNormal) = d.μ
-get_action(d::ProjLogNormal) = d.action
-get_lie_basis(d::ProjLogNormal) = d.B
+get_action(d::ProjLogNormal) = d.noise.action
+get_lie_basis(d::ProjLogNormal) = d.noise.basis
 
 """
     update_mean_cov(d::ProjLogNormal, μ, Σ)
 
 Return new `ProjLogNormal` object with new mean ``μ`` and covariance ``Σ``.
 """
-update_mean_cov(d::ProjLogNormal{<:Any,TM}, μ::TM, Σ) where {TM}  = ProjLogNormal(d.action, μ, Σ, d.B)
+update_mean_cov(d::ProjLogNormal{<:Any,TM}, μ::TM, Σ) where {TM}  = ProjLogNormal(get_action(d), μ, Σ, get_lie_basis(d))
 
 """
     update_mean_cov(d::ProjLogNormal, μ)
@@ -77,7 +77,7 @@ Return new `ProjLogNormal` object with new mean ``μ``.
 update_mean(d::ProjLogNormal, x) = update_mean_cov(d, x, Distributions.cov(d))
 
 function Base.length(d::ProjLogNormal)
-    M = group_manifold(d.action)
+    M = group_manifold(get_action(d))
     return manifold_dimension(M)
 end
 
@@ -87,10 +87,10 @@ function rand!(
     out::AbstractArray,
     ) 
     rc = sample(rng, Distributions.cov(d))
-    G = base_group(d.action)
-    ξ = get_vector_lie(G, rc, d.B)
+    G = base_group(get_action(d))
+    ξ = get_vector_lie(G, rc, get_lie_basis(d))
     χ = exp_lie(G, ξ)
-    apply!(d.action, out, χ, Distributions.mean(d))
+    apply!(get_action(d), out, χ, Distributions.mean(d))
     return out
 end
 
@@ -98,7 +98,7 @@ function Base.rand(
     rng::Random.AbstractRNG,
     d::AbstractProjLogNormal,
     )
-    M = group_manifold(d.action)
+    M = sample_space(d.noise)
     x = allocate_result(M, typeof(rand))
     rand!(rng, d, x)
     return x
@@ -110,7 +110,7 @@ end
 Create an action noise object from a ProjLogNormal distribution.
 This is simply an action noise with constant covariance.
 """
-action_noise(D::AbstractProjLogNormal) = ActionNoise(get_action(D), ConstantFunction(D.Σ), get_lie_basis(D))
+action_noise(D::AbstractProjLogNormal) = D.noise
 
 
 @doc raw"""

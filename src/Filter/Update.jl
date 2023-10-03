@@ -34,7 +34,7 @@ function _update(
     Σ_, gain = prepare_correction(prior, H, noise, pred)
     x = Distributions.mean(prior)
     N = observation_space(observer)
-    B = prior.B
+    B = get_lie_basis(prior)
     action = get_action(prior)
 
     innovation = log(N, pred, measurement)
@@ -60,7 +60,7 @@ function get_obs_matrix(prior, observer, pred, obs_basis)
 
     obs_op = get_tan_observer(observer, action, x, pred)
 
-    basis = prior.B
+    basis = get_lie_basis(prior)
     H = get_op_matrix(G, observation_space(observer), pred, obs_op, basis, obs_basis)
     return H
 end

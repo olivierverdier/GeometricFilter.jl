@@ -34,7 +34,7 @@ function predict(
     assert_equal_actions(distribution, motion, "Different distribution and motion actions")
     x = Distributions.mean(distribution)
 
-    χ, morph = compute_morphism(motion, x, distribution.B; dt=dt)
+    χ, morph = compute_morphism(motion, x, get_lie_basis(distribution); dt=dt)
 
     x_ = apply(get_action(motion), χ, x)
 
@@ -42,7 +42,7 @@ function predict(
     if process_noise === nothing
         Σ_ = Σ
     else
-        Σ_ = Σ + get_lie_covariance_at(process_noise, x_, distribution.B)
+        Σ_ = Σ + get_lie_covariance_at(process_noise, x_, get_lie_basis(distribution))
     end
     Σ__ = PDMats.X_A_Xt(Σ_, morph)
     return update_mean_cov(distribution, x_, PDMats.AbstractPDMat(Σ__))
@@ -61,6 +61,6 @@ function add_process_noise(
 )
     x = Distributions.mean(distribution)
     Σ = Distributions.cov(distribution)
-    Σ_ = PDMats.AbstractPDMat(Σ + get_lie_covariance_at(process_noise, x, distribution.B))
+    Σ_ = PDMats.AbstractPDMat(Σ + get_lie_covariance_at(process_noise, x, get_lie_basis(distribution)))
     return update_mean_cov(distribution, x, Σ_)
 end

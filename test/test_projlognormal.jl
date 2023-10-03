@@ -22,7 +22,7 @@ rng = Random.default_rng()
     # possible to initialise with a matrix
     D_ = ProjLogNormal(A, μ, mat*mat')
     @test_throws LinearAlgebra.PosDefException ProjLogNormal(A, μ, zeros(dG,dG))
-    apply!(D.action, similar(D.μ), identity_element(G), D.μ)
+    apply!(get_action(D), similar(D.μ), identity_element(G), D.μ)
     rand(D)
     @test_throws TypeError ProjLogNormal(switch_direction(A), μ, Σ)
 end
