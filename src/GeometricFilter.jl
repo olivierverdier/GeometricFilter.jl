@@ -49,12 +49,12 @@ export AbstractObserver,
     # get_action
 export Observation, EmptyObservation
 
+export ConstantFunction
 
 # Noise
 export AbstractNoise,
     ActionNoise, IsotropicNoise,
     NoNoise,
-    ConstantFunction,
     get_basis_at, get_covariance_at
 
 export Covariance, covariance_from
@@ -97,6 +97,7 @@ include("Motion.jl")
 
 include("Aux/PDMats/Covariance.jl")
 include("ProjLogNormal.jl")
+include("ConstantFunction.jl")
 include("Noise.jl")
 
 include("Observation.jl")
