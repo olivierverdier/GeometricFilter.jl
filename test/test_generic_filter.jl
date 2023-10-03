@@ -3,25 +3,25 @@ using GeometricFilter
 using Manifolds
 
 
-import PDMats
+using PDMats
 
-import Random
+using Random
 
-rng = Random.default_rng()
+rng = default_rng()
 
 function setup_static_motion(G, dev=0)
     # ξ = rand(rng, G; vector_at=Identity(G))
     ξ = zero_vector(G, Identity(G))
     motion = RigidMotion(A, ξ)
     # zero process noise instead?
-    pnoise = IsotropicNoise(G, x->dev)
+    pnoise = ActionNoise(GroupOperationAction(G), dev)
     return motion, pnoise
 end
 
 function setup_id_observer(A, dev=1.)
     M = group_manifold(A)
     obs = IdentityObserver(M) # or specified?
-    onoise = IsotropicNoise(get_manifold(obs), x->dev)
+    onoise = IsotropicNoise(observation_space(obs), dev)
     return obs, onoise
 end
 

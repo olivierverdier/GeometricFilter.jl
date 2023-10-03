@@ -3,6 +3,7 @@ using GeometricFilter
 using Manifolds
 
 import LinearAlgebra
+using Distributions
 
 import PDMats
 
@@ -60,7 +61,7 @@ display_obs_type(::IdentityObserver) = "IdentityObserver"
     # ground truth
     D0 = setup_initial_dist(rng, A)
 
-    x0 = D0.μ
+    x0 = mean(D0)
 
 
     m = observer(x0)
@@ -77,7 +78,7 @@ display_obs_type(::IdentityObserver) = "IdentityObserver"
 
     # gdist = [distance(group_manifold(A), D0.μ, D.μ) for D in Ds]
     # dists = [distance(group_manifold(A), D0.μ, D.μ) for D in [first(Ds), last(Ds)]]
-    dists = [distance(group_manifold(A), D0.μ, D.μ) for D in [D1, D_]]
+    dists = [distance(group_manifold(A), mean(D0), mean(D)) for D in [D1, D_]]
 
     improvement_dB = -10*log10(last(dists) / first(dists))
     @test improvement_dB >= 10
