@@ -31,12 +31,6 @@ end
 
 
 
-# apply observation + noise one point first
-# then generate
-
-function generate_observations(signal, observer)
-    return map(observer, signal)
-end
 
 function get_noisy_observations(
     rng,

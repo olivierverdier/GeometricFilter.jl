@@ -26,7 +26,7 @@ export AbstractMotion, AbstractAffineMotion,
 export integrate, generate_signal,
     AbstractStochasticMotion, StochasticMotion,
     MotionMode, PositionMode,
-    generate_observations,
+    simulate_observations,
     get_noisy_observations,
     noisy_observation,
     simulate_filter

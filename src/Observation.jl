@@ -37,6 +37,17 @@ Base.show(io::IO, obs::Observation) = print(io, "Observation($(obs.observer), $(
 """
 noisy_observation(rng::Random.AbstractRNG, obs, noise, state) = Observation(obs, noise, noise(rng, obs(state)))
 
+function simulate_observations(flag, rng, states, observers, noises)
+    observations = map(enumerate(zip(states, observers, noises))) do (i, (state, observer, noise))
+        if flag(i)
+            return noisy_observation(rng, observer, noise, state)
+        else
+            return Observation()
+        end
+    end |> SparseVector
+    return observations
+end
+
 """
     EmptyObservation()
 
