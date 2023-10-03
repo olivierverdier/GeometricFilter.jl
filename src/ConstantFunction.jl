@@ -3,9 +3,14 @@
 
 A constant function always taking the value `v`.
 
+The functions value can be accessed by providing either zero
+or one (arbitrary) argument:
+
 ```jldoctest
 f = ConstantFunction(10)
+
 f(x)
+f()
 
 # output
 10

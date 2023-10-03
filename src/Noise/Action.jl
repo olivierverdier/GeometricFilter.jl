@@ -75,7 +75,7 @@ end
 
 rescale_noise(n::ActionNoise, scale) = ActionNoise(n.action, x -> scale^2*n.covariance(x), n.basis)
 
-rescale_noise(n::ActionNoise{<:Any,TF}, scale) where{TF<:ConstantFunction} = ActionNoise(n.action, scale^2*n.covariance, n.basis)
+rescale_noise(n::ActionNoise{<:Any,<:ConstantFunction}, scale) = ActionNoise(n.action, scale^2*n.covariance, n.basis)
 
 update_cov(n::ActionNoise, Σ) = ActionNoise(n.action, Σ, n.basis)
 
