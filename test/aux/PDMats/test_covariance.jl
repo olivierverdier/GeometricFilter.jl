@@ -26,6 +26,14 @@ rng = Random.default_rng()
     M = PDMat(A*A')
     @test M + c isa AbstractPDMat
     @test c + M isa AbstractPDMat
+
+    @testset "Covariance + PDiagMat" begin
+        # D = PDiagMat(randn(2) .^ 2)
+        D = PDiagMat(zeros(2))
+        C = Covariance(D+I)
+        @test D + C == C
+        @test C + D == C
+    end
 end
 
 @testset "Conversion to Covariance" begin
