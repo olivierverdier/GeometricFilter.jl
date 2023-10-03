@@ -56,6 +56,7 @@ export AbstractNoise,
     ActionNoise, IsotropicNoise,
     NoNoise,
     get_basis_at, get_covariance_at
+    update_cov
 
 export Covariance, covariance_from
 export AbstractProjLogNormal, ProjLogNormal,

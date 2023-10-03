@@ -67,7 +67,7 @@ get_lie_basis(d::ProjLogNormal) = d.noise.basis
 
 Return new `ProjLogNormal` object with new mean ``μ`` and covariance ``Σ``.
 """
-update_mean_cov(d::ProjLogNormal{<:Any,TM}, μ::TM, Σ) where {TM}  = ProjLogNormal(get_action(d), μ, Σ, get_lie_basis(d))
+update_mean_cov(d::ProjLogNormal{<:Any,TM}, μ::TM, Σ) where {TM}  = ProjLogNormal(μ, update_cov(d.noise, Σ))
 
 """
     update_mean_cov(d::ProjLogNormal, μ)

@@ -77,6 +77,7 @@ rescale_noise(n::ActionNoise, scale) = ActionNoise(n.action, x -> scale^2*n.cova
 
 rescale_noise(n::ActionNoise{<:Any,TF}, scale) where{TF<:ConstantFunction} = ActionNoise(n.action, scale^2*n.covariance, n.basis)
 
+update_cov(n::ActionNoise, Σ) = ActionNoise(n.action, Σ, n.basis)
 
 _basis_error_message(B1, B2) = "Changing from basis\n\t$B1\nto\n\t$B2\nis not implemented"
 
