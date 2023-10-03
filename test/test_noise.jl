@@ -86,7 +86,7 @@ end
     an = ActionNoise(A, PDMats.ScalMat(3, 1.), B)
     an_ = ActionNoise(A, PDMats.ScalMat(3, 1.), B)
     @test get_covariance_at(2*an, Identity(G), B) == 4*LinearAlgebra.diagm(ones(manifold_dimension(G)))
-    @test 2*an[PDMats.ScalMat(3,1/4)] == an
+    @test 2*update_cov(an, PDMats.ScalMat(3,1/4)) == an
 end
 
 @testset "Test Action Noise" begin
