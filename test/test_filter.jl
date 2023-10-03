@@ -2,9 +2,10 @@ using Test
 using GeometricFilter
 using Manifolds
 
-
+using SparseArrays
 using DataFrames
-import PDMats
+using PDMats
+using LinearAlgebra
 
 
 import Random

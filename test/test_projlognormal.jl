@@ -3,7 +3,7 @@ using GeometricFilter
 using Manifolds
 
 import Random
-import Distributions
+using Distributions
 import PDMats
 
 import LinearAlgebra

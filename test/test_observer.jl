@@ -132,7 +132,7 @@ end
     GA_ = DualGroupOperationAction(G)
     @assert is_point(G, χ)
 
-    for (ob, act) in Base.Iterators.product([obs, obs_], [GA, GA_])
+    @testset "Tan action $ob, $act" for ob in [obs, obs_], act in [GA, GA_]
         computed = GeometricFilter.get_tan_observer(ob, act, χ)(ξ)
         expected = compute_tan_action(act, ob, χ, ξ)
         @test computed ≈ expected
