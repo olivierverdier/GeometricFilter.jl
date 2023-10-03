@@ -19,6 +19,28 @@ rng = Random.default_rng()
 # 1) set up a regular Kalman filter (with flat spaces)
 # 2) compare with standard implementation of Kalman filter
 
+@testset "Degenerate Process Noise" begin
+    dim = 3
+    size = 2
+    G = MultiDisplacement(dim,size)
+    A =DualGroupOperationAction(G)
+    pdiag = spzeros(manifold_dimension(G))
+    idx = first(axes(pdiag))
+    pdiag[GeometricFilter.normal_indices(G, idx; pos=1)] .= 1.
+    pdiag[GeometricFilter.factor_indices(G, idx)] .= 2.
+    cov = PDiagMat(pdiag)
+    ccov = Covariance(PDiagMat(pdiag))
+    dist = ProjLogNormal(DualGroupOperationAction(G), identity_element(G), cov)
+    pnoise = action_noise(dist)
+    cdist = ProjLogNormal(DualGroupOperationAction(G), identity_element(G), ccov)
+    cpnoise = action_noise(cdist)
+    run_simulation(d,n) = simulate_filter(rng, d, [StochasticMotion(ZeroMotion(A), n)], [Observation()])
+    @test_throws PosDefException run_simulation(dist, pnoise)
+    @test_throws PosDefException run_simulation(cdist, pnoise)
+    @test_throws PosDefException run_simulation(dist, cpnoise)
+    run_simulation(cdist, cpnoise)
+end
+
 @testset "Test Flat Filter Partial Observation" begin
 	  lin = [0 1.;0 0]
     trans = zeros(2)
