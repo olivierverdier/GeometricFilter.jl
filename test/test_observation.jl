@@ -18,7 +18,6 @@ rng = Random.default_rng()
     onoise = IsotropicNoise(M, 1.)
     noises = fill(onoise, T)
 
-    [Observation()] |> SparseVector
 
     observations = simulate_observations(rng, states, observers, noises) do i
         return i==5 || i == 7
@@ -26,3 +25,4 @@ rng = Random.default_rng()
     @test length(findnz(observations)) == 2
 end
 
+@test collect([Observation()] |> SparseVector) == [Observation()]

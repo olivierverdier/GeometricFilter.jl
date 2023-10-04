@@ -63,5 +63,6 @@ Base.show(io::IO, ::EmptyObservation) = print(io, "Observation()")
 # So that AbstractObservation can be used in sparse vectors
 Base.zero(::AbstractObservation) = EmptyObservation()
 Base.zero(::Type{AbstractObservation}) = EmptyObservation()
+Base.zero(::Type{EmptyObservation}) = EmptyObservation()
 
 Observation() = EmptyObservation()
