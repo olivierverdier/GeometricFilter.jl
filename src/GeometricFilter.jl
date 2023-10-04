@@ -29,6 +29,7 @@ export integrate, generate_signal,
     simulate_observations,
     get_noisy_observations,
     noisy_observation,
+    sensor_noise,
     simulate_filter
 
 # Filter

@@ -58,14 +58,13 @@ StochasticMotion(motion::AbstractMotion{TA}, noise::AbstractActionNoise{TA}, mod
 get_motion(s::StochasticMotion) = s.motion
 get_noise(s::StochasticMotion) = s.noise
 
-function rigid_perturbation(rng::Random.AbstractRNG, sm::AbstractStochasticMotion, x)
-    action = get_action(get_motion(sm))
-    pnoise = get_noise(sm)
-    Σ = get_lie_covariance_at(pnoise, x)
-    ndist = Distributions.MvNormal(Σ)
-    ξ = rand(rng, ndist)
-    RigidMotion(action, ξ)
-end
+"""
+    sensor_noise(rng::RNG, sm::StochasticMotion, x) :: StochasticMotion
+
+Simulate sensor noise by adding a random rigid motion with
+velocity drawn from the stochastic motions noise.
+"""
+sensor_noise(rng::Random.AbstractRNG, sm::AbstractStochasticMotion, x) = StochasticMotion(get_motion(sm) + rigid_perturbation(rng, get_noise(sm), x), get_noise(sm))
 
 
 """

@@ -132,6 +132,20 @@ end
 
 add_noise(noise::ActionNoise{<:Any, <:ConstantFunction}, rng::Random.AbstractRNG, point) = rand(rng, ProjLogNormal(point, noise))
 
+"""
+    rigid_perturbation(rng::RNG, noise::ActionNoise, x) :: RigidMotion
+
+Compute a random rigid motion using the covariance of the
+stochastic motion at ``x``, where ``x`` is a point on the sample
+space of the noise.
+"""
+function rigid_perturbation(rng::Random.AbstractRNG, pnoise::AbstractActionNoise, x)
+    action = pnoise.action
+    Σ = get_lie_covariance_at(pnoise, x)
+    ndist = Distributions.MvNormal(Σ)
+    ξ = rand(rng, ndist)
+    RigidMotion(action, ξ)
+end
 
 
 """

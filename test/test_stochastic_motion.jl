@@ -29,6 +29,6 @@ rng = Random.default_rng()
     Dp = GeometricFilter.apply_noise(rng, smp, D)
     @test Dp.μ != D.μ
 
-    pert = GeometricFilter.rigid_perturbation(rng, smm, x)
-    @test pert isa RigidMotion
+    pert = sensor_noise(rng, smm, x)
+    @test pert isa StochasticMotion
 end
