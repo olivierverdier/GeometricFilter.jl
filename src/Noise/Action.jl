@@ -95,6 +95,8 @@ function get_lie_covariance_at(
     return noise.covariance(x)
 end
 
+get_lie_covariance_at(noise::ActionNoise, x) = get_lie_covariance_at(noise, x, noise.basis)
+
 function get_covariance_at(
     noise::ActionNoise,
     x, # point on Manifold M
