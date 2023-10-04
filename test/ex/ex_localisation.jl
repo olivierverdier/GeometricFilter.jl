@@ -123,7 +123,7 @@ process_action = A
 # process_noise = ActionNoise(process_action, PDMats.PDiagMat([.01,.01,.015].^2), DefaultOrthogonalBasis())
 process_noise = ActionNoise(DualGroupOperationAction(G), PDMats.PDiagMat([.01,.01,sqrt(2)*.015].^2), DefaultOrthonormalBasis())
 
-dist = ProjLogNormal(DualGroupOperationAction(G), identity_element(G), 1., DefaultOrthonormalBasis())
+dist = ProjLogNormal(identity_element(G), update_cov(process_noise, 1.))
 
 # make_obs_noise(M) = IsotropicNoise(M, 0.5)
 

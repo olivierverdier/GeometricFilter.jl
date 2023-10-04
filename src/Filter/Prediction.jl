@@ -1,31 +1,29 @@
 
 
 """
-    predict(distribution::AbstractProjLogNormal, motion::AbstractMotion, process_noise::AbstractActionNoise)
+    predict(distribution::AbstractProjLogNormal, stochastic_motion::StochasticMotion)
 
 Compute the update of the uncertainty (the distribution),
-given a motion and its associated process noise.
+given a motion and its associated process noise (a stochastic motion).
 """
 predict(
     distribution::AbstractProjLogNormal,
-    motion,
-    process_noise,
+    stochastic_motion
 )
 
-predict(distribution::AbstractProjLogNormal{TA}, sm::AbstractStochasticMotion{<:Any,TA}) where {TA} = predict(distribution, sm.motion, sm.noise)
+predict(distribution::AbstractProjLogNormal{TA}, sm::AbstractStochasticMotion{<:Any,TA}) where {TA} = _predict(distribution, sm.motion, sm.noise)
+@deprecate predict(distribution, motion, noise) predict(distribution, StochasticMotion(motion, noise))
+predict(d::AbstractProjLogNormal{TA}, m::AbstractMotion{TA}) where {TA} = _predict(d, m)
 
 #--------------------------------
 # Prediction Helpers
 #--------------------------------
 """
-    predict(distribution::ProjLogNormal, motion::Motion, process_noise::ActionNoise) :: ProjLogNormal
+    _predict(distribution::ProjLogNormal, motion::Motion, process_noise::ActionNoise) :: ProjLogNormal
 
 Updates the distribution according to the motion and the process noise.
-
-The noise `process_noise` must implement `get_lie_covariance_at`,
-so must be of type `AbstractActionNoise`.
 """
-function predict(
+function _predict(
     distribution::AbstractProjLogNormal{TA}, # filtering distribution
     motion::AbstractMotion{TA}, # abstract model with the relevant motion
     process_noise=nothing;

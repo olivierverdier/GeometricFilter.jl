@@ -59,7 +59,7 @@ end
     D0_ = ProjLogNormal(A, x0, 5)
     D0__ = ProjLogNormal(A, x0, 5, DefaultOrthonormalBasis())
     dt = .02
-    predict(D0, dt*motion, pnoise)
+    predict(D0, StochasticMotion(dt*motion, pnoise))
     update(D0, Observation(observer, onoise, [1.]))
     update(D0, EmptyObservation())
     update(D0, Observation())
@@ -89,7 +89,7 @@ end
     G = base_group(A)
     x0 = zeros(1)
     # pnoise = IsotropicNoise(V, 2.)
-    pnoise = ActionNoise(GroupOperationAction(G), 2.0^2)
+    pnoise = ActionNoise(A, 2.0^2)
     onoise = IsotropicNoise(V, 1.)
     observer = LinearObserver([1.;;])
     x1 = pnoise(rng, integrate(motion, x0))
@@ -99,7 +99,8 @@ end
     # @show z1
 
     D0 = ProjLogNormal(A, x0, PDMats.ScalMat(1,1.), DefaultOrthonormalBasis())
-    D1 = predict(D0, motion, pnoise)
+    D1 = predict(D0, StochasticMotion(motion, pnoise))
+    # @code_warntype predict(D0, StochasticMotion(motion, pnoise))
     D1_ = update(D1, Observation(observer, onoise, z1))
     # @show D1_
 end
@@ -196,8 +197,7 @@ end
     D = ProjLogNormal(A, identity_element(G), 1.)
     # pnoise = IsotropicNoise(G, x->1.)
     pnoise = ActionNoise(GroupOperationAction(G), 1.)
-    predict(D, m, pnoise)
+    predict(D, StochasticMotion(m, pnoise))
 end
-
 
 

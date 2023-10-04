@@ -47,11 +47,13 @@ end
 Base.show(io::IO, sm::StochasticMotion{TNM}) where {TNM} = print(io, "StochasticMotion($(sm.motion), $(sm.noise), $TNM())")
 
 @doc raw"""
-    StochasticMotion(motion::Motion, noise::Noise, mode=PositionMode())
+    StochasticMotion(motion::Motion, process_noise::ActionNoise, mode=PositionMode())
 
 Encapsulate the idea of a stochastic dynamical system on a manifold ``\mathcal{M}``, defined by a motion ``φ \colon \mathcal{M}→\mathfrak{g}``, and a noise model on the manifold.
+
+The noise `process_noise` must implement `get_lie_covariance_at`, so must be of type `AbstractActionNoise`.
 """
-StochasticMotion(motion::AbstractMotion{TA}, noise::AbstractActionNoise{TA}, mode::NoiseMode=PositionMode()) where {TA} = StochasticMotion{typeof(mode),typeof(motion),typeof(noise), TA}(motion, noise)
+StochasticMotion(motion::AbstractMotion{TA}, noise::AbstractActionNoise{TA}, mode::NoiseMode=PositionMode()) where {TA} = StochasticMotion{typeof(mode),typeof(motion),typeof(noise),TA}(motion, noise)
 
 get_motion(s::StochasticMotion) = s.motion
 get_noise(s::StochasticMotion) = s.noise
