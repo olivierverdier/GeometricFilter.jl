@@ -28,13 +28,12 @@ For instance, `make_square(2.0, 0.1)` creates
 a square of size 2 with 20 points per side.
 """
 function make_square_path(scale; dt=0.2)
-    dirs = [exp(im * j * τ / 4) for j in 0:3]
+    dirs = Complex{Float64}[exp(im * j * τ / 4) for j in 0:3]
     paths = [straight_path(d, dt, scale) for d in dirs]
-    translated_paths = accumulate(paths; init=(nothing, 0)) do (_p,s),p
+    translated_paths = accumulate(paths; init=(LinRange(0,0,0), 0im)) do (_p,s),p
         p_ = p.+s
         return (p_, last(p_))
     end
-    # full_path = vcat([first(z) for z in translated_paths]...)
     full_path = reduce(vcat, first.(translated_paths))
     return full_path
 end
