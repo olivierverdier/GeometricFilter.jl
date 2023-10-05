@@ -94,7 +94,9 @@ The linear part of the motion, a linear endomorphism of ``\mathfrak{G}``.
 get_lin(m::AffineMotion) = m.lin
 
 
-function Base.:+(m1::AbstractAffineMotion{TA}, m2::AbstractAffineMotion{TA})  where {TA}
+Base.:+(m1::AbstractAffineMotion{TA}, m2::AbstractAffineMotion{TA})  where {TA} = _add_affine_motions(m1,m2)
+
+function _add_affine_motions(m1::AbstractAffineMotion{TA}, m2::AbstractAffineMotion{TA})  where {TA}
     # assert_equal_actions(m1, m2, "Cannot add motion with different actions")
     a1 = get_action(m1)
     function f(u)

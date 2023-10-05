@@ -25,11 +25,12 @@ export AbstractMotion, AbstractAffineMotion,
 # Simulation
 export integrate, generate_signal,
     AbstractStochasticMotion, StochasticMotion,
-    MotionMode, PositionMode,
+    DataMode,
+    SensorPerturbation, PositionPerturbation,
     simulate_observations,
     get_noisy_observations,
     noisy_observation,
-    sensor_noise,
+    sensor_perturbation,
     simulate_filter
 
 # Filter

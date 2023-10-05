@@ -34,7 +34,9 @@ end
     # submanifold_component(vel, 1) .= 0
     # rm = make_rigid_motion(action, vel)
     rm = RigidMotion(action, vel)
+    @test_throws ExceptionError RigidMotion(action, 0)
     rm0 = rm + ZeroMotion(GroupOperationAction(G))
+    @test rm0 == rm
 
     @test_throws TypeError RigidMotion(GroupOperationAction(G,RightAction()), vel)
     # @show rm'(identity_element(G))

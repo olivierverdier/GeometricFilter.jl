@@ -18,17 +18,17 @@ rng = Random.default_rng()
     x = [1., 0, 0]
     noise = ActionNoise(A, 1.)
     motion = ZeroMotion(A)
-    smm = StochasticMotion(motion, noise, MotionMode())
-    smp = StochasticMotion(motion, noise, PositionMode())
-    @test_throws MethodError StochasticMotion(motion, IsotropicNoise(M, 1.0), PositionMode())
+    smm = StochasticMotion(motion, noise, GeometricFilter.MotionMode())
+    smp = StochasticMotion(motion, noise, GeometricFilter.PositionMode())
+    @test_throws MethodError StochasticMotion(motion, IsotropicNoise(M, 1.0), GeometricFilter.PositionMode())
     D = ProjLogNormal(A, x, 1.)
-    @test smm isa AbstractStochasticMotion{MotionMode}
-    @test !(smm isa AbstractStochasticMotion{PositionMode})
+    @test smm isa AbstractStochasticMotion{GeometricFilter.MotionMode}
+    @test !(smm isa AbstractStochasticMotion{GeometricFilter.PositionMode})
     Dm = GeometricFilter.apply_noise(rng, smm, D)
     @test Dm.μ == D.μ
     Dp = GeometricFilter.apply_noise(rng, smp, D)
     @test Dp.μ != D.μ
 
-    pert = sensor_noise(rng, smm, x)
+    pert = GeometricFilter.sensor_perturbation(rng, smm, x)
     @test pert isa StochasticMotion
 end

@@ -143,8 +143,9 @@ function rigid_perturbation(rng::Random.AbstractRNG, pnoise::AbstractActionNoise
     action = pnoise.action
     Σ = get_lie_covariance_at(pnoise, x)
     ndist = Distributions.MvNormal(Σ)
-    ξ = rand(rng, ndist)
-    RigidMotion(action, ξ)
+    vec = rand(rng, ndist)
+    ξ = get_vector_lie(base_group(action), vec, pnoise.basis)
+    return RigidMotion(action, ξ)
 end
 
 

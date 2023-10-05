@@ -34,7 +34,7 @@ rng = Random.default_rng()
     pnoise = action_noise(dist)
     cdist = ProjLogNormal(DualGroupOperationAction(G), identity_element(G), ccov)
     cpnoise = action_noise(cdist)
-    run_simulation(d,n) = simulate_filter(rng, d, [StochasticMotion(ZeroMotion(A), n)], [Observation()])
+    run_simulation(d,n) = simulate_filter(PositionPerturbation(rng), d, [StochasticMotion(ZeroMotion(A), n)], [Observation()])
     @test_throws PosDefException run_simulation(dist, pnoise)
     @test_throws PosDefException run_simulation(cdist, pnoise)
     @test_throws PosDefException run_simulation(dist, cpnoise)
@@ -121,11 +121,13 @@ end
     @test signal == signal_
     observations = [selector(i,T÷2) ? Observation(observer, onoise, onoise(rng, observer(s))) : EmptyObservation() for (i,s) in enumerate(signal)]
     sms = fill(StochasticMotion(motion, pnoise), T)
-    res = simulate_filter(rng, D0, sms, observations; streak_nb=:nb)
-    @test res isa DataFrame
-    @test names(res) == ["nb", "dist"]
-    @test nrow(res) == T
-    @test length(groupby(res, :nb)) == 3
+    @testset "Simulation Mode $mode" for mode in [PositionPerturbation, SensorPerturbation]
+        res = simulate_filter(mode(rng), D0, sms, observations; streak_nb=:nb)
+        @test res isa DataFrame
+        @test names(res) == ["nb", "dist"]
+        @test nrow(res) == T
+        @test length(groupby(res, :nb)) == 3
+    end
 end
 
 @testset "Test Filter" begin

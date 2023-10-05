@@ -59,12 +59,12 @@ get_motion(s::StochasticMotion) = s.motion
 get_noise(s::StochasticMotion) = s.noise
 
 """
-    sensor_noise(rng::RNG, sm::StochasticMotion, x) :: StochasticMotion
+    sensor_perturbation(rng::RNG, sm::StochasticMotion, x) :: StochasticMotion
 
 Simulate sensor noise by adding a random rigid motion with
 velocity drawn from the stochastic motions noise.
 """
-sensor_noise(rng::Random.AbstractRNG, sm::AbstractStochasticMotion, x) = StochasticMotion(get_motion(sm) + rigid_perturbation(rng, get_noise(sm), x), get_noise(sm))
+sensor_perturbation(rng::Random.AbstractRNG, sm::AbstractStochasticMotion, x) = StochasticMotion(get_motion(sm) + rigid_perturbation(rng, get_noise(sm), x), get_noise(sm))
 
 
 """
