@@ -142,8 +142,7 @@ space of the noise.
 function rigid_perturbation(rng::Random.AbstractRNG, pnoise::AbstractActionNoise, x)
     action = pnoise.action
     Σ = get_lie_covariance_at(pnoise, x)
-    ndist = Distributions.MvNormal(Σ)
-    vec = rand(rng, ndist)
+    vec = sample(rng, Σ)
     ξ = get_vector_lie(base_group(action), vec, pnoise.basis)
     return RigidMotion(action, ξ)
 end

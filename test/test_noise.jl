@@ -3,7 +3,7 @@ using Test
 using GeometricFilter
 using Manifolds
 
-import PDMats
+using PDMats
 import Random
 rng = Random.default_rng()
 
@@ -106,4 +106,12 @@ end
     @test GeometricFilter.get_lie_covariance_at(noise, x, BG) == PDMats.ScalMat(3, σ)
     @test cov == PDMats.ScalMat(2, σ)
     @test GeometricFilter.rigid_perturbation(rng, noise, x) isa RigidMotion
+
+    @testset "Degenerate Covariance $cov" for cov in [
+        Covariance(PDiagMat(sparsevec([1,0,0]))),
+         PDiagMat([1,0,0])
+        ]
+        dnoise = ActionNoise(A, cov)
+        rmot = GeometricFilter.rigid_perturbation(rng, dnoise, x)
+    end
 end
