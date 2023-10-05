@@ -32,7 +32,6 @@ function _update(
 
     H = get_obs_matrix(prior, observer, pred, obs_basis)
     Σ_, gain = prepare_correction(prior, H, noise, pred)
-    x = Distributions.mean(prior)
     N = observation_space(observer)
     B = get_lie_basis(prior)
     action = get_action(prior)
