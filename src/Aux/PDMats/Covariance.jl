@@ -15,7 +15,6 @@ covariance_from(trafo::AbstractArray{T,2}) where {T} = Covariance{T, typeof(traf
 # TODO: convert to PDMats or cholesky when trafo matrix becomes wide?
 
 Covariance(M::LinearAlgebra.Symmetric) = covariance_from(PDMats.chol_lower(LinearAlgebra.cholesky(M)))
-# TODO: convert from PDMat{SparseVector} instead
 Covariance(M::PDMats.PDMat) = covariance_from(PDMats.chol_lower(M))
 Covariance(M::PDMats.PDiagMat) = covariance_from(LinearAlgebra.diagm(sqrt.(M.diag)))
 function Covariance(D::PDMats.PDiagMat{T, <:SparseArrays.AbstractSparseVector{T}}) where {T<:Real}
