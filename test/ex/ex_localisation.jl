@@ -124,6 +124,20 @@ process_noise = ActionNoise(DualGroupOperationAction(G), PDMats.PDiagMat([.01,.0
 
 dist = ProjLogNormal(identity_element(G), update_cov(process_noise, 1.))
 
+let
+    using Random
+    rng = Random.default_rng()
+    FREQ = 5
+    # full_path = make_square_path(30, 1; dt=1/FREQ)
+    # poses = compute_poses(full_path)
+    poses = fill(identity_element(G), 3)
+    vels = compute_velocities(G, poses)
+    motions = compute_motions(A, vels)
+    simulate_filter(SensorPerturbation(rng), dist, [StochasticMotion(first(motions), process_noise)], [Observation()])
+    " "
+end
+
+
 # make_obs_noise(M) = IsotropicNoise(M, 0.5)
 
 
