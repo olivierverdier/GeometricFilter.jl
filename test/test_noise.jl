@@ -5,6 +5,7 @@ using Manifolds
 
 import PDMats
 import Random
+rng = Random.default_rng()
 
 function Manifolds.apply_diff_group(
     ::RotationAction{N,F,LeftAction},
@@ -104,4 +105,5 @@ end
     cov = get_covariance_at(noise, x, BM)
     @test GeometricFilter.get_lie_covariance_at(noise, x, BG) == PDMats.ScalMat(3, σ)
     @test cov == PDMats.ScalMat(2, σ)
+    @test GeometricFilter.rigid_perturbation(rng, noise, x) isa RigidMotion
 end
