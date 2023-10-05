@@ -7,14 +7,14 @@ full_path = straight_path(1., 0.2, 30)
 poses = compute_poses(full_path)
 vels = compute_velocities(G, poses)
 motions = compute_motions(A, vels)
-smotions = map(m -> StochasticMotion(m, ActionNoise(A, 0.01), PositionMode()), motions)
+smotions = map(m -> StochasticMotion(m, ActionNoise(A, 0.01)), motions)
 # smotions = map(m -> StochasticMotion(m, IsotropicNoise(G, 0.01), PositionMode()), motions)
 init_pose = identity_element(G)
 
 poses = generate_signal(motions, init_pose)
 
 noisy_trajectory = accumulate(smotions; init=init_pose) do pose, sm
-    return integrate(rng, sm, pose)
+    return integrate(PositionPerturbation(rng), sm, pose)
 end
 
 

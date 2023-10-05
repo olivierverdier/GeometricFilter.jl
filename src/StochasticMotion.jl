@@ -1,15 +1,6 @@
 
-"""
-    NoiseMode
 
-Whether the noise is already encoded in the motion (typical for actual measurements), or as a noise applied on the resulting position.
-"""
-abstract type NoiseMode end
-
-struct MotionMode <: NoiseMode end
-struct PositionMode <: NoiseMode end
-
-abstract type AbstractStochasticMotion{TNM, TA<:AbstractGroupAction{LeftAction}} end
+abstract type AbstractStochasticMotion{TA<:AbstractGroupAction{LeftAction}} end
 
 #--------------------------------
 # AbstractStochasticMotion Interface
@@ -28,18 +19,9 @@ The underlying process noise.
 """
 function get_noise end
 
-"""
-    apply_noise(::RNG, ::StochasticMotion, dist::ProjLogNormal)
-
-In `PositionMode`, apply noise to the mean of the distribution `dist`.
-This models a noisy measurement of the motion.
-In `MotionMode`, the motions are supposed to be already marred by
-uncertainty, so this does not do anything.
-"""
-function apply_noise end
 #--------------------------------
 
-struct StochasticMotion{TNM,TM,TN,TA} <: AbstractStochasticMotion{TNM,TA}
+struct StochasticMotion{TM,TN,TA} <: AbstractStochasticMotion{TA}
     motion::TM
     noise::TN
 end
@@ -47,13 +29,13 @@ end
 Base.show(io::IO, sm::StochasticMotion{TNM}) where {TNM} = print(io, "StochasticMotion($(sm.motion), $(sm.noise), $TNM())")
 
 @doc raw"""
-    StochasticMotion(motion::Motion, process_noise::ActionNoise, mode=PositionMode())
+    StochasticMotion(motion::Motion, process_noise::ActionNoise)
 
 Encapsulate the idea of a stochastic dynamical system on a manifold ``\mathcal{M}``, defined by a motion ``φ \colon \mathcal{M}→\mathfrak{g}``, and a noise model on the manifold.
 
 The noise `process_noise` must implement `get_lie_covariance_at`, so must be of type `AbstractActionNoise`.
 """
-StochasticMotion(motion::AbstractMotion{TA}, noise::AbstractActionNoise{TA}, mode::NoiseMode=PositionMode()) where {TA} = StochasticMotion{typeof(mode),typeof(motion),typeof(noise),TA}(motion, noise)
+StochasticMotion(motion::AbstractMotion{TA}, noise::AbstractActionNoise{TA}) where {TA} = StochasticMotion{typeof(motion),typeof(noise),TA}(motion, noise)
 
 get_motion(s::StochasticMotion) = s.motion
 get_noise(s::StochasticMotion) = s.noise
@@ -68,19 +50,19 @@ sensor_perturbation(rng::Random.AbstractRNG, sm::AbstractStochasticMotion, x) = 
 
 
 """
-    integrate(rng::RNG, s::StochasticMotion, x)
+    integrate(::FilteringMode, s::StochasticMotion, x)
 
 Integrate the stochastic motion: deterministically integrate
 the underlying motion, and adds noise on the result.
 
-In `PositionMode`, the noise is added after exact integration.
-In `MotionMode`, the underlying motions are already noisy.
+The `FilterMode` can be the following:
+- With `DataMode`, the motion is integrated exactly.
+- With `PositionPerturbation(rng)`, the noise is added after exact integration.
+- With `SensorPerturbation(rng)`, the noise is applied to the motion, followed by an exact integration.
 """
-# integrate(rng::Random.AbstractRNG, s::AbstractStochasticMotion{PositionMode}, x) = get_noise(s)(rng, integrate(get_motion(s), x))
-function integrate(rng::Random.AbstractRNG, s::AbstractStochasticMotion{PositionMode}, x)
-    return get_noise(s)(rng, integrate(get_motion(s), x))
-end
-integrate(::Random.AbstractRNG, s::AbstractStochasticMotion{MotionMode}, x) = integrate(get_motion(s), x)
+integrate(fm::FilteringMode, s::AbstractStochasticMotion, x)
 
-apply_noise(rng::Random.AbstractRNG, sm::AbstractStochasticMotion{PositionMode}, dist) = update_mean(dist, get_noise(sm)(rng, Distributions.mean(dist)))
-apply_noise(::Random.AbstractRNG, ::AbstractStochasticMotion{MotionMode}, dist) = dist
+integrate(::DataMode, s::AbstractStochasticMotion, x) = integrate(get_motion(s), x)
+integrate(fm::SimulationMode{PositionPerturbationMode}, s::AbstractStochasticMotion, x) = get_noise(s)(fm.rng, integrate(DataMode(), s, x))
+integrate(fm::SimulationMode{SensorPerturbationMode}, s::AbstractStochasticMotion, x) = integrate(DataMode(), sensor_perturbation(fm.rng, s, x), x)
+

@@ -150,7 +150,7 @@ end
     @test_throws MethodError predict(ProjLogNormal(DualGroupOperationAction(G), x0, 1.), stoch_motion)
     sms = fill(stoch_motion, T)
     rng = Random.default_rng()
-    signal = generate_signal(rng, sms, x0)
+    signal = generate_signal(PositionPerturbation(rng), sms, x0)
     # @show signal
     # @show length(signal)
 

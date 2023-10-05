@@ -11,7 +11,7 @@ predict(
     stochastic_motion
 )
 
-predict(distribution::AbstractProjLogNormal{TA}, sm::AbstractStochasticMotion{<:Any,TA}) where {TA} = _predict(distribution, sm.motion, sm.noise)
+predict(distribution::AbstractProjLogNormal{TA}, sm::AbstractStochasticMotion{TA}) where {TA} = _predict(distribution, sm.motion, sm.noise)
 @deprecate predict(distribution, motion, noise) predict(distribution, StochasticMotion(motion, noise))
 predict(d::AbstractProjLogNormal{TA}, m::AbstractMotion{TA}) where {TA} = _predict(d, m)
 

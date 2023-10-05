@@ -105,6 +105,7 @@ include("ConstantFunction.jl")
 include("Noise.jl")
 
 include("Observation.jl")
+include("Filter/SimulationMode.jl")
 include("StochasticMotion.jl")
 
 include("Filter/Prediction.jl")

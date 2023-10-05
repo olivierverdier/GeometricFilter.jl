@@ -1,19 +1,3 @@
-abstract type FilteringMode end
-
-struct DataMode <: FilteringMode end
-
-struct SimulationMode{T,TRNG} <: FilteringMode
-    rng::TRNG
-end
-
-abstract type PerturbationType  end
-struct SensorPerturbationMode <: PerturbationType end
-struct PositionPerturbationMode <: PerturbationType end
-
-SimulationMode(rng::Random.AbstractRNG, t::PerturbationType) = SimulationMode{typeof(t),typeof(rng)}(rng)
-
-PositionPerturbation(rng) = SimulationMode(rng, PositionPerturbationMode())
-SensorPerturbation(rng) = SimulationMode(rng, SensorPerturbationMode())
 
 """
     generate_signal(motions::AbstractVector{<:AbstractMotion}, x0)
@@ -35,12 +19,12 @@ generate_signal(
 Integrate one sample path the sequence of stochastic motions, starting at the point ``x_0``.
 """
 function generate_signal(
-    rng::Random.AbstractRNG,
+    fm::FilteringMode,
     stoch_motions::AbstractVector{<:AbstractStochasticMotion},
     x0 # initial point
     )
     res = accumulate(stoch_motions; init=x0) do x, sm
-        return integrate(rng, sm, x)
+        return integrate(fm, sm, x)
     end
     return res
 end
@@ -67,7 +51,7 @@ function prediction_step(fm::SimulationMode{SensorPerturbationMode}, D, sm)
 end
 function prediction_step(fm::SimulationMode{PositionPerturbationMode}, D, sm)
     D_ = prediction_step(DataMode(), D, sm)
-    return apply_noise(fm.rng, sm, D_)
+    return update_mean(D_, get_noise(sm)(fm.rng, Distributions.mean(D_)))
 end
 
 """
