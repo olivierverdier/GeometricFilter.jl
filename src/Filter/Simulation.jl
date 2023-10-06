@@ -40,8 +40,8 @@ function get_noisy_observations(
     return [noise(rng, obs) for (noise, obs) in zip(noises, observations)]
 end
 
-_is_obs(::AbstractObservation) = true
-_is_obs(::EmptyObservation) = false
+_increase_if_observation(::AbstractObservation, k) = k+1
+_increase_if_observation(::EmptyObservation, k) = k
 
 prediction_step(::DataMode, D, sm) = predict(D, sm)
 function prediction_step(fm::SimulationMode{SensorPerturbationMode}, D, sm)
@@ -72,7 +72,7 @@ There are three main mode to use as `FilterMode`:
 """
 function simulate_filter(fm::FilteringMode, D0::AbstractProjLogNormal, stochastic_motions, observations; streak_nb=:streak_nb, dist=:dist)
     res = accumulate(zip(stochastic_motions, observations); init=(1=>D0)) do (k, D), (sm, obs)
-        new_k = _is_obs(obs) ? k+1 : k
+        new_k = _increase_if_observation(obs, k)
 
         D__ = prediction_step(fm, D, sm)
 
