@@ -28,7 +28,7 @@ rng = default_rng()
     @test isapprox(computed, expected)
     se = MultiDisplacement(dim,1)
     A_ = MultiAffineAction(se)
-    @test isa(A_, MultiAffineAction{typeof(base_group(se.op.action)), dim, 1})
+    @test isa(A_, MultiAffineAction{<:Any, typeof(base_group(se.op.action)), dim, 1})
 end
 
 @testset "MultiAffineAction apply" begin

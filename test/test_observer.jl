@@ -27,7 +27,8 @@ end
     G = MultiDisplacement(2, 2)
     M = G
     A = GroupOperationAction(G)
-    # obs = PositionObserver(MultiAffineAction(G))
+    pos_obs = PositionObserver(MultiAffineAction(G, [1,0]))
+    @test pos_obs(identity_element(G)) == zeros(2)
     obs = ActionObserver(MultiAffineAction(G, [1.0, 0]), [1.0, 0])
     x = identity_element(G)
     @show obs(x)
