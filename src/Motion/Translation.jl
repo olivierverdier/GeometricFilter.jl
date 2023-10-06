@@ -1,5 +1,5 @@
 
-struct TranslationMotion{TA, TG,TV,TAD<:ActionDirection} <: AbstractAffineMotion{TA}
+struct TranslationMotion{TAD<:ActionDirection,TA,TG,TV} <: AbstractAffineMotion{TA}
     G::TG
     vel::TV # in Alg(G)
 end
@@ -16,13 +16,13 @@ The right version is associated to the right multiplication action of ``G`` on i
 
 In both cases, the linear part is the zero operator.
 """
-TranslationMotion(G, vel, conv=LeftAction()) = TranslationMotion{typeof(_get_group_operation_action(G, conv)), typeof(G),typeof(vel),typeof(conv)}(G, vel)
+TranslationMotion(G, vel, conv=LeftAction()) = TranslationMotion{typeof(conv),typeof(_get_group_operation_action(G, conv)),typeof(G),typeof(vel)}(G, vel)
 
-get_action(m::TranslationMotion{<:Any,<:Any,<:Any,TAD}) where {TAD} = _get_group_operation_action(m.G, TAD())
+get_action(m::TranslationMotion{TAD}) where {TAD} = _get_group_operation_action(m.G, TAD())
 
-get_dynamics(m::TranslationMotion{<:Any,<:Any,<:Any,LeftAction}, u) =  -adjoint_action(m.G, u, m.vel)
+get_dynamics(m::TranslationMotion{LeftAction}, u) =  -adjoint_action(m.G, u, m.vel)
 # TODO: should be inverse adjoint action here?
-get_dynamics(m::TranslationMotion{<:Any,<:Any,<:Any,RightAction}, u) =  -adjoint_action(m.G, inv(m.G, u), m.vel)
+get_dynamics(m::TranslationMotion{RightAction}, u) =  -adjoint_action(m.G, inv(m.G, u), m.vel)
 
 function get_lin(m::TranslationMotion)
     G = base_group(get_action(m))
