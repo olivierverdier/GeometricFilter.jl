@@ -3,7 +3,6 @@ using GeometricFilter
 using Manifolds
 
 using SparseArrays
-using DataFrames
 using PDMats
 using LinearAlgebra
 
@@ -113,21 +112,31 @@ end
     onoise = IsotropicNoise(observation_space(observer), 1.)
     D0 = ProjLogNormal(get_action(motion), [0., 0], 1.)
     T = 10
-    selector(i, N) = (i % N) == 0
-    signal = accumulate(1:T; init=D0.μ) do x, i
-        return integrate(motion, x)
-    end
     signal_ = generate_signal(fill(motion, T), D0.μ)
-    @test signal == signal_
-    observations = [selector(i,T÷2) ? Observation(observer, onoise, onoise(rng, observer(s))) : EmptyObservation() for (i,s) in enumerate(signal)]
+    @testset "Signal" begin
+        signal = accumulate(1:T; init=D0.μ) do x, i
+            return integrate(motion, x)
+        end
+        @test signal == signal_[begin+1:end]
+    end
+    selector(i, N) = (i % N) == 0
+    observations = [selector(i,T÷2) ? Observation(observer, onoise, onoise(rng, observer(s))) : EmptyObservation() for (i,s) in enumerate(signal_)]
     sms = fill(StochasticMotion(motion, pnoise), T)
     @testset "Simulation Mode $mode" for mode in [PositionPerturbation, SensorPerturbation]
-        res = simulate_filter(mode(rng), D0, sms, observations; streak_nb=:nb)
-        @test res isa DataFrame
-        @test names(res) == ["nb", "dist"]
-        @test nrow(res) == T
-        @test length(groupby(res, :nb)) == 3
+        nbs, dists = simulate_filter(mode(rng), D0, sms, observations)
+        length(dists) == T
+        @test length(unique(nbs)) == 3
     end
+    @testset "Wrong nb of observations" begin
+        nbs, dists = @test_logs (:info,) simulate_filter(DataMode(), D0, sms, observations[begin:end-2])
+        @test all(isassigned(dists, i) for i in eachindex(dists))
+    end
+    @testset "Wrong nb of motions" begin
+        k = 2
+        nbs, dists = @test_logs (:warn,) simulate_filter(DataMode(), D0, sms[begin:end-k], observations)
+        @test length(dists) == length(sms) - k
+    end
+
 end
 
 @testset "Test Filter" begin
@@ -202,4 +211,10 @@ end
     predict(D, StochasticMotion(m, pnoise))
 end
 
-
+@testset "Simulation" begin
+    m = FlatAffineMotion([1. 0;0 1], zeros(2))
+    p = zeros(2)
+    T = 10
+    signal = generate_signal(fill(m,T),p)
+    @test length(signal) == T+1
+end

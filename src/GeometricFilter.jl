@@ -84,8 +84,6 @@ import LinearAlgebra
 import ManifoldDiffEq
 import OrdinaryDiffEq
 
-import DataFrames
-
 
 include("Aux/Manifolds/MultiAffine.jl")
 include("Aux/Manifolds/MultiDisplacement.jl")
