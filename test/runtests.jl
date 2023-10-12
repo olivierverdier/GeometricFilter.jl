@@ -1,6 +1,6 @@
 
 function include_test(path)
-    @info "Testing $path"
+    printstyled("Testing $path\n"; color=:yellow)
     @time include(path)  # show basic timing, (this will print a newline at end)
 end
 

@@ -2,7 +2,9 @@
 """
 A model of a map from a manifold to a covariance on a Lie algebra.
 """
-abstract type AbstractActionNoise{TA<:AbstractGroupAction{LeftAction}} <: AbstractNoise end
+abstract type ProcessNoise{TA<:AbstractGroupAction{LeftAction}} <: AbstractNoise end
+
+const AbstractActionNoise{TA} = ProcessNoise{TA}
 #--------------------------------
 # AbstractActionNoise Interface
 #--------------------------------
