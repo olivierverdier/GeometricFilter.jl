@@ -21,7 +21,6 @@ rng = Random.default_rng()
     m = ZeroMotion(A)
     x = [1., 0, 0]
     @test m(x) ≈ zero_vector(G, identity_element(G))
-    # @show m*x
     ξ = rand(G; vector_at=Identity(G))
     @test isapprox(G, m'(x)(ξ), zero_vector(G, identity_element(G)))
     @test RigidMotion(A) isa ZeroMotion
@@ -41,9 +40,11 @@ end
                ]
     @test_throws MethodError RigidMotion(action, vel) + TranslationMotion(G, vel, RightAction())
     @testset "Sum/Rescale $m" for m in motions
+        @test m ≈ m
         @test .5*m isa typeof(m)
         @test 2*(.5*m) ≈ m
         @test 2*m ≈ m+m broken=isa(m, GeometricFilter.AffineMotionSum)
+        # if m is AffineMotionSum{TA, TV}, the sum is AffineMotionSum{TA, TV'} with another TV, hence the following two cases:
         if m isa GeometricFilter.AffineMotionSum
             @test m+m isa GeometricFilter.AffineMotionSum
         else
@@ -229,11 +230,6 @@ end
         m_ = FlatAffineMotion(zeros(dim, dim), t)
         p = rand(dim)
         @test m * p ≈ m_ * p
-    end
-    @testset "Approx Equality" begin
-        M1 = FlatAffineMotion(zeros(2,2), zeros(2))
-        M2 = FlatAffineMotion(zeros(2,2), zeros(2))
-        @test M1 ≈ M2
     end
 end
 
