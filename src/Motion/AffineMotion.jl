@@ -1,5 +1,5 @@
 #================================
-  Obsolete
+  Largely Obsolete
 ================================#
 
 @doc raw"""
@@ -66,3 +66,16 @@ function rescale_motion(s::Number, m::AbstractAffineMotion)
     lin = get_lin(m)
     return AffineMotion(A, x -> s*m(x), ξ -> s*lin(ξ))
 end
+
+function _swap_group_motion(m::AbstractAffineMotion)
+    A = get_action(m)
+    G = base_group(A)
+    lin = get_lin(m)
+    # new_f(χ) = -adjoint_action(G, _swap_inv(A, G, χ), m(χ))
+    new_f(χ) = -_swap_adjoint_action(A, G, χ, m(χ))
+    φ1 = m(identity_element(G))
+    new_lin(ξ) = lin(ξ) - lie_bracket(G, φ1, ξ)
+    return AffineMotion(_swap_group_action(A), new_f, new_lin)
+end
+
+swap_group_motion(m::AffineMotion{TA}) where {TA<:Union{GroupOperationAction,DualGroupOperationAction}} = _swap_group_motion(m)

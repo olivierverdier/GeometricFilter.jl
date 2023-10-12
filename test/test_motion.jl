@@ -187,6 +187,14 @@ end
         test_constant_dict(MAM, (a,b) -> isapprox(G, a, b))
     end
 
+    @testset "Swap sum" begin
+        # G = MultiDisplacement(3,2)
+        m1 = MultiAffineMotion(G, [1.0 0;0 0], LeftAction())
+        rm = RigidMotion(GroupOperationAction(G), ξ)
+        @test swap_group_motion(m1+rm) isa GeometricFilter.AffineMotionSum
+    end
+
+
 end
 
 """
