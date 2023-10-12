@@ -5,11 +5,14 @@ using Manifolds
 
 import LinearAlgebra
 
+using Random
+rng = Random.default_rng()
+
+
 # Base.length(x::ProductRepr) = sum(map(Base.length, submanifold_components(x)))
 # Base.convert(::Type{ArrayPartition}, x::ProductRepr) = ArrayPartition(submanifold_components(x)...)
 # Base.convert(::Type{ProductRepr}, x::ArrayPartition) = ProductRepr(submanifold_components(x)...)
 
-# TODO: test scalar * motion
 
 @testset "Zero Motion" begin
     G = SpecialOrthogonal(3)
@@ -22,6 +25,54 @@ import LinearAlgebra
     ξ = rand(G; vector_at=Identity(G))
     @test isapprox(G, m'(x)(ξ), zero_vector(G, identity_element(G)))
     @test RigidMotion(A) isa ZeroMotion
+end
+
+@testset "Motion Composition" begin
+    G = MultiDisplacement(4,2)
+    M = rand(rng, 2, 2)
+    action = GroupOperationAction(G)
+    vel = rand(rng, G; vector_at=identity_element(G))
+    motions = [RigidMotion(action, vel),
+               TranslationMotion(G,vel,RightAction()),
+               MultiAffineMotion(G, rand(2,2), LeftAction()),
+               FlatAffineMotion(M, zeros(2)),
+               ZeroMotion(action),
+               RigidMotion(action, vel) + TranslationMotion(G, vel, LeftAction()),
+               ]
+    @test_throws MethodError RigidMotion(action, vel) + TranslationMotion(G, vel, RightAction())
+    @testset "Sum/Rescale $m" for m in motions
+        @test .5*m isa typeof(m)
+        @test 2*(.5*m) ≈ m
+        @test 2*m ≈ m+m broken=isa(m, GeometricFilter.AffineMotionSum)
+        if m isa GeometricFilter.AffineMotionSum
+            @test m+m isa GeometricFilter.AffineMotionSum
+        else
+            @test m+m isa typeof(m)
+        end
+    end
+end
+
+@testset "Motion Sum" begin
+    G = MultiDisplacement(4,2)
+    m1 = MultiAffineMotion(G, ones(2,2), LeftAction())
+    ξ = rand(rng, G; vector_at=identity_element(G))
+
+    motions = (
+    rm = RigidMotion(GroupOperationAction(G), ξ),
+    tm = TranslationMotion(G, ξ, LeftAction()),
+    lm = MultiAffineMotion(G, rand(2,2), LeftAction()),
+    )
+
+    @testset "Sum type" for m in motions
+        m+m isa typeof(m)
+        m+m+m isa typeof(m)
+    end
+
+    rm,tm,lm = motions
+
+    @test (rm + tm) + lm ≈ rm + (tm + lm)
+
+    @test (rm + tm) + (rm + tm) isa GeometricFilter.AffineMotionSum
 end
 
 @testset "Motion" begin
@@ -150,7 +201,7 @@ function flat_affine_motion(
     V = Euclidean(dim)
     A = TranslationAction(V, G)
     f(u) = lin * u + trans
-    return AffineMotion(A, f, x -> lin * x)
+    return GeometricFilter.AffineMotion(A, f, x -> lin * x)
 end
 
 @testset "Flat Motion" begin

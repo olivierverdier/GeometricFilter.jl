@@ -204,7 +204,7 @@ end
     G = MultiDisplacement(2)
     A = GroupOperationAction(G)
     ξ = rand(rng, G; vector_at=Identity(G))
-    m = TranslationMotion(G, ξ)
+    m = TranslationMotion(G, ξ, LeftAction())
     D = ProjLogNormal(A, identity_element(G), 1.)
     # pnoise = IsotropicNoise(G, x->1.)
     pnoise = ActionNoise(GroupOperationAction(G), 1.)

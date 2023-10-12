@@ -1,10 +1,12 @@
 
-struct MultiAffineMotion{TAD<:ActionDirection, TA, TG,TM} <: AbstractAffineMotion{TA}
+struct MultiAffineMotion{TAD<:ActionDirection, TA, TG,TM} <: SimpleAffineMotion{TA}
     G::TG # MultiAffine{H, dim, size, 𝔽}
     M::TM # Array{𝔽, 2}; size×size array
 end
 
 Base.show(io::IO, m::MultiAffineMotion{TAD}) where {TAD} = print(io, "MultiAffineMotion($(m.G), $(m.M), $TAD())")
+
+rescale_motion(s::Number, m::MultiAffineMotion{TAD}) where {TAD} = MultiAffineMotion(m.G, s*m.M, TAD())
 
 @doc raw"""
     MultiAffineMotion(G::DecoratedManifold,M::Array{𝔽, 2},conv::ActionDirection)
@@ -35,3 +37,11 @@ end
 get_lin(m::MultiAffineMotion) = ξ -> _lin(m, ξ)
 
 swap_group_motion(m::MultiAffineMotion{TAD}) where {TAD} = MultiAffineMotion(m.G, m.M, switch_direction(TAD()))
+
+Base.:+(m1::MultiAffineMotion{<:Any, TA}, m2::MultiAffineMotion{<:Any, TA})  where {TA} = _add_multiaffine_motions(m1,m2)
+
+function _add_multiaffine_motions(m1::MultiAffineMotion{TAD}, m2::MultiAffineMotion{TAD}) where {TAD}
+    return MultiAffineMotion(m1.G, m1.M+m2.M, TAD())
+end
+
+Base.isapprox(M1::MultiAffineMotion{<:Any, TA}, M2::MultiAffineMotion{<:Any,TA}; kwargs...) where {TA} = isapprox(M1.M, M2.M; kwargs...)

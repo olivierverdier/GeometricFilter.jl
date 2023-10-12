@@ -1,4 +1,4 @@
-abstract type AbstractRigidMotion{TA} <: AbstractAffineMotion{TA} end
+abstract type AbstractRigidMotion{TA} <: SimpleAffineMotion{TA} end
 
 #--------------------------------
 # AbstractRigidMotion Interface
@@ -10,6 +10,7 @@ Access to the underlying infinitesimal motion defining the rigid motion `m`.
 """
 function get_velocity end
 #--------------------------------
+
 
 
 @doc raw"""
@@ -45,6 +46,8 @@ RigidMotion(A) = ZeroMotion(A)
 
 Base.show(io::IO, m::RigidMotion) = print(io, "RigidMotion($(m.A), $(m.vel))")
 
+rescale_motion(s::Number, m::RigidMotion) = RigidMotion(m.A, s*m.vel)
+
 get_dynamics(m::RigidMotion, u) = copy(m.vel)
 
 function get_lin(m::RigidMotion)
@@ -59,13 +62,14 @@ end
 
 get_velocity(m::RigidMotion) = m.vel
 
-Base.:+(m1::AbstractRigidMotion{TA}, m2::AbstractRigidMotion{TA})  where {TA} = _add_rigid_motions(m1,m2)
+Base.:+(rm::AbstractRigidMotion{TA}...)  where {TA} = _add_rigid_motions(rm...)
 
-function _add_rigid_motions(m1::AbstractRigidMotion{TA}, m2::AbstractRigidMotion{TA})  where {TA}
-    action = get_action(m1)
-    return RigidMotion(action, get_velocity(m1) + get_velocity(m2))
+function _add_rigid_motions(rms::AbstractRigidMotion{TA}...)  where {TA}
+    action = get_action(first(rms))
+    return RigidMotion(action, sum([get_velocity(rm) for rm in rms]))
 end
 
+Base.isapprox(M1::RigidMotion{TA}, M2::RigidMotion{TA}; kwargs...) where {TA} = isapprox(M1.vel, M2.vel; kwargs...)
 
 """
     ZeroMotion
@@ -78,6 +82,7 @@ end
 
 Base.show(io::IO, m::ZeroMotion) = print(io, "ZeroMotion($(m.A))")
 
+rescale_motion(::Number, m::ZeroMotion) = m
 
 function get_dynamics(m::ZeroMotion, ::Any)
     G = base_group(get_action(m))
@@ -94,3 +99,7 @@ function get_lin(m::ZeroMotion)
     return ξ -> get_velocity(m)
 end
 
+Base.:+(zm::ZeroMotion{TA}...)  where {TA} = first(zm)
+
+
+Base.isapprox(M1::ZeroMotion{TA}, M2::ZeroMotion{TA}; kwargs...) where {TA} = true

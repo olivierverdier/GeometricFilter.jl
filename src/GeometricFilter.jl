@@ -13,7 +13,7 @@ export MultiAffineAction
 
 # Motion
 export AbstractMotion, AbstractAffineMotion,
-    AffineMotion, RigidMotion, TranslationMotion,
+    RigidMotion, TranslationMotion,
     MultiAffineMotion, FlatAffineMotion,
     ZeroMotion,
     get_flat_action,

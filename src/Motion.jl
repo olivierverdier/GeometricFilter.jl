@@ -54,8 +54,22 @@ function get_lin_at end
 Base.adjoint(m::AbstractMotion) = x -> get_lin_at(m, x)
 
 abstract type AbstractAffineMotion{TA} <: AbstractMotion{TA} end
+abstract type CompositeAffineMotion{TA} <: AbstractAffineMotion{TA} end
+abstract type SimpleAffineMotion{TA} <: AbstractAffineMotion{TA} end
+
+
+@doc raw"""
+    rescale_motion(s::Number, φ::Motion) :: Typeof(φ)
+
+Rescale the motion by ``s``.
+This corresponds to the new motion ``(sφ)(x) := s(φ(x))``.
+The motion `φ` is conveniently rescaled with the syntax `s*φ`.
+"""
+function rescale_motion end
 
 get_lin_at(m::AbstractAffineMotion, ::Any) = get_lin(m)
+
+Base.:*(s::Number, m::AbstractAffineMotion) = rescale_motion(s, m)
 
 """
 Compute the tangent vector corresponding to the motion
@@ -63,72 +77,11 @@ at the point x on the manifold.
 """
 Base.:*(m::AbstractMotion, x) = apply_diff_group(get_action(m), Identity(base_group(get_action(m))), m(x), x)
 
-@doc raw"""
-    struct AffineMotion <: AbstractAffineMotion
-        A # action G -> Diff(M)
-        f # motion: M -> Alg(G)
-        lin # linear part: operator Alg(G) ⊗ Alg(G)*
-    end
+# include("Motion/AffineMotion.jl")
 
-General affine motion, defined from an action of a group ``G``
-on a manifold ``M``,
-a dynamics ``f \colon G \to \mathfrak{g}``,
- and the corresponding constant linear part `lin`,
-a linear endormorphism of ``\mathfrak{g}``.
-"""
-struct AffineMotion{TA<:AbstractGroupAction{LeftAction},TF,TL} <: AbstractAffineMotion{TA}
-    A::TA # action G -> Diff(M)
-    f::TF # motion: M -> Alg(G)
-    lin::TL # linear part: operator Alg(G) ⊗ Alg(G)*
-end
-
-Base.show(io::IO, m::AffineMotion) = print(io, "AffineMotion($(m.A), [...])")
-
-get_dynamics(m::AffineMotion, x) = m.f(x)
-
-@doc raw"""
-    get_lin(m::AffineMotion) :: Function
-
-The linear part of the motion, a linear endomorphism of ``\mathfrak{G}``.
-"""
-get_lin(m::AffineMotion) = m.lin
-
-
-Base.:+(m1::AbstractAffineMotion{TA}, m2::AbstractAffineMotion{TA})  where {TA} = _add_affine_motions(m1,m2)
-
-function _add_affine_motions(m1::AbstractAffineMotion{TA}, m2::AbstractAffineMotion{TA})  where {TA}
-    # assert_equal_actions(m1, m2, "Cannot add motion with different actions")
-    a1 = get_action(m1)
-    function f(u)
-        return get_dynamics(m1, u) + get_dynamics(m2, u)
-    end
-    l1 = get_lin(m1)
-    l2 = get_lin(m2)
-    function lin(ξ)
-        return l1(ξ) + l2(ξ)
-    end
-    return AffineMotion(a1, f, lin)
-end
-
-
-function Base.:*(s::Number, m::AbstractAffineMotion)
-    A = get_action(m)
-    lin = get_lin(m)
-    return AffineMotion(A, x -> s*m(x), ξ -> s*lin(ξ))
-end
 
 Base.:-(m::AbstractAffineMotion) = -1*m
 
-
-# TODO: is it ever useful? what about the dual version?
-function lift_at(m::AbstractAffineMotion, x)
-    A = get_action(m)
-    return AffineMotion(
-        GroupOperationAction(base_group(A)),
-        χ -> m(apply(A, χ, x)),
-        get_lin(m)
-    )
-end
 
 
 # Integration
@@ -246,10 +199,12 @@ function compute_morphism(motion, x, B; dt=0.1)
     return χ, morph
 end
 
-include("Motion/Rigid.jl")
-include("Motion/Translation.jl")
-include("Motion/MultiAffine.jl")
-include("Motion/FlatAffine.jl")
+include("Motion/Simple/Rigid.jl")
+include("Motion/Simple/Translation.jl")
+include("Motion/Simple/MultiAffine.jl")
+include("Motion/Simple/FlatAffine.jl")
+include("Motion/Sum.jl")
+include("Motion/AffineMotion.jl")
 include("Motion/GroupMotion.jl")
 
 

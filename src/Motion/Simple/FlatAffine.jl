@@ -15,14 +15,17 @@ x1 = integrate(motion, x0)
 [12., 10]
 ```
 """
-struct FlatAffineMotion{TA,TM,TV} <: AbstractAffineMotion{TA}
+struct FlatAffineMotion{TA,TM,TV} <: SimpleAffineMotion{TA}
     linear::TM
     translation::TV
 end
 
+
 FlatAffineMotion(linear, translation) = FlatAffineMotion{typeof(_get_flat_action_from_translation(translation)), typeof(linear), typeof(translation)}(linear, translation)
 
 Base.show(io::IO, m::FlatAffineMotion) = print(io, "FlatAffineMotion($(m.linear), $(m.translation))")
+
+rescale_motion(s::Number, m::FlatAffineMotion) = FlatAffineMotion(s*m.linear, s*m.translation)
 
 """
     get_flat_action(d)
@@ -44,5 +47,11 @@ get_dynamics(m::FlatAffineMotion, x) = m.linear*x + m.translation
 
 get_lin(m::FlatAffineMotion) = x -> m.linear*x
 
+
+Base.:+(lms::FlatAffineMotion{TA}...)  where {TA} = _add_flataffine_motions(lms...)
+
+function _add_flataffine_motions(lms::FlatAffineMotion{TA}...)  where {TA}
+    return FlatAffineMotion(sum([lm.linear for lm in lms]), sum([lm.translation for lm in lms]))
+end
 
 Base.isapprox(M1::FlatAffineMotion, M2::FlatAffineMotion; kwargs...) = isapprox(M1.linear, M2.linear; kwargs...) && isapprox(M1.translation, M2.translation; kwargs...)
