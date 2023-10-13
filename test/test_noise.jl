@@ -36,9 +36,9 @@ end
     @test N_ == N
     @test N__ == N
     # get_basis_at(N, Identity(G))
-    @show get_covariance_at(N, Identity(G))
+    covmat = get_covariance_at(N, Identity(G))
     sn = .5*N
-    @show sc = get_covariance_at(sn, Identity(G), B)
+    @test get_covariance_at(sn, Identity(G), B) ≈ covmat/4
 end
 
 @testset "ActionNoise Basis" begin
@@ -49,8 +49,7 @@ end
     x = [1., 0, 0]
     noise = ActionNoise(A, 1.)
     B = get_basis_at(noise, x)
-    @show get_vector(M, x, [1., 0], B)
-    @show B
+    @test get_vector(M, x, [1., 0], B) ≈ [0,1,0]
 end
 
 @testset "NoNoise" begin
@@ -98,7 +97,7 @@ end
     BG = DefaultOrthogonalBasis()
     BM = DefaultOrthonormalBasis()
     P = GeometricFilter.get_proj_matrix(A, x, BG, BM)
-    @show P
+    @test P[:,1] ≈ [0,0]
     # noise = ActionNoise(A, x->Matrix{Float64}(LinearAlgebra.I, 3, 3), BG)
     σ = 4.0
     noise = ActionNoise(A, PDMats.ScalMat(manifold_dimension(G), σ), BG)

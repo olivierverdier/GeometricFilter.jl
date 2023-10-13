@@ -35,8 +35,8 @@ end
     Σ = PDMats.ScalMat(3, 1.)
     B = DefaultOrthonormalBasis()
     dist = ProjLogNormal(A, μ, Σ, B)
-    @show x = rand(rng, dist)
-    @show rand(dist)
+    x = rand(rng, dist)
+    rand(dist)
     @test scaled_distance(dist, [0., 1, 0]) == scaled_distance(dist, [0, 0, 1.])
     @test update_mean(dist, mean(dist)) == dist
     @test update_mean_cov(dist, mean(dist), cov(dist)) == dist

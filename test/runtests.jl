@@ -16,7 +16,7 @@ test_files = [
     "test_ex_inertial.jl",
 ]
 
-@testset " " for path in test_files
+@time @testset " " for path in test_files
     printstyled("─"^16 * "[ $path ]\n"; color=:yellow)
     @time include(path)
 end

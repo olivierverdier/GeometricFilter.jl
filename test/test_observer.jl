@@ -26,20 +26,24 @@ end
 @testset "Test Observers" begin
     G = MultiDisplacement(2, 2)
     M = G
-    A = GroupOperationAction(G)
     pos_obs = PositionObserver(MultiAffineAction(G, [1,0]))
     @test pos_obs(identity_element(G)) == zeros(2)
-    obs = ActionObserver(MultiAffineAction(G, [1.0, 0]), [1.0, 0])
+    ref = rand(2)
+    obs = ActionObserver(MultiAffineAction(G, [1.0, 0]), ref)
     x = identity_element(G)
-    @show obs(x)
+    @test obs(x) ≈ ref
+    A = GroupOperationAction(G)
     H = GeometricFilter.get_tan_observer(obs, A, x)
-    # @infiltrate
-    @show H(x)
+    ξ = rand(G; vector_at=Identity(G))
+    expected = apply_diff_group(get_action(obs), Identity(G), ξ, ref)
+    computed = H(ξ)
+    @test computed ≈ expected
     oobs = ProductObserver(obs, obs)
     @test observed_space(oobs) == G
-    @show oobs(x)
+    yy = oobs(x)
+    @test first(yy.x) ≈ ref
     HH = GeometricFilter.get_tan_observer(oobs, A, x)
-    @show HH(x)
+    @test first(HH(ξ).x) ≈ H(ξ)
 end
 
 """
@@ -126,8 +130,7 @@ end
     obs = ActionObserver(A, x)
     obs_ = ActionObserver(switch_direction(A), x)
 
-    @show obs(χ)
-    @show obs_(χ)
+    @test obs(χ) ≈ obs_(inv(G,χ))
 
     GA = GroupOperationAction(G)
     GA_ = DualGroupOperationAction(G)
