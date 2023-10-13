@@ -41,20 +41,21 @@ run_filter(D0, N, observation) =
 display_obs_type(::ProductObserver) = "ProductObserver"
 display_obs_type(::IdentityObserver) = "IdentityObserver"
 
-@testset "Observer action: $OA; Action $A; Observer: $(display_obs_type(observer))" for OA in [
+# @testset "Observer action: $OA; Action $A; Observer: $(display_obs_type(observer))" for OA in [
+@testset "oa$ioa ia$ia o$io" for (ioa,OA) in enumerate([
     GroupOperationAction(SpecialOrthogonal(3)),
     DualGroupOperationAction(SpecialOrthogonal(3)),
     MultiAffineAction(MultiDisplacement(2), LeftAction()),
     MultiAffineAction(MultiDisplacement(2), RightAction()),
     RotationAction(Euclidean(3), SpecialOrthogonal(3), RightAction()),
-    ], A in [
+    ]), (ia,A) in enumerate([
         GroupOperationAction(base_group(OA)),
         DualGroupOperationAction(base_group(OA)),
-    ], observer in
-    [
+    ]), (io,observer) in
+    enumerate([
         setup_action_observer(rng, OA, 10),
         IdentityObserver(base_group(A)),
-    ]
+    ])
 
     M = group_manifold(A)
 

@@ -1,6 +1,6 @@
 using Test
 
-@testset "Example Code $name" for name in [
+@testset "$name" for name in [
     "flatfilter",
     "inertial",
     "localisation",
