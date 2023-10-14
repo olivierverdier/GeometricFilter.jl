@@ -14,7 +14,8 @@ export MultiAffineAction
 # Motion
 export AbstractMotion, AbstractAffineMotion,
     RigidMotion, TranslationMotion,
-    MultiAffineMotion, FlatAffineMotion,
+    AdjointLinearMotion,
+    FlatAffineMotion,
     ZeroMotion,
     get_flat_action,
     # integrate,

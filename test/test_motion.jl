@@ -33,7 +33,7 @@ end
     vel = rand(rng, G; vector_at=identity_element(G))
     motions = [RigidMotion(action, vel),
                TranslationMotion(G,vel,RightAction()),
-               MultiAffineMotion(G, rand(2,2), LeftAction()),
+               AdjointLinearMotion(G, rand(2,2), LeftAction()),
                FlatAffineMotion(M, zeros(2)),
                ZeroMotion(action),
                RigidMotion(action, vel) + TranslationMotion(G, vel, LeftAction()),
@@ -55,13 +55,13 @@ end
 
 @testset "Motion Sum" begin
     G = MultiDisplacement(4,2)
-    m1 = MultiAffineMotion(G, ones(2,2), LeftAction())
+    m1 = AdjointLinearMotion(G, ones(2,2), LeftAction())
     ξ = rand(rng, G; vector_at=identity_element(G))
 
     motions = (
     rm = RigidMotion(GroupOperationAction(G), ξ),
     tm = TranslationMotion(G, ξ, LeftAction()),
-    lm = MultiAffineMotion(G, rand(2,2), LeftAction()),
+    lm = AdjointLinearMotion(G, rand(2,2), LeftAction()),
     )
 
     @testset "Sum type" for m in motions
@@ -177,9 +177,9 @@ end
 
     end
 
-    @testset "Swap MultiAffineMotion" begin
+    @testset "Swap AdjointLinearMotion" begin
         G = MultiDisplacement(3,2)
-        m1 = MultiAffineMotion(G, [1.0 0;0 0], LeftAction())
+        m1 = AdjointLinearMotion(G, [1.0 0;0 0], LeftAction())
         m2 = swap_group_motion(m1)
         MAM = Dict(
             :m1 => integrate(m1, x0),
@@ -190,7 +190,7 @@ end
 
     @testset "Swap sum" begin
         # G = MultiDisplacement(3,2)
-        m1 = MultiAffineMotion(G, [1.0 0;0 0], LeftAction())
+        m1 = AdjointLinearMotion(G, [1.0 0;0 0], LeftAction())
         rm = RigidMotion(GroupOperationAction(G), ξ)
         @test swap_group_motion(m1+rm) isa GeometricFilter.AffineMotionSum
     end

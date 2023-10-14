@@ -5,5 +5,5 @@ using Manifolds
 
 G = MultiDisplacement(2, 2)
 
-m_ma = MultiAffineMotion(G, [0 0; 1.0 0], LeftAction())
+m_ma = AdjointLinearMotion(G, [0 1; 0 0], LeftAction())
 

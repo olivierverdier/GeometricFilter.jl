@@ -42,11 +42,11 @@ Return a list of motions corresponding to the motion (with the standard left act
 where ``ψ_M`` is a multi-affine motion corresponding to
 the matrix ``M``.
 """
-function get_inertial_motions(G, ::LeftAction, ξ_body, ξ_nav; M=[0 0;1. 0])
+function get_inertial_motions(G, ::LeftAction, ξ_body, ξ_nav; M=[0 1;0 0])
     action = GroupOperationAction(G)
     m_nav = RigidMotion(action, ξ_nav)
     m_body = TranslationMotion(G, -ξ_body, LeftAction())
-    m_ma = MultiAffineMotion(G, M, LeftAction())
+    m_ma = AdjointLinearMotion(G, M, LeftAction())
     return (m_body, m_nav, m_ma)
 end
 
