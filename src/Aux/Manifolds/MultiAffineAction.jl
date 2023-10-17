@@ -1,16 +1,16 @@
 """
     MultiAffineAction(
       group::MultiAffine,
-      selector::AbstractVector,
+      selector::AbstractArray,
       conv::ActionDirection=LeftAction()
       )
 
-Given a fixed vector ``S`` of size ``k`` (the `selector`),
+Given a fixed vector ``S`` of size ``k`` (the `selector`) (or a matrix of size ``k×m``),
 this defines an action of the element ``[X;R]`` of the [`MultiAffine`](@ref) group (so ``X`` is a ``n×k`` matrix and ``R`` is an element of a matrix group)
- on the vector ``p`` of size ``n``.
+ on the vector ``p`` of size ``n`` (or the matrix ``p`` of size ``n×m``).
 The action is defined by ``[X;R]⋅p := XS+Rp``.
 """
-struct MultiAffineAction{TAD<:ActionDirection,TG,TS<:AbstractVector} <: AbstractGroupAction{TAD}
+struct MultiAffineAction{TAD<:ActionDirection,TG,TS<:AbstractArray} <: AbstractGroupAction{TAD}
     group::TG
     selector::TS # vector of length `size`
 end
@@ -42,7 +42,8 @@ end
 
 
 Manifolds.base_group(A::MultiAffineAction) = A.group
-Manifolds.group_manifold(::MultiAffineAction{<:Any,<:MultiAffine{<:Any, dim, <:Any, 𝔽}}) where {dim,𝔽} = Euclidean(dim; field=𝔽)
+Manifolds.group_manifold(::MultiAffineAction{<:Any,<:MultiAffine{<:Any, dim, <:Any, 𝔽}, <:AbstractVector}) where {dim,𝔽} = Euclidean(dim; field=𝔽)
+Manifolds.group_manifold(A::MultiAffineAction{<:Any,<:MultiAffine{<:Any, dim, <:Any, 𝔽}, <:AbstractMatrix}) where {dim,𝔽} = Euclidean(dim, size(A.selector, 2); field=𝔽)
 
 get_selector(A::MultiAffineAction) = A.selector
 

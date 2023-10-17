@@ -44,15 +44,19 @@ end
 @testset "MultiAffineAction apply" begin
     dim = 3
     size = 2
+    prod = 2
     G = MultiDisplacement(dim, size)
-    sel =randn(size)
-    A = MultiAffineAction(G, sel)
-    χ = rand(rng, G)
-    p = rand(group_manifold(A))
-    computed = apply(A, χ, p)
-    M,R = submanifold_components(G,χ)
-    expected = M*sel + R*p
-    @test computed ≈ expected
-    @test apply(switch_direction(A), χ, p) ≈ apply(A, inv(G,χ), p)
+    @testset "Product" for sel in [randn(size), randn(size, prod)]
+        A = MultiAffineAction(G, sel)
+        expected_manifold = ndims(sel) == 1 ? Euclidean(dim) : Euclidean(dim,prod)
+        @test group_manifold(A) == expected_manifold
+        χ = rand(rng, G)
+        p = rand(group_manifold(A))
+        computed = apply(A, χ, p)
+        M, R = submanifold_components(G, χ)
+        expected = M * sel + R * p
+        @test computed ≈ expected
+        @test apply(switch_direction(A), χ, p) ≈ apply(A, inv(G, χ), p)
+    end
 end
 
