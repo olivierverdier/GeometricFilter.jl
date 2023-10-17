@@ -25,7 +25,8 @@ observed_space(obs::ActionObserver) = base_group(get_action(obs))
 
 get_measurement(obs::ActionObserver, χ) = apply(get_action(obs), χ, get_ref(obs))
 
-PositionObserver(A::MultiAffineAction{LeftAction, <:Any, dim}) where {dim} = ActionObserver(A, zeros(dim))
+PositionObserver(A::MultiAffineAction{LeftAction, <:MultiAffine{<:Any, dim}}) where {dim} = ActionObserver(A, zeros(dim))
+
 
 
 
