@@ -59,7 +59,7 @@ export AbstractNoise,
     ActionNoise, IsotropicNoise,
     NoNoise,
     sample_space,
-    get_basis_at, get_covariance_at,
+    get_covariance_at,
     update_cov
 
 export Covariance, covariance_from

@@ -48,7 +48,7 @@ end
     # x = rand(M)
     x = [1., 0, 0]
     noise = ActionNoise(A, 1.)
-    B = get_basis_at(noise, x)
+    B = GeometricFilter.get_basis_at(noise, x)
     @test get_vector(M, x, [1., 0], B) ≈ [0,1,0]
 end
 
