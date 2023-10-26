@@ -32,7 +32,7 @@ struct RigidMotion{TA,TV} <: AbstractRigidMotion{TA}
     vel::TV # in Alg(G)
     function RigidMotion(A, vel)
         G = base_group(A)
-        Alg_G = TangentSpaceAtPoint(G, identity_element(G))
+        Alg_G = TangentSpace(G, identity_element(G))
         if !is_point(Alg_G, vel)
             throw(ErrorException("Expected a point in Alg(G), but $vel ∉ Alg($G)"))
         end

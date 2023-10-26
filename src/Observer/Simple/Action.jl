@@ -46,10 +46,24 @@ end
 # switch_sign(::RightAction) = -1.
 
 """
+Compute ``η = v χ⁻¹``, or ``χ⁻¹ v`` depending on whether the observation action direction is `Left` or `Right` respectively.
+The previous version of `Manifolds.jl` (< v0.9.0) allowed to write:
+```julia
+η_ = inverse_translate_diff(G, χ, χ, v, switch_direction(AD()))
+```
+For the new version (≥ v0.9.0), we use that
+``v χ⁻¹`` is obtained by `translate_diff(G, inv(G,χ), χ, v, RightBackwardAction())`
+and ``χ⁻¹ v`` is obtained by `translate_diff(G, inv(G,χ), χ, v, LeftForwardAction())`.
+"""
+_translate_to_identity(G, χ, v, ::LeftAction) = translate_diff(G, inv(G,χ), χ, v, Manifolds.RightBackwardAction())
+_translate_to_identity(G, χ, v, ::RightAction) = translate_diff(G, inv(G, χ), χ, v, Manifolds.LeftForwardAction())
+
+"""
 Translate infinitesimal action into the
 left action of the observation group on itself,
-in other words, we solve the equation ξ⋅χ = η⋅χ
-and return η.
+in other words, we solve the equation ``ξ⋅χ = η∘χ``
+and return ``η``, where ``∘`` denotes the
+standard or dual left action of the group on itself.
 """
 function translate_action(
     obs::ActionObserver{AD}, # action G ⊂ Diff(M) OR G* ⊂ Diff(M)
@@ -61,9 +75,11 @@ function translate_action(
     G = base_group(get_action(obs))
     # tangent vector from infinitesimal action:
     v = apply_diff_group(action, Identity(H), ξ, χ)
-    # compute η = v χ⁻¹, or χ⁻¹ v depending on observation
-    # action direction
-    η_ = inverse_translate_diff(G, χ, χ, v, switch_direction(AD()))
+
+    # compute η = v χ⁻¹, or χ⁻¹ v depending on observation action direction
+    # η_ = inverse_translate_diff(G, χ, χ, v, switch_direction(AD()))
+    η_ =_translate_to_identity(G, χ, v, AD())
+
     # η = switch_sign(AD()) * η_
     η = η_
     return η

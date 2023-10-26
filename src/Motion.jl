@@ -5,7 +5,7 @@ of a Lie group ``G`` action on the manifold ``M``.
 
 ```julia
 G = SpecialOrthogonal(3)
-ξ = rand(G; vector_at=Identity(G))
+ξ = rand(TangentSpace(G, identity_element(G)))
 M = Sphere(2)
 A = RotationAction(M, G)
 # use a rigid motion for the sake of the example

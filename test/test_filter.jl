@@ -144,7 +144,7 @@ end
     dim = 2
     G = MultiDisplacement(dim, 1)
     action = GroupOperationAction(G)
-    # vel = rand(G; vector_at=identity_element(G))
+    # vel = rand(rng, GeometricFilter.algebra(G))
     vel = zero_vector(G, identity_element(G))
     vel[firstindex(vel)] = 1.
     rm = RigidMotion(action, vel)
@@ -203,7 +203,7 @@ end
 @testset "Test Translation" begin
     G = MultiDisplacement(2)
     A = GroupOperationAction(G)
-    ξ = rand(rng, G; vector_at=Identity(G))
+    ξ = rand(rng, TangentSpace(G, identity_element(G)))
     m = TranslationMotion(G, ξ, LeftAction())
     D = ProjLogNormal(A, identity_element(G), 1.)
     # pnoise = IsotropicNoise(G, x->1.)

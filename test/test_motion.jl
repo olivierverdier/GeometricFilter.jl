@@ -21,7 +21,7 @@ rng = Random.default_rng()
     m = ZeroMotion(A)
     x = [1., 0, 0]
     @test m(x) ≈ zero_vector(G, identity_element(G))
-    ξ = rand(G; vector_at=Identity(G))
+    ξ = rand(rng, GeometricFilter.algebra(G))
     @test isapprox(G, m'(x)(ξ), zero_vector(G, identity_element(G)))
     @test RigidMotion(A) isa ZeroMotion
 end
@@ -30,7 +30,7 @@ end
     G = MultiDisplacement(4,2)
     M = rand(rng, 2, 2)
     action = GroupOperationAction(G)
-    vel = rand(rng, G; vector_at=identity_element(G))
+    vel = rand(rng, GeometricFilter.algebra(G))
     motions = [RigidMotion(action, vel),
                TranslationMotion(G,vel,RightAction()),
                AdjointLinearMotion(G, rand(2,2), LeftAction()),
@@ -56,7 +56,7 @@ end
 @testset "Motion Sum" begin
     G = MultiDisplacement(4,2)
     m1 = AdjointLinearMotion(G, ones(2,2), LeftAction())
-    ξ = rand(rng, G; vector_at=identity_element(G))
+    ξ = rand(rng, GeometricFilter.algebra(G))
 
     motions = (
     rm = RigidMotion(GroupOperationAction(G), ξ),
@@ -81,8 +81,7 @@ end
     G = MultiDisplacement(4,2)
     # G = SpecialEuclidean(4)
     action = GroupOperationAction(G)
-    # vel = rand(G; vector_at=Identity(G))
-    vel = rand(G; vector_at=identity_element(G))
+    vel = rand(rng, GeometricFilter.algebra(G))
     # submanifold_component(vel, 1) .= 0
     # rm = make_rigid_motion(action, vel)
     rm = RigidMotion(action, vel)
@@ -91,7 +90,7 @@ end
     @test rm0 isa RigidMotion
     @test rm0 ≈ rm
 
-    @test_throws TypeError RigidMotion(GroupOperationAction(G,RightAction()), vel)
+    @test_throws TypeError RigidMotion(GroupOperationAction(G,(RightAction(), RightSide())), vel)
     # @show rm'(identity_element(G))
     sol = GeometricFilter.integrate_lift(1.0*rm, identity_element(G), .01)
     # test that sol(1) ≡ exp(ξ), for a rigid motion ξ
@@ -107,7 +106,7 @@ end
     tm = TranslationMotion(G, vel, LeftAction())
     sol = GeometricFilter.integrate_lift(tm, identity_element(G), .1)
 
-    # vel_ = rand(G; vector_at=Identity)
+    # vel_ = rand(rng, GeometricFilter.algebra(G))
     # v3 = lie_bracket(G, vel, vel_)
     # @show vel_
     # @show adjoint_action(G, inv(G, χ), v3)
@@ -136,7 +135,7 @@ end
 
 @testset "Swap Group Motion" begin
     G = MultiDisplacement(3,2)
-    ξ = rand(G; vector_at=Identity(G))
+    ξ = rand(rng, GeometricFilter.algebra(G))
 
     # x0 = identity_element(G)
     x0 = rand(G)

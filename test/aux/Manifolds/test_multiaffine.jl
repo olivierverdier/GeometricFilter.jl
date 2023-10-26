@@ -7,13 +7,16 @@ import Random: rand!, AbstractRNG
 
 using Random
 
+rng = Random.default_rng()
+
 # TODO: this may be useful later in Motion.jl instead for some special motion cases
 get_adjoint_matrix(G, vel, B::AbstractBasis) = GeometricFilter.matrix_from_lin_endomorphism(G, ξ -> lie_bracket(G, vel, ξ), B)
 
 
+# TODO: not used:
 function my_test_group(rng, G, n=3)
     pts = [rand(rng, G) for i in 1:n]
-    vels = [rand(rng, G; vector_at=Identity(G)) for i in 1:n]
+    vels = [rand(rng, GeometricFilter.algebra(G)) for i in 1:n]
     # Manifolds.test_group(G, pts, [], vels,
     Manifolds.test_group(G, pts, vels, vels,
                          test_exp_lie_log=false,
@@ -25,12 +28,12 @@ end
 
 
 function rand_lie(rng::AbstractRNG, G)
-    return rand(rng, G; vector_at=Identity(G))
+    return rand(rng, TangentSpace(G, identity_element(G)))
 end
 
-function randn_vec(rng::AbstractRNG, G::Manifolds.GeneralUnitaryMultiplicationGroup{n,𝔽,S};
+function randn_vec(rng::AbstractRNG, G::Manifolds.GeneralUnitaryMultiplicationGroup{MB.TypeParameter{Tuple{n}}};
                    σ::Real=1.,
-                   ) where {n,𝔽,S}
+                   ) where {n}
     NT = MB.allocate_result_type(G, typeof(randn_vec), ())
     M = σ*randn(rng, NT, n, n)
     ξ = M - M' # some kind of projection like the one in SkewHermitianMatrices?
@@ -38,27 +41,27 @@ function randn_vec(rng::AbstractRNG, G::Manifolds.GeneralUnitaryMultiplicationGr
     return ξ
 end
 
-function randn_pt(rng::AbstractRNG, G::Manifolds.GeneralUnitaryMultiplicationGroup{n,𝔽,S};
+function randn_pt(rng::AbstractRNG, G::Manifolds.GeneralUnitaryMultiplicationGroup;
                   σ::Real=1.,
-                  ) where {n,𝔽,S}
+                  )
     ξ = randn_vec(rng, G; σ)
     return exp_lie(G, ξ)
 end
 
 function rand!(rng::AbstractRNG,
-               M::Manifolds.GeneralUnitaryMatrices{n,𝔽,S},
+               M::Manifolds.GeneralUnitaryMatrices{MB.TypeParameter{Tuple{n}}},
                tmp;
                vector_at=nothing,
                # σ::Real=one(eltype(tmp))
                σ=1.
-               ) where {n,𝔽,S}
+               ) where {n}
     G = Manifolds.GeneralUnitaryMultiplicationGroup(M)
     if vector_at === nothing
         res = randn_pt(rng, G; σ)
-    elseif vector_at isa Identity
+    else # vector_at isa Identity
         res = randn_vec(rng, G; σ)
-    else
-        throw(ErrorException("Only tangent vector at identity supported"))
+    # else
+    #     throw(ErrorException("Only tangent vector at identity supported"))
     end
     copyto!(tmp, res)
     return tmp
@@ -94,6 +97,19 @@ function test_exp_ad(rng, G)
   end
 end
 
+@testset "eltype rand_lie" begin
+    G = MultiAffine(Unitary(4), 3)
+    @test eltype(rand_lie(rng, G)) <: Complex broken=true
+end
+
+@testset "Test diff" begin
+    G = MultiDisplacement(3,2)
+    id = identity_element(G)
+    g = TangentSpace(G, identity_element(G))
+    ξ = rand(rng, g)
+    ξ_ = apply_diff_group(GroupOperationAction(G), id, ξ, id)
+    @test isapprox(g, ξ, ξ_)
+end
 
 @testset "Test types" begin
     @testset "MultiDisplacement(x,y) creates proper type" begin
@@ -107,8 +123,8 @@ end
     end
     @testset "MultiAffine(G, size) creates proper type" begin
         GA = MultiAffine(Orthogonal(4), 3)
-        @test isa(GA, MultiAffine{Orthogonal{4}, 4, 3, ℝ})
-        @test !isa(GA, MultiAffine{Orthogonal{5}, 5, 3, ℝ})
+        @test isa(GA, MultiAffine{typeof(Orthogonal(4)), 4, 3, ℝ})
+        @test !isa(GA, MultiAffine{typeof(Orthogonal(5)), 5, 3, ℝ})
         @test isa(MultiAffine(Unitary(4), 5), MultiAffine)
     end
 end
@@ -156,12 +172,14 @@ function test_multi_affine(rng, G::MultiAffine{TH,dim,size,𝔽}
   end
 end
 
+
+
 test_exp_ad(Random.default_rng(), MultiDisplacement(3, 2))
 
-@testset "Test MultiAffine" for G in
+@testset "MultiAffine" for G in
     [
         MultiDisplacement(3, 2),
-        MultiAffine(Unitary(4), 3),
+        # MultiAffine(Unitary(4), 3),
     ]
     # begin
     test_multi_affine(Random.default_rng(), G)

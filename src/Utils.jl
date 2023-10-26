@@ -6,3 +6,5 @@ function assert_equal_actions(obj1, obj2, msg)
         throw(ErrorException("$msg:\n\t$a1\n≠\n\t$a2"))
     end
 end
+
+algebra(G) = TangentSpace(G, identity_element(G))

@@ -3,14 +3,14 @@
 
 
 const MultiColumnwiseMultiplicationAction{G,dim,size,𝔽} = Manifolds.ColumnwiseMultiplicationAction{
-    TranslationGroup{Tuple{dim,size},𝔽},
+    LeftAction,
+    TranslationGroup{ManifoldsBase.TypeParameter{Tuple{dim,size}},𝔽},
     G,
-    LeftAction
 }
 
 const MultiAffine{G,dim,size,𝔽} = SemidirectProductGroup{
     𝔽,
-    TranslationGroup{Tuple{dim,size},𝔽},
+    TranslationGroup{ManifoldsBase.TypeParameter{Tuple{dim,size}},𝔽},
     G,
     MultiColumnwiseMultiplicationAction{G,dim,size,𝔽}
 }
@@ -31,7 +31,7 @@ and ``X`` is a ``n × k`` matrix.
 If we denote such an element by ``[X,g]``,
 the multiplication law is ``[X,g] [X',g'] = [X+gX';gg']``.
 """
-function MultiAffine(G::Manifolds.GeneralUnitaryMultiplicationGroup{dim,𝔽}, size::Integer=1) where {dim, 𝔽}
+function MultiAffine(G::Manifolds.GeneralUnitaryMultiplicationGroup{ManifoldsBase.TypeParameter{Tuple{dim}},𝔽}, size::Integer=1) where {dim, 𝔽}
     space = TranslationGroup(dim,size;field=𝔽)
     action = Manifolds.ColumnwiseMultiplicationAction(space, G)
     group = GroupManifold(ProductManifold(space, G), Manifolds.SemidirectProductOperation(action))
@@ -179,14 +179,14 @@ function Manifolds.adjoint_action!(G::MultiAffine, tmp, p, X)
 end
 
 
-function Manifolds.apply_diff(A::Manifolds.ColumnwiseMultiplicationAction{<:Any,<:Any,LeftAction}, a, ::Any, X)
+function Manifolds.apply_diff(A::Manifolds.ColumnwiseMultiplicationAction{LeftAction}, a, ::Any, X)
     return apply(A, a, X)
 end
 
 
 
 
-function Manifolds.translate_diff!(G::MultiAffine, Y, p, q, X, dir::RightAction)
+function Manifolds.translate_diff!(G::MultiAffine, Y, p, q, X, dir::Tuple{RightAction, RightSide})
     np, hp = submanifold_components(G, p)
     nq, hq = submanifold_components(G, q)
     nX, hX = submanifold_components(G, X)

@@ -1,23 +1,23 @@
 
 
 function Manifolds.apply_diff_group(
-    A::Manifolds.RotationActionOnVector{N,F,RightAction},
+    A::Manifolds.RotationActionOnVector{RightAction},
     Id::Identity,
     X,
     p,
-) where {N,F}
+) 
     return -apply_diff_group(switch_direction(A), Id, X, p)
 end
 
 function Manifolds.apply_diff_group(
-    ::Manifolds.ColumnwiseMultiplicationAction{N,F,LeftAction},
+    ::Manifolds.ColumnwiseMultiplicationAction{LeftAction},
     ::Identity,
     X,
     p,
-) where {N,F}
+)
     return X * p
 end
 
-Manifolds.apply!(::RotationAction{TM,TG,LeftAction}, q, a, p) where {TM,TG} = LinearAlgebra.mul!(q, a, p)
+Manifolds.apply!(::RotationAction{LeftAction}, q, a, p)  = LinearAlgebra.mul!(q, a, p)
 
-Manifolds.apply!(A::Manifolds.RotationAction{TM,TG,RightAction}, q, a, p) where {TM,TG} = Manifolds.apply!(switch_direction(A), q, inv(base_group(A), a), p)
+Manifolds.apply!(A::Manifolds.RotationAction{RightAction}, q, a, p) = Manifolds.apply!(switch_direction(A), q, inv(base_group(A), a), p)

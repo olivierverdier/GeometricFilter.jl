@@ -8,11 +8,11 @@ import Random
 rng = Random.default_rng()
 
 function Manifolds.apply_diff_group(
-    ::RotationAction{N,F,LeftAction},
+    ::RotationAction{LeftAction},
     ::Identity,
     X,
     p,
-    ) where {N,F}
+    ) 
     return X * p
 end
 

@@ -34,7 +34,7 @@ end
     @test obs(x) ≈ ref
     A = GroupOperationAction(G)
     H = GeometricFilter.get_tan_observer(obs, A, x)
-    ξ = rand(G; vector_at=Identity(G))
+    ξ = rand(rng, GeometricFilter.algebra(G))
     expected = apply_diff_group(get_action(obs), Identity(G), ξ, ref)
     computed = H(ξ)
     @test computed ≈ expected
@@ -70,7 +70,7 @@ end
 ξ⋅ob(χ)
 """
 function compute_tan_action(
-    ::GroupOperationAction{<:Any,LeftAction},
+    ::GroupOperationAction{LeftAction},
     O::ActionObserver{LeftAction},
     χ,
     ξ
@@ -82,7 +82,7 @@ end
 -(χ⁻¹⋆ξ)⋅ob(χ)
 """
 function compute_tan_action(
-    A::GroupOperationAction{<:Any,LeftAction},
+    A::GroupOperationAction{LeftAction},
     O::ActionObserver{RightAction},
     χ,
     ξ
@@ -123,7 +123,7 @@ end
     G = MultiDisplacement(dim,1)
     V = submanifold(G, 1)
     χ = rand(G)
-    ξ = rand(G; vector_at=Identity(G))
+    ξ = rand(rng, GeometricFilter.algebra(G))
     A = MultiAffineAction(G)
     x = rand(dim)
 
@@ -160,8 +160,20 @@ end
     # obs_ = ActionObserver(switch_direction(A), [1., 0.])
     # @show obs_(x)
     # op = GeometricFilter.get_tan_observer(obs, GA, x)
-    # ξ = rand(G; vector_at=Identity(G))
+    # ξ = rand(rng, GeometricFilter.algebra(G))
     # @show op(ξ)
     # H = GeometricFilter.get_op_matrix(G, GeometricFilter.get_manifold(obs), obs(x), op, DefaultOrthonormalBasis(), DefaultOrthonormalBasis())
     # @show H
+end
+
+_repr(::LeftAction) = "→"
+_repr(::RightAction) = "←"
+
+
+@testset "Linear $(_repr(conv)) $depth" for conv in [LeftAction(), RightAction()], depth in [0, 4]
+    lobs = LinearObserver(zeros(2,3), conv; depth=depth)
+    x = rand(observed_space(lobs))
+    @show lobs
+    res = lobs(x)
+    @test is_point(observation_space(lobs), res)
 end

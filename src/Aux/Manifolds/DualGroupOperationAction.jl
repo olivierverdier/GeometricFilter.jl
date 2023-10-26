@@ -19,22 +19,20 @@ Manifolds.base_group(A::DualGroupOperationAction) = A.group
 Manifolds.group_manifold(A::DualGroupOperationAction) = A.group
 
 
-_get_group_operation_action(G, ::LeftAction) = GroupOperationAction(G, LeftAction())
+_get_group_operation_action(G, ::LeftAction) = GroupOperationAction(G, (LeftAction(), LeftSide()))
 _get_group_operation_action(G, ::RightAction) = DualGroupOperationAction(G)
 
 
+Manifolds.apply(A::DualGroupOperationAction, a, p) = translate(A.group, a, p, Manifolds.LeftBackwardAction())
 
-
-Manifolds.apply(A::DualGroupOperationAction, a, p) = inverse_translate(A.group, a, p, RightAction())
-
-Manifolds.apply!(A::DualGroupOperationAction, q, a, p) = inverse_translate!(A.group, q, a, p, RightAction())
+Manifolds.apply!(A::DualGroupOperationAction, q, a, p) = inverse_translate!(A.group, q, a, p, Manifolds.LeftBackwardAction())
 
 function Manifolds.inverse_apply(A::DualGroupOperationAction, a, p)
-    return translate(A.group, a, p, RightAction())
+    return translate(A.group, a, p, Manifolds.RightBackwardAction())
 end
 
 function Manifolds.inverse_apply!(A::DualGroupOperationAction, q, a, p)
-    return translate!(A.group, q, a, p, RightAction())
+    return translate!(A.group, q, a, p, Manifolds.RightBackwardAction())
 end
 
 # ----
@@ -53,7 +51,7 @@ function Manifolds.apply_diff_group(
     p,
 )
     G = base_group(A)
-    return -translate_diff(G, p, id, ξ, LeftAction())
+    return -translate_diff(G, p, id, ξ, Manifolds.LeftForwardAction())
 end
 
 function Manifolds.apply_diff_group!(
@@ -64,7 +62,7 @@ function Manifolds.apply_diff_group!(
     p,
 ) 
     G = base_group(A)
-    return -translate_diff!(G, Y, p, id, ξ, LeftAction())
+    return -translate_diff!(G, Y, p, id, ξ, Manifolds.LeftForwardAction())
 end
 
 # function inverse_apply_diff(A::DualGroupOperationAction, a, p, X)

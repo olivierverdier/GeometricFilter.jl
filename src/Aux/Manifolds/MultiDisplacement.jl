@@ -1,6 +1,6 @@
 
 const MultiDisplacement{dim,size} = MultiAffine{
-    SpecialOrthogonal{dim},
+    SpecialOrthogonal{ManifoldsBase.TypeParameter{Tuple{dim}}},
     dim,
     size,
     ℝ
