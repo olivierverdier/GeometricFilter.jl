@@ -70,7 +70,7 @@ end
 ξ⋅ob(χ)
 """
 function compute_tan_action(
-    ::GroupOperationAction{LeftAction},
+    ::GroupOperationAction{LeftAction, LeftSide},
     O::ActionObserver{LeftAction},
     χ,
     ξ
@@ -82,7 +82,7 @@ end
 -(χ⁻¹⋆ξ)⋅ob(χ)
 """
 function compute_tan_action(
-    A::GroupOperationAction{LeftAction},
+    A::GroupOperationAction{LeftAction, LeftSide},
     O::ActionObserver{RightAction},
     χ,
     ξ
