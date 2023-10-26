@@ -4,9 +4,9 @@
 
 Swap from standard to dual group action, while preserving the same dynamics.
 """
-swap_group_motion(m::RigidMotion{TA}) where {TA<:GroupOperationAction} = TranslationMotion(base_group(get_action(m)), m.vel, RightAction())
+swap_group_motion(m::RigidMotion{<:GroupOperationAction}) = TranslationMotion(base_group(get_action(m)), m.vel, RightAction())
 swap_group_motion(m::TranslationMotion{RightAction}) = RigidMotion(GroupOperationAction(m.G), m.vel)
-swap_group_motion(m::RigidMotion{TA}) where {TA<:DualGroupOperationAction} = TranslationMotion(base_group(get_action(m)), m.vel, LeftAction())
+swap_group_motion(m::RigidMotion{<:DualGroupOperationAction}) = TranslationMotion(base_group(get_action(m)), m.vel, LeftAction())
 swap_group_motion(m::TranslationMotion{LeftAction}) = RigidMotion(DualGroupOperationAction(m.G), m.vel)
 
 # _swap_inv(::GroupOperationAction, G, χ) = inv(G,χ)

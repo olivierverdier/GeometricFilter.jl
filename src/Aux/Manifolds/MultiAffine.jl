@@ -41,7 +41,7 @@ end
 
 Base.show(io::IO, ::MultiAffine{G, <:Any,size}) where {G, size} = print(io, "MultiAffine($(G), $(size))")
 
-_get_representation_dim(G::MultiAffine{<:Any,dim,size}
+_get_representation_dim(::MultiAffine{<:Any,dim,size}
                         ) where {dim,size} = dim+size
 
 
@@ -226,28 +226,21 @@ end
 
 _fill_in!(G::MultiAffine, x, ts...) = _fill_in!(G, x, hcat(ts...))
 
-function from_normal_grp(G::MultiAffine, ts...)
+from_normal_grp(G::MultiAffine, ts...) = begin
     x = identity_element(G)
     return _fill_in!(G, x, ts...)
 end
 
-
-function from_normal_alg(G::MultiAffine, ts...)
+from_normal_alg(G::MultiAffine, ts...) = begin
     x = zero_vector(G, identity_element(G))
     return _fill_in!(G, x, ts...)
 end
 
-function to_factor(G::MultiAffine, pt)
-    return submanifold_component(G,pt,2)
-end
+to_factor(G::MultiAffine, pt) = submanifold_component(G,pt,2)
 
-function to_factor_grp(G::MultiAffine, pt)
-    return to_factor(G, pt)
-end
+to_factor_grp(G::MultiAffine, pt) = to_factor(G, pt)
 
-function to_factor_alg(G::MultiAffine, pt)
-    return to_factor(G, pt)
-end
+to_factor_alg(G::MultiAffine, pt) = to_factor(G, pt)
 
 normal_indices(::MultiAffine{<:Any, dim}, idx; pos=0) where {dim} = collect(Iterators.take(Iterators.drop(idx, pos*dim), dim))
 factor_indices(::MultiAffine{<:Any, dim, size}, idx) where {dim,size} = collect(Iterators.drop(idx, size * dim))
