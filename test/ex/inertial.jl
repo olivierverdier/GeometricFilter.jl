@@ -1,33 +1,17 @@
 using Manifolds
 
-"""
-Return the Lie Algebra element (0,a;0)
-"""
-function make_velocity_(G, a; pos=1)
-    ξ = zero_vector(G, Identity(G))
-    X = submanifold_component(G, ξ, 1)
-    idx = first(Iterators.drop(axes(X, 2), pos))
-    X[:, idx] = a
-    return ξ
-end
 
 """
 Return the Lie Algebra element (0,a;ω)
 """
-function make_velocity_(G, a, ω; pos=1)
-    ξ = make_velocity_(G, a; pos)
-    submanifold_component(G, ξ, 2)[:] = ω
-    return ξ
-end
-
 function make_velocity(G, a, ω=nothing; pos=1)
     vector = zeros(manifold_dimension(G))
     idx = first(axes(vector))
     a_idx = GeometricFilter.normal_indices(G, idx; pos=pos)
     ω_idx = GeometricFilter.factor_indices(G, idx)
-    vector[a_idx] .= a
+    vector[a_idx] = a
     if ω !== nothing
-      vector[ω_idx] .= ω
+        vector[ω_idx] = ω * sqrt(2)
     end
     return get_vector_lie(G, vector, DefaultOrthonormalBasis())
 end
@@ -39,7 +23,7 @@ Return a list of motions corresponding to the motion (with the standard left act
 ```math
 φ(χ) = ξ_{nav} + χ ξ_{body} χ^{-1} + ψ_M
 ```
-where ``ψ_M`` is a multi-affine motion corresponding to
+where ``ψ_M`` is an adjoint linear motion corresponding to
 the matrix ``M``.
 """
 function get_inertial_motions(G, ::LeftAction, ξ_body, ξ_nav; M=[0 1;0 0])
@@ -60,30 +44,44 @@ make_inertial_motion(G, AD::ActionDirection, ξ_body, ξ_nav) = sum(get_inertial
 # Body accelerations from navigation accelerations
 #--------------------------------
 
-SIZE = 2
+motion_from_sensors(grav, conv, sensors...) = let (G,g,Ξ) = grav
+    make_inertial_motion(G, conv, make_velocity(G, sensors...), Ξ)
+end
 
-g₀ = [0, 0, -9.82]
-G = MultiDisplacement(3,2)
-Ξ_nav = make_velocity(G, g₀)
+"""
+    nav2body_accelerations(grav, pose, dts, as, ωs, g)
 
-motion_from_sensors(G, conv, sensors...) = make_inertial_motion(G, conv, make_velocity(G, sensors...), Ξ_nav)
+Convert navigation accelerations to body accelerations.
+"""
+function nav2body_accelerations(grav, pose, dtas, as, ωs)
+    G = grav[:G]
+    g = grav[:g]
+    N = size(as, 2)
+    poses = Vector{typeof(identity_element(G))}(undef, N + 1)
+    body_accelerations = similar(as)
+    H = submanifold(G, 2)
+    rotacc = RotationAction(Euclidean(3), H)
+    lastp = foldl(zip(axes(poses, 1), axes(body_accelerations, 2), dtas, eachcol(as), eachcol(ωs)); init=pose) do p, (pi, ai, dt, acc, ω)
+        poses[pi] = p
+        R = submanifold_component(p, 2)
+        ωvec = get_vector_lie(H, sqrt(2) * ω, DefaultOrthonormalBasis())
+        Rmot = RigidMotion(DualGroupOperationAction(H), -ωvec)
+        R_ = integrate((dt/2) * Rmot, R)
+        a = apply(rotacc, inv(H, R_), acc - g)
+        # general formula:
+        # act = MultiAffineAction(G, [0,1], LeftAction())
+        # obs = PositionObserver(act)
+        # a = apply(rotacc, inv(H, R), acc) - obs(adjoint_action(G, inv(G, p), ξ_nav))
+        body_accelerations[:, ai] = a
 
-
-function nav2body_accelerations(G, dtas, as, pose; g_vec=g₀)
-    acc_act = MultiAffineAction(G, [0,1], RightAction())
-
-    sim_res = accumulate(zip(dtas, eachcol(as)); init=(pose, nothing)) do (p_,_a), (dt,acc)
-        p = copy(p_)
-        p.x[1][:,2] = g_vec
-        a = apply(acc_act, p, acc)
-        m = motion_from_sensors(G, RightAction(), a)
-        p__ = integrate(dt * m, p_)
-        return (p__, a)
+        m = motion_from_sensors(grav, RightAction(), a, ω)
+        p_ = integrate(dt * m, p)
+        return p_
     end
-    poses = first.(sim_res)
-    body_accelerations = last.(sim_res)
+    poses[lastindex(poses)] = lastp
     return poses, body_accelerations
 end
+
 
 #--------------------------------
 # Initial Pose
@@ -109,24 +107,54 @@ function tdiff(ts, xs)
     return tm, dx ./ dt'
 end
 
-motions_from_body_accelerations(G, dtas, body_accelerations) = map(zip(dtas, body_accelerations)) do (dt, a)
-    return dt * motion_from_sensors(G, RightAction(), a)
+_make_ωs(as, ::Nothing) = zero(as)
+function _make_ωs(as, ωs::Vector)
+    res = reduce(hcat, fill(ωs, size(as, 2)))
+    return res
 end
+_make_ωs(::Any, ωs::Matrix) = ωs
+
+motions_from_body_accelerations(grav, dtas, body_accelerations, ωs) =
+    map(zip(dtas, eachcol(body_accelerations), eachcol(_make_ωs(body_accelerations, ωs)))) do (dt, a, ω)
+        return dt * motion_from_sensors(grav, RightAction(), a, ω)
+    end
 
 
-# motions = compute_motions(G, dtas, body_accelerations)
-
-function compute_body_accelerations(G, ts, xs; kwargs...)
+function compute_body_accelerations(grav, ts, xs, ωs=nothing)
     tvs, vs = tdiff(ts, xs)
     tas, as = tdiff(tvs, vs)
     dtas = diff(tvs)
     pose = initial_pose(xs[:, 1], vs[:, 1])
-    poses, body_accelerations = nav2body_accelerations(G, dtas, as, pose; kwargs...)
-    return prepend!(poses, [pose]), dtas, body_accelerations
+    ωs_ = _make_ωs(as, ωs)
+    poses, body_accelerations = nav2body_accelerations(grav, pose, dtas, as, ωs_)
+    return poses, dtas, body_accelerations
 end
 
-function motions_from_trajectory(G, ts, xs; kwargs...)
-    poses, dtas, body_accelerations = compute_body_accelerations(G, ts, xs; kwargs...)
-    motions = motions_from_body_accelerations(G, dtas, body_accelerations)
+"""
+    motions_from_trajectory(grav::Tuple,
+      ts, # Vector of length N
+      xs, # dxN Matrix (d is the dimension)
+         ωs # coordinates in the Lie algebra so(d)
+      )
+
+Compute inertial motions from a given trajectory given by
+the vector `ts` and the matrix `xs`.
+The angular velocity `ωs` may be either a vector
+(in which case the rotation is supposed to be constant),
+or a vector of the same size as `xs`.
+`grav` is a tuple of the same form as the constant `GRAVITY`.
+"""
+function motions_from_trajectory(grav, ts, xs, ωs=nothing)
+    poses, dtas, body_accelerations = compute_body_accelerations(grav, ts, xs, ωs)
+    motions = motions_from_body_accelerations(grav, dtas, body_accelerations, ωs)
     return poses, motions
 end
+
+function make_gravity(g)
+    dim = length(g)
+    G = MultiDisplacement(dim, 2)
+    return (G=G, g=g, Ξ=make_velocity(G, g))
+end
+
+GRAVITY = make_gravity([0, 0, -9.82])
+
