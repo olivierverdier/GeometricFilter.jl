@@ -28,7 +28,7 @@ end
     M = G
     pos_obs = PositionObserver(MultiAffineAction(G, [1,0]))
     @test pos_obs(identity_element(G)) == zeros(2)
-    ref = rand(2)
+    ref = rand(rng, 2)
     obs = ActionObserver(MultiAffineAction(G, [1.0, 0]), ref)
     x = identity_element(G)
     @test obs(x) ≈ ref
@@ -122,10 +122,10 @@ end
     dim = 2
     G = MultiDisplacement(dim,1)
     V = submanifold(G, 1)
-    χ = rand(G)
+    χ = rand(rng, G)
     ξ = rand(rng, GeometricFilter.algebra(G))
     A = MultiAffineAction(G)
-    x = rand(dim)
+    x = rand(rng, dim)
 
     obs = ActionObserver(A, x)
     obs_ = ActionObserver(switch_direction(A), x)
@@ -172,7 +172,7 @@ _repr(::RightAction) = "←"
 
 @testset "Linear $(_repr(conv)) $depth" for conv in [LeftAction(), RightAction()], depth in [0, 4]
     lobs = LinearObserver(zeros(2,3), conv; depth=depth)
-    x = rand(observed_space(lobs))
+    x = rand(rng, observed_space(lobs))
     @show lobs
     res = lobs(x)
     @test is_point(observation_space(lobs), res)

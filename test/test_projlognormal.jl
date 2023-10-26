@@ -16,7 +16,7 @@ rng = Random.default_rng()
     M = group_manifold(A)
     μ = zeros(manifold_dimension(M))
     dG = manifold_dimension(G)
-    mat = randn(dG, dG)
+    mat = randn(rng, dG, dG)
     Σ = PDMats.PDMat(mat*mat')
     D = ProjLogNormal(A, μ, Σ)
     # possible to initialise with a matrix

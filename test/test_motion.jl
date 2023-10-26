@@ -28,12 +28,12 @@ end
 
 @testset "Motion Composition" begin
     G = MultiDisplacement(4,2)
-    M = rand(rng, 2, 2)
+    M = randn(rng, 2, 2)
     action = GroupOperationAction(G)
     vel = rand(rng, GeometricFilter.algebra(G))
     motions = [RigidMotion(action, vel),
                TranslationMotion(G,vel,RightAction()),
-               AdjointLinearMotion(G, rand(2,2), LeftAction()),
+               AdjointLinearMotion(G, rand(rng, 2,2), LeftAction()),
                FlatAffineMotion(M, zeros(2)),
                ZeroMotion(action),
                RigidMotion(action, vel) + TranslationMotion(G, vel, LeftAction()),
@@ -61,7 +61,7 @@ end
     motions = (
     rm = RigidMotion(GroupOperationAction(G), ξ),
     tm = TranslationMotion(G, ξ, LeftAction()),
-    lm = AdjointLinearMotion(G, rand(2,2), LeftAction()),
+    lm = AdjointLinearMotion(G, randn(rng, 2,2), LeftAction()),
     )
 
     @testset "Sum type" for m in motions
@@ -138,7 +138,7 @@ end
     ξ = rand(rng, GeometricFilter.algebra(G))
 
     # x0 = identity_element(G)
-    x0 = rand(G)
+    x0 = rand(rng, G)
 
     @testset "Rigid/Translation" begin
 
@@ -215,19 +215,19 @@ end
 @testset "Flat Motion" begin
     @testset "Scaling+Translation" begin
         dim = 2
-        A = rand(dim, dim)
-        b = rand(dim)
+        A = rand(rng, dim, dim)
+        b = rand(rng, dim)
         m = flat_affine_motion(A, b)
         m_ = FlatAffineMotion(A, b)
-        p = rand(dim)
+        p = rand(rng, dim)
         @test m * p ≈ m_ * p
     end
     @testset "Flat Translation" begin
         dim = 2
-        t = rand(dim)
+        t = rand(rng, dim)
         m = RigidMotion(get_flat_action(dim), t)
         m_ = FlatAffineMotion(zeros(dim, dim), t)
-        p = rand(dim)
+        p = rand(rng, dim)
         @test m * p ≈ m_ * p
     end
 end

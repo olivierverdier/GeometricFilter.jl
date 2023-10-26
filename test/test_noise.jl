@@ -45,7 +45,6 @@ end
     G = SpecialOrthogonal(3)
     M = Sphere(2)
     A = RotationAction(M, G)
-    # x = rand(M)
     x = [1., 0, 0]
     noise = ActionNoise(A, 1.)
     B = GeometricFilter.get_basis_at(noise, x)

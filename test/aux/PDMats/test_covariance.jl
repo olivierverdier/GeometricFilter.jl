@@ -22,13 +22,13 @@ rng = Random.default_rng()
     @test sum isa Covariance
     @test sum ≈ Matrix(c) + Matrix(complement)
 
-    A = rand(2,2)
+    A = rand(rng, 2,2)
     M = PDMat(A*A')
     @test M + c isa AbstractPDMat
     @test c + M isa AbstractPDMat
 
     @testset "Covariance + PDiagMat" begin
-        # D = PDiagMat(randn(2) .^ 2)
+        # D = PDiagMat(randn(rng, 2) .^ 2)
         D = PDiagMat(zeros(2))
         C = Covariance(D+I)
         @test D + C == C
@@ -37,11 +37,11 @@ rng = Random.default_rng()
 end
 
 @testset "Conversion to Covariance" begin
-    A = randn(2, 2)
+    A = randn(rng, 2, 2)
     M = A * A'
     @test_throws MethodError Covariance(M)
     S = Symmetric(M)
-    D = PDiagMat(abs2.(randn(3)))
+    D = PDiagMat(abs2.(randn(rng, 3)))
     s = ScalMat(3, 2.0)
 
     @testset "Conversion $(typeof(mat))" for mat in [s, D, S]
@@ -51,7 +51,7 @@ end
     @testset "Conversion from sparse diagonal" begin
         N = 20
         k = 4
-        zdiag = rand(N) .+ 1
+        zdiag = rand(rng, N) .+ 1
         zdiag[collect(Iterators.take(axes(zdiag, 1), k))] .= 0
         shuffle!(rng, zdiag)
         D0 = PDiagMat(sparsevec(zdiag))
@@ -64,8 +64,8 @@ end
 end
 
 @testset "Multiplications" begin
-    A = randn(2, 2)
-    X = randn(2, 2)
+    A = randn(rng, 2, 2)
+    X = randn(rng, 2, 2)
     C = covariance_from(A)
 
     @test 1*C ≈ C

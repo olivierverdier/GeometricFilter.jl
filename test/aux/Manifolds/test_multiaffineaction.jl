@@ -46,12 +46,12 @@ end
     size = 2
     prod = 2
     G = MultiDisplacement(dim, size)
-    @testset "Product" for sel in [randn(size), randn(size, prod)]
+    @testset "Product" for sel in [randn(rng, size), randn(rng, size, prod)]
         A = MultiAffineAction(G, sel)
         expected_manifold = ndims(sel) == 1 ? Euclidean(dim) : Euclidean(dim,prod)
         @test group_manifold(A) == expected_manifold
         χ = rand(rng, G)
-        p = rand(group_manifold(A))
+        p = rand(rng, group_manifold(A))
         computed = apply(A, χ, p)
         M, R = submanifold_components(G, χ)
         expected = M * sel + R * p
