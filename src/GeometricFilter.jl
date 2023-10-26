@@ -28,11 +28,11 @@ export integrate, generate_signal,
     AbstractStochasticMotion, StochasticMotion,
     DataMode,
     SensorPerturbation, PositionPerturbation,
+    noisy_observation,
+    simulate_filter,
     simulate_observations,
     get_noisy_observations,
-    noisy_observation,
-    sensor_perturbation,
-    simulate_filter
+    sensor_perturbation
 
 # Filter
 export predict,
@@ -47,9 +47,7 @@ export AbstractObserver,
     LinearObserver,
     IdentityObserver,
     observation_space, observed_space
-    # get_tan_observer,
-    # get_manifold,
-    # get_action
+
 export Observation, EmptyObservation
 
 export ConstantFunction

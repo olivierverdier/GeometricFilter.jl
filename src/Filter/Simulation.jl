@@ -69,11 +69,23 @@ There are three main mode to use as `FilterMode`:
 - `SensorPerturbation(rng)` for simulated perturbation of sensor inputs
 - `PositionPerturbation(rng)` for simulated perturbations of positions
 """
-simulate_filter(fm::FilteringMode, D0::AbstractProjLogNormal, stochastic_motions, observations) = _simulate_filter(D0, stochastic_motions, observations) do D, sm
+simulate_filter(fm::FilteringMode, D0::AbstractProjLogNormal, stochastic_motions, observations) = simulate_filter_from(D0, stochastic_motions, observations) do D, sm
     return prediction_step(fm, D, sm)
 end
 
-function _simulate_filter(prediction_step, D0::AbstractProjLogNormal, stochastic_motions, observations)
+"""
+    simulate_filter(prediction_step,
+    D0,
+    stochastic_motions,
+    observations)
+
+Run a filter from stochastic motions and observations.
+The argument `prediction_step` can be used to
+modify the standard behaviour of `predict`,
+for instance by adding sensor noise, position noise,
+or both.
+"""
+function simulate_filter_from(prediction_step, D0::AbstractProjLogNormal, stochastic_motions, observations)
     N = length(stochastic_motions)
     nb_missing_obs = N - length(observations)
     if nb_missing_obs > 0
