@@ -50,7 +50,7 @@ sensor_perturbation(rng::Random.AbstractRNG, sm::AbstractStochasticMotion, x) = 
 
 
 """
-    integrate(::FilteringMode, s::StochasticMotion, x)
+    integrate(::FilteringMode, s::StochasticMotion, x::TM) ::TM
 
 Integrate the stochastic motion: deterministically integrate
 the underlying motion, and adds noise on the result.
