@@ -102,13 +102,43 @@ end
     @test eltype(rand_lie(rng, G)) <: Complex broken=true
 end
 
-@testset "Test diff" begin
+_adjoint_action(G::MultiAffine, p, X) = begin
+    tmp = allocate_result(G, adjoint_action, X)
+    return _adjoint_action!(G, tmp, p, X)
+end
+
+_adjoint_action!(G::MultiAffine, tmp, p, X) = begin
+    mat = affine_matrix(G, p)
+    matinv = affine_matrix(G, inv(G, p))
+    res = mat * screw_matrix(G, X) * matinv
+    map(copyto!, submanifold_components(G, tmp), submanifold_components(G, res))
+    return tmp
+end
+
+@testset "Adjoint" begin
     G = MultiDisplacement(3,2)
+    χ = rand(rng, G)
+    ξ = rand_lie(rng, G)
+    expected = _adjoint_action(G, χ, ξ)
+    computed = adjoint_action(G, χ, ξ)
+    @test isapprox(GeometricFilter.algebra(G), expected, computed)
+end
+
+_switch_sign(ξ, ::LeftSide) = ξ
+_switch_sign(ξ, ::RightSide) = -ξ
+
+
+@testset "Test diff" begin
+    G = MultiDisplacement(3, 2)
+    # G = SpecialEuclidean(3)
+    # G = SpecialOrthogonal(3)
     id = identity_element(G)
     g = TangentSpace(G, identity_element(G))
     ξ = rand(rng, g)
-    ξ_ = apply_diff_group(GroupOperationAction(G), id, ξ, id)
-    @test isapprox(g, ξ, ξ_)
+    @testset "$side" for side in [LeftSide(), RightSide()]
+        ξ_ = apply_diff_group(GroupOperationAction(G, (LeftAction(), side)), id, ξ, id)
+        @test isapprox(g, ξ, _switch_sign(ξ_, side))
+    end
 end
 
 @testset "Test types" begin
@@ -185,3 +215,5 @@ test_exp_ad(Random.default_rng(), MultiDisplacement(3, 2))
     test_multi_affine(Random.default_rng(), G)
 end
 
+include("multiaffine/apply_diff_group.jl")
+include("multiaffine/inv_diff.jl")

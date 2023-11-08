@@ -88,7 +88,10 @@ include("Aux/Manifolds/MultiAffine.jl")
 include("Aux/Manifolds/MultiDisplacement.jl")
 include("Aux/Manifolds/rotation_action.jl")
 
-include("Aux/Manifolds/DualGroupOperationAction.jl")
+DualGroupOperationAction(G) = GroupOperationAction(G, Manifolds.LeftBackwardAction())
+_get_group_operation_action(G, ::LeftAction) = GroupOperationAction(G, (LeftAction(), LeftSide()))
+_get_group_operation_action(G, ::RightAction) = DualGroupOperationAction(G)
+# include("Aux/Manifolds/DualGroupOperationAction.jl")
 
 include("Utils.jl")
 

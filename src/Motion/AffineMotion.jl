@@ -78,4 +78,4 @@ function _swap_group_motion(m::AbstractAffineMotion)
     return AffineMotion(_swap_group_action(A), new_f, new_lin)
 end
 
-swap_group_motion(m::AffineMotion{TA}) where {TA<:Union{GroupOperationAction,DualGroupOperationAction}} = _swap_group_motion(m)
+swap_group_motion(m::AffineMotion{TA}) where {TA<:GroupOperationAction} = _swap_group_motion(m)

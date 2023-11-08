@@ -25,4 +25,4 @@ Base.:+(m::SimpleAffineMotion, sms::AffineMotionSum{TA}) where {TA} = AffineMoti
 # Tricky here, this `isapprox` is too rigid.
 Base.isapprox(M1::AffineMotionSum, M2::AffineMotionSum; kwargs...) = all(isapprox(m1, m2; kwargs...) for (m1,m2) in zip(M1.motions, M2.motions))
 
-swap_group_motion(ms::AffineMotionSum{TA}) where {TA<:Union{GroupOperationAction,DualGroupOperationAction}} = AffineMotionSum([swap_group_motion(m) for m in ms.motions]...)
+swap_group_motion(ms::AffineMotionSum{TA}) where {TA<:Union{GroupOperationAction{LeftAction, TAS} where {TAS}}} = AffineMotionSum([swap_group_motion(m) for m in ms.motions]...)

@@ -18,6 +18,14 @@ function Manifolds.apply_diff_group(
     return X * p
 end
 
-Manifolds.apply!(::RotationAction{LeftAction}, q, a, p)  = LinearAlgebra.mul!(q, a, p)
+Manifolds.apply!(::RotationAction{LeftAction}, q, a, p) = LinearAlgebra.mul!(q, a, p)
 
 Manifolds.apply!(A::Manifolds.RotationAction{RightAction}, q, a, p) = Manifolds.apply!(switch_direction(A), q, inv(base_group(A), a), p)
+
+
+function Manifolds.apply_diff(A::Manifolds.ColumnwiseMultiplicationAction{LeftAction}, a, ::Any, X)
+    return apply(A, a, X)
+end
+
+
+Manifolds.apply_diff_group!(::Manifolds.ColumnwiseMultiplicationAction{LeftAction}, Y, ::Identity, X, p) = LinearAlgebra.mul!(Y, X, p)

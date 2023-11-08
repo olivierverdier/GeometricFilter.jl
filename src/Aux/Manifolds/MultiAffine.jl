@@ -170,34 +170,58 @@ function Manifolds.adjoint_action(G::MultiAffine, p, X)
     return adjoint_action!(G, tmp, p, X)
 end
 
-function Manifolds.adjoint_action!(G::MultiAffine, tmp, p, X)
-    mat = affine_matrix(G, p)
-    matinv = affine_matrix(G, inv(G,p))
-    res = mat * screw_matrix(G,X) * matinv
-    map(copyto!, submanifold_components(G, tmp), submanifold_components(G, res))
+Manifolds.adjoint_action!(::MultiAffine, Y, ::Identity, X) = copyto!(Y, X)
+
+Manifolds.adjoint_action!(G::MultiAffine, tmp, p, X) = begin
+    np, hp = submanifold_components(G, p)
+    n, h = submanifold_components(G, tmp)
+    nX, hX = submanifold_components(G, X)
+    H = factor_group(G)
+    adjoint_action!(H, h, hp, hX)
+    A = G.op.action
+    apply!(A, n, hp, nX)
+    LinearAlgebra.axpy!(-1, apply_diff_group(A, Identity(H), h, np), n)
     return tmp
 end
 
 
-function Manifolds.apply_diff(A::Manifolds.ColumnwiseMultiplicationAction{LeftAction}, a, ::Any, X)
-    return apply(A, a, X)
-end
+inverse_adjoint_action!(G::MultiAffine, Y, p, X) = adjoint_action!(G, Y, inv(G,p), X)
+
+# Manifolds.translate_diff!(G::MultiAffine, Y, p, ::Any, X, dir::Tuple{RightAction, RightSide}) = inverse_adjoint_action!(G, Y, p, X)
+Manifolds.translate_diff!(G::MultiAffine,
+    Y, ::Any, ::Any, X,
+    ::Manifolds.LeftForwardAction,
+) = copyto!(G, Y, X)
+Manifolds.translate_diff!(G::MultiAffine,
+    Y, ::Any, ::Any, X,
+    ::Manifolds.RightForwardAction,
+) = copyto!(G, Y, X)
+Manifolds.translate_diff!(
+    G::MultiAffine,
+    Y, p, ::Any, X,
+    ::Manifolds.LeftBackwardAction,
+) = adjoint_action!(G, Y, p, X)
+Manifolds.translate_diff!(
+    G::MultiAffine,
+    Y, p, ::Any, X,
+    ::Manifolds.RightBackwardAction,
+) = inverse_adjoint_action!(G, Y, p, X)
+
+# simply because it is defined for semi-direct products as well
+Manifolds.translate_diff!(G::MultiAffine,
+    Y, ::Identity, ::Any, X,
+    # ::Manifolds.LeftForwardAction,
+    ::Manifolds.LeftForwardAction,
+) = copyto!(G, Y, X)
+Manifolds.translate_diff!(G::MultiAffine,
+    Y, ::Any, ::Identity, X,
+    # ::Manifolds.LeftForwardAction,
+    ::Manifolds.LeftForwardAction,
+) = copyto!(G, Y, X)
 
 
-
-
-function Manifolds.translate_diff!(G::MultiAffine, Y, p, q, X, dir::Tuple{RightAction, RightSide})
-    np, hp = submanifold_components(G, p)
-    nq, hq = submanifold_components(G, q)
-    nX, hX = submanifold_components(G, X)
-    nY, hY = submanifold_components(G, Y)
-    H = submanifold(G, 2)
-    hY .= translate_diff!(H, hY, hp, hq, hX, dir)
-    copyto!(nY, hq * (hX * np) + nX)
-    @inbounds Manifolds._padvector!(G, Y)
-    return Y
-end
-
+Manifolds.inv_diff(::MultiAffine, ::Identity, ξ) = -ξ
+Manifolds.inv_diff!(G::MultiAffine, Y, p, X) = -adjoint_action!(G, Y, p, X)
 
 
 function Manifolds.lie_bracket(G::MultiAffine, v1, v2, )
@@ -210,7 +234,7 @@ function Manifolds.lie_bracket!(G::MultiAffine, res, v1, v2, )
     n1, h1 = submanifold_components(v1)
     n2, h2 = submanifold_components(v2)
     rn = apply(A, h1, n2) - apply(A, h2, n1)
-    rh = lie_bracket(G.manifold.manifolds[2], h1, h2)
+    rh = lie_bracket(factor_group(G), h1, h2)
     map(copyto!, submanifold_components(G, res), [rn,rh])
     return res
 end
@@ -225,6 +249,9 @@ function _fill_in!(G::MultiAffine, x, ts)
 end
 
 _fill_in!(G::MultiAffine, x, ts...) = _fill_in!(G, x, hcat(ts...))
+
+factor_group(G::MultiAffine) = submanifold(G, 2)
+normal_group(G::MultiAffine) = submanifold(G, 1)
 
 from_normal_grp(G::MultiAffine, ts...) = begin
     x = identity_element(G)
