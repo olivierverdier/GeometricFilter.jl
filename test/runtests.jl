@@ -1,3 +1,4 @@
+using Test
 
 test_files = [
     "aux/Manifolds/test_multiaffine.jl",
