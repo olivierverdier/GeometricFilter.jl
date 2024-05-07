@@ -99,7 +99,7 @@ end
 
 @testset "eltype rand_lie" begin
     G = MultiAffine(Unitary(4), 3)
-    @test eltype(rand_lie(rng, G)) <: Complex broken=true
+    @test eltype(rand_lie(rng, G)) <: Complex #broken=true
 end
 
 _adjoint_action(G::MultiAffine, p, X) = begin
