@@ -75,7 +75,7 @@ display_obs_type(::IdentityObserver) = "IdentityObserver"
     x1 = noise(rng, x0)
     D1 = update_mean(D0, x1)
 
-    D_ = run_filter(D1, 2^5, Observation(observer, onoise, m))
+    D_ = run_filter(D1, 2^6, Observation(observer, onoise, m))
 
     # gdist = [distance(group_manifold(A), D0.μ, D.μ) for D in Ds]
     # dists = [distance(group_manifold(A), D0.μ, D.μ) for D in [first(Ds), last(Ds)]]
@@ -86,6 +86,3 @@ display_obs_type(::IdentityObserver) = "IdentityObserver"
 end
 
 # why is the error not exponential as in the localisation test?!?
-
-
-"⚡"

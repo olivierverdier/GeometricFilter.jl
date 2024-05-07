@@ -3,6 +3,9 @@ using GeometricFilter
 using Manifolds
 
 import LinearAlgebra
+import Random
+
+rng = Random.default_rng()
 
 @testset "Motion" for G in [SpecialOrthogonal(4),
                             # SpecialEuclidean(4),
