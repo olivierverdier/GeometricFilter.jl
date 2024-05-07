@@ -20,7 +20,6 @@ Manifolds.apply!(A::Manifolds.RotationAction{RightAction}, q, a, p) = Manifolds.
 
 
 Manifolds.apply_diff(A::Manifolds.ColumnwiseMultiplicationAction{LeftAction}, a, ::Any, X) = apply(A, a, X)
-end
 
 
 Manifolds.apply_diff_group!(::Manifolds.ColumnwiseMultiplicationAction{LeftAction}, Y, ::Identity, X, p) = LinearAlgebra.mul!(Y, X, p)
