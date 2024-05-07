@@ -69,7 +69,27 @@ export DualGroupOperationAction
 
 export inverse_adjoint_action
 
-using Manifolds
+import Manifolds
+import Manifolds: LeftAction, RightAction,
+    ℝ, AbstractManifold, AbstractDecoratorManifold,
+    TranslationGroup, SemidirectProductGroup, SpecialOrthogonal, Identity,
+    affine_matrix, screw_matrix,
+    RotationAction, AbstractGroupAction, ActionDirection, GroupOperationAction, LeftSide, RightSide,
+    AbstractBasis, CachedBasis, DefaultOrthogonalBasis, DefaultOrthonormalBasis
+import Manifolds: ProductManifold, GroupManifold, submanifold_components,
+    allocate_result, allocate,
+    adjoint_action, adjoint_action!, apply!, apply_diff_group, apply, translate_diff, TranslationAction, switch_direction,
+    submanifold,
+    TangentSpace,
+    lie_bracket, lie_bracket!,
+    manifold_dimension,
+    get_vector_lie, get_coordinates, get_vector,
+    zero_vector, identity_element,
+    Euclidean,
+    base_group, group_manifold,
+    is_point,
+    exp_lie,
+    submanifold_component, ArrayPartition
 import ManifoldsBase
 
 using GeometricFilter
