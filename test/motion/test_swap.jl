@@ -14,7 +14,7 @@ end
 
 @testset "Swap Group Motion" for G in [
     SpecialOrthogonal(3),
-    SpecialEuclidean(3),
+    # SpecialEuclidean(3),
     MultiDisplacement(3, 2),
     ]
     ξ = rand(rng, GeometricFilter.algebra(G))

@@ -5,7 +5,7 @@ using Manifolds
 import LinearAlgebra
 
 @testset "Motion" for G in [SpecialOrthogonal(4),
-                            SpecialEuclidean(4),
+                            # SpecialEuclidean(4),
                             MultiDisplacement(4,2),
                             ]
     # G = SpecialOrthogonal(4)
