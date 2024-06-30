@@ -141,7 +141,7 @@ function integrate(
     # @assert is_point(manifold, x0)
 
     sol = integrate_lift(motion, x0, dt)
-    χ = sol(1.0)
+    χ = last(sol)
     x = apply(action, χ, x0)
     return x
 end
@@ -189,7 +189,7 @@ function compute_morphism(motion, x, B; dt=0.1)
     action = get_action(motion)
 
     sol = integrate_lift(motion, x, dt)
-    χ = sol(1)
+    χ = last(sol)
 
 
     G = base_group(action)
