@@ -153,7 +153,7 @@ end
 function get_lin_mat(m::AbstractMotion, x, B::AbstractBasis)
     G = base_group(get_action(m))
     op = get_lin_at(m, x)
-    return matrix_from_lin_endomorphism(G, op, B)
+    return GroupTools.matrix_from_lin_endomorphism(G, op, B)
 end
 
 
@@ -172,7 +172,7 @@ function compose_adjoint(
     B::AbstractBasis
     ) 
     op(ξ) = adjoint_action(G, elt, ξ)
-    return compose_lie_matrix_op(G, op, morph_mat, B)
+    return GroupTools.compose_lie_matrix_op(G, op, morph_mat, B)
 end
 
 @doc raw"""

@@ -95,7 +95,7 @@ end
     x = [1., 0, 0]
     BG = DefaultOrthogonalBasis()
     BM = DefaultOrthonormalBasis()
-    P = GeometricFilter.get_proj_matrix(A, x, BG, BM)
+    P = GroupTools.get_proj_matrix(A, x, BG, BM)
     @test P[:,1] ≈ [0,0]
     # noise = ActionNoise(A, x->Matrix{Float64}(LinearAlgebra.I, 3, 3), BG)
     σ = 4.0

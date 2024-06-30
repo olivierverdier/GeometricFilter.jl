@@ -7,4 +7,3 @@ function assert_equal_actions(obj1, obj2, msg)
     end
 end
 
-algebra(G) = TangentSpace(G, identity_element(G))

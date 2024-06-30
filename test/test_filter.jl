@@ -25,8 +25,8 @@ rng = Random.default_rng()
     A =DualGroupOperationAction(G)
     pdiag = spzeros(manifold_dimension(G))
     idx = first(axes(pdiag))
-    pdiag[GeometricFilter.normal_indices(G, idx; pos=1)] .= 1.
-    pdiag[GeometricFilter.factor_indices(G, idx)] .= 2.
+    pdiag[MultiAffine.normal_indices(G, idx; pos=1)] .= 1.
+    pdiag[MultiAffine.factor_indices(G, idx)] .= 2.
     cov = PDiagMat(pdiag)
     ccov = Covariance(PDiagMat(pdiag))
     dist = ProjLogNormal(DualGroupOperationAction(G), identity_element(G), cov)
@@ -173,7 +173,7 @@ end
     tobs = GeometricFilter.get_tan_observer(observer, action, x, measure)
     Mobs = observation_space(observer)
     B = get_basis(G, identity_element(G), DefaultOrthonormalBasis())
-    H = GeometricFilter.get_op_matrix(G, observation_space(observer), measure, tobs, DefaultOrthonormalBasis(), DefaultOrthonormalBasis())
+    H = GroupTools.get_op_matrix(G, observation_space(observer), measure, tobs, DefaultOrthonormalBasis(), DefaultOrthonormalBasis())
     # @show H
     # what should H look like?
     ob_noise = IsotropicNoise(Mobs, x -> .1)

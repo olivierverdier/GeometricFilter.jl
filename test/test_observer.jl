@@ -34,7 +34,7 @@ end
     @test obs(x) ≈ ref
     A = GroupOperationAction(G)
     H = GeometricFilter.get_tan_observer(obs, A, x)
-    ξ = rand(rng, GeometricFilter.algebra(G))
+    ξ = rand(rng, GroupTools.algebra(G))
     expected = apply_diff_group(get_action(obs), Identity(G), ξ, ref)
     computed = H(ξ)
     @test computed ≈ expected
@@ -123,7 +123,7 @@ end
     G = MultiDisplacement(dim,1)
     V = submanifold(G, 1)
     χ = rand(rng, G)
-    ξ = rand(rng, GeometricFilter.algebra(G))
+    ξ = rand(rng, GroupTools.algebra(G))
     A = MultiAffineAction(G)
     x = rand(rng, dim)
 
@@ -160,7 +160,7 @@ end
     # obs_ = ActionObserver(switch_direction(A), [1., 0.])
     # @show obs_(x)
     # op = GeometricFilter.get_tan_observer(obs, GA, x)
-    # ξ = rand(rng, GeometricFilter.algebra(G))
+    # ξ = rand(rng, GroupTools.algebra(G))
     # @show op(ξ)
     # H = GeometricFilter.get_op_matrix(G, GeometricFilter.get_manifold(obs), obs(x), op, DefaultOrthonormalBasis(), DefaultOrthonormalBasis())
     # @show H

@@ -1,15 +1,5 @@
 module GeometricFilter
 
-# MultiAffine
-export MultiAffine,
-    MultiDisplacement,
-    from_normal_grp, from_normal_alg,
-    to_factor_grp, to_factor_alg
-
-export MultiAffineAction
-
-# export get_id_matrix_lie
-
 
 # Motion
 export AbstractMotion, AbstractAffineMotion,
@@ -67,30 +57,27 @@ export AbstractProjLogNormal, ProjLogNormal,
 
 export DualGroupOperationAction
 
-export inverse_adjoint_action
 
-import Manifolds
-import Manifolds: LeftAction, RightAction,
-    ℝ, AbstractManifold, AbstractDecoratorManifold,
-    TranslationGroup, SemidirectProductGroup, SpecialOrthogonal, Identity,
-    affine_matrix, screw_matrix,
-    RotationAction, AbstractGroupAction, ActionDirection, GroupOperationAction, LeftSide, RightSide,
-    AbstractBasis, CachedBasis, DefaultOrthogonalBasis, DefaultOrthonormalBasis
-import Manifolds: ProductManifold, GroupManifold, submanifold_components,
-    allocate_result, allocate,
-    adjoint_action, adjoint_action!, apply!, apply_diff_group, apply, translate_diff, TranslationAction, switch_direction,
-    submanifold,
-    TangentSpace,
-    lie_bracket, lie_bracket!,
-    manifold_dimension,
-    get_vector_lie, get_coordinates, get_vector,
-    zero_vector, identity_element,
-    Euclidean,
-    base_group, group_manifold,
-    is_point,
-    exp_lie,
-    submanifold_component, ArrayPartition
 import ManifoldsBase
+import Manifolds
+import ManifoldsBase:  # general manifolds
+    AbstractManifold, manifold_dimension,
+    AbstractBasis, CachedBasis, DefaultOrthonormalBasis, zero_vector, get_coordinates, get_vector,
+    allocate_result,
+    TangentSpace, is_point,
+    submanifold_component, submanifold_components, submanifold
+import Manifolds:
+    ArrayPartition, ProductManifold
+import Manifolds: # Groups
+    Identity, identity_element, TranslationGroup, Euclidean, lie_bracket, exp_lie, translate_diff, get_vector_lie
+import Manifolds: # Actions
+    AbstractGroupAction, apply, apply!, adjoint_action, TranslationAction, LeftAction, RightAction, switch_direction, ActionDirection, GroupOperationAction, LeftSide, RightSide, base_group, group_manifold, apply_diff_group
+
+# weak dependency: only used in AdjointLinearMotion and PositionObserver
+import MultiAffine:
+    MultiAffineGroup, MultiAffineAction,
+    from_normal_alg, to_factor_grp
+import GroupTools
 
 using GeometricFilter
 
@@ -104,18 +91,13 @@ import ManifoldDiffEq
 import OrdinaryDiffEq
 
 
-include("Aux/Manifolds/MultiAffine.jl")
-include("Aux/Manifolds/MultiDisplacement.jl")
-include("Aux/Manifolds/rotation_action.jl")
-
 DualGroupOperationAction(G) = GroupOperationAction(G, Manifolds.LeftBackwardAction())
 _get_group_operation_action(G, ::LeftAction) = GroupOperationAction(G, (LeftAction(), LeftSide()))
 _get_group_operation_action(G, ::RightAction) = DualGroupOperationAction(G)
-# include("Aux/Manifolds/DualGroupOperationAction.jl")
+
 
 include("Utils.jl")
 
-include("GroupTools.jl")
 
 include("Motion.jl")
 
@@ -132,7 +114,6 @@ include("Filter/Prediction.jl")
 include("Filter/Update.jl")
 include("Filter/Simulation.jl")
 
-include("Aux/Manifolds/MultiAffineAction.jl")
 
 include("Observer.jl")
 
