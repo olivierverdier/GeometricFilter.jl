@@ -4,7 +4,10 @@ abstract type AbstractObservation end
 @doc raw"""
     Observation(observer::Observer, noise::Noise, measurement)
 
-Encapsulation of a full observation data, namely
+Encapsulation of a full observation data.
+This includes the actual measurement, but also *how* it was measured
+(the observer) and with how much noise.
+The `Observation` object is thus built from
 - an observer (`AbstractObserver`)
 - an observation noise (`AbstractNoise`)
 - a measurement, i.e., a *point* lying on the observer's space

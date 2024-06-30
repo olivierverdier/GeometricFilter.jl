@@ -12,9 +12,10 @@ function test_constant_dict(d::Dict, comp)
     end
 end
 
-@testset "Swap Group Motion" for G in [
+@testset "Swap Group Motion $G" for G in [
     SpecialOrthogonal(3),
     # SpecialEuclidean(3),
+    MultiDisplacement(3, 1),
     MultiDisplacement(3, 2),
     ]
     ξ = rand(rng, GroupTools.algebra(G))

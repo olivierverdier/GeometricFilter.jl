@@ -173,7 +173,6 @@ _repr(::RightAction) = "←"
 @testset "Linear $(_repr(conv)) $depth" for conv in [LeftAction(), RightAction()], depth in [0, 4]
     lobs = LinearObserver(zeros(2,3), conv; depth=depth)
     x = rand(rng, observed_space(lobs))
-    @show lobs
     res = lobs(x)
     @test is_point(observation_space(lobs), res)
 end

@@ -96,10 +96,10 @@ function point_correction(
     # just compute the innovation?
     gain,
     B::AbstractBasis,
-    innovation, # point at tangent space of prediction
+    innovation_coords, # coordinates of point at tangent space of prediction
     )
     group = base_group(action)
-    increment_coord = gain*innovation
+    increment_coord = gain*innovation_coords
     increment = get_vector_lie(group, increment_coord, B)
     movement = exp_lie(group, increment)
     x_ = apply(action, movement, x)

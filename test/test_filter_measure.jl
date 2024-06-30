@@ -10,10 +10,15 @@ import PDMats
 import Random
 
 """
-Simple test: assume that the movement is zero, process noise zero.
+Simple test:
+Pick a group, and choose either the natural or dual left action.
+Assume that the movement is zero, process noise zero.
+The observer may be the identity, or an action observation
+(so we observe ``χ ⋅ x_0``).
 We use the same measurement over and over again.
 The point should then converge to the true value.
 """
+
 
 
 rng = Random.default_rng()

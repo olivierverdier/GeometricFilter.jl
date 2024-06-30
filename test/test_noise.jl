@@ -33,13 +33,13 @@ end
     N = ActionNoise(A, PDMats.ScalMat(manifold_dimension(G), σ))
     N = ActionNoise(A, PDMats.ScalMat(manifold_dimension(G), σ), B)
     N_ = ActionNoise(A, σ)
-    N__ = sqrt(σ)*ActionNoise(A)
+    N__ = sqrt(σ) * ActionNoise(A)
     @test N_ == N
     @test N__ == N
     # get_basis_at(N, Identity(G))
     covmat = get_covariance_at(N, Identity(G))
-    sn = .5*N
-    @test get_covariance_at(sn, Identity(G), B) ≈ covmat/4
+    sn = 0.5 * N
+    @test get_covariance_at(sn, Identity(G), B) ≈ covmat / 4
 end
 
 @testset "ActionNoise Basis" begin
