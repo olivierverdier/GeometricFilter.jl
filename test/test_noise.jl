@@ -2,6 +2,7 @@ using Manifolds: LinearAlgebra
 using Test
 using GeometricFilter
 using Manifolds
+import SparseArrays
 
 using PDMats
 import Random
@@ -106,7 +107,7 @@ end
     @test GeometricFilter.rigid_perturbation(rng, noise, x) isa RigidMotion
 
     @testset "Degenerate Covariance $cov" for cov in [
-        Covariance(PDiagMat(sparsevec([1,0,0]))),
+        Covariance(PDiagMat(SparseArrays.sparsevec([1,0,0]))),
          PDiagMat([1,0,0])
         ]
         dnoise = ActionNoise(A, cov)

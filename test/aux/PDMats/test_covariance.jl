@@ -4,7 +4,7 @@ using Test
 using GeometricFilter
 using LinearAlgebra
 using Random
-using SparseArrays
+import SparseArrays
 
 rng = Random.default_rng()
 
@@ -54,7 +54,7 @@ end
         zdiag = rand(rng, N) .+ 1
         zdiag[collect(Iterators.take(axes(zdiag, 1), k))] .= 0
         shuffle!(rng, zdiag)
-        D0 = PDiagMat(sparsevec(zdiag))
+        D0 = PDiagMat(SparseArrays.sparsevec(zdiag))
         C = Covariance(D0)
         @test GeometricFilter.depth(C) == N-k
         @test C ≈ D0
