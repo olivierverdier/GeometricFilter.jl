@@ -112,7 +112,7 @@ function get_covariance_at(
     A = noise.action
     Σ = noise.covariance(x)
     BG = noise.basis
-    P = GroupTools.get_proj_matrix(A, x, BG, B)
+    P = GU.get_proj_matrix(A, x, BG, B)
     return PDMats.AbstractPDMat(PDMats.X_A_Xt(Σ, P))
 end
 
@@ -161,7 +161,7 @@ Obsolete: in this basis, the covariance matrix is the identity.
 function get_adapted_basis_at(noise::ActionNoise, x)
     A = noise.action
     BM = ManifoldsBase.get_basis(group_manifold(A), x, DefaultOrthonormalBasis())
-    L = GroupTools.get_proj_matrix(A, x, noise.basis, BM)
+    L = GU.get_proj_matrix(A, x, noise.basis, BM)
     res = LinearAlgebra.svd(L)
     vec_mat = res.U .* res.S'
     return CachedBasis(DefaultOrthonormalBasis(), collect(eachcol(vec_mat)))

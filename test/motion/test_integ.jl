@@ -13,7 +13,7 @@ rng = Random.default_rng()
                             MultiDisplacement(4,2),
                             ]
     action = GroupOperationAction(G)
-    vel = rand(rng, GroupTools.algebra(G))
+    vel = rand_lie(rng, G)
     # submanifold_component(vel, 1) .= 0
     # rm = make_rigid_motion(action, vel)
     rm = RigidMotion(action, vel)

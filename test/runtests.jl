@@ -1,5 +1,7 @@
 using Test
 using MultiAffine
+import ManifoldGroupUtils as GU
+import ManifoldGroupUtils: rand_lie
 
 test_files = [
     # "test_filter_measure.jl",

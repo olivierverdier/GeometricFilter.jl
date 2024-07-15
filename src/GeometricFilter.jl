@@ -77,7 +77,7 @@ import Manifolds: # Actions
 import MultiAffine:
     MultiAffineGroup, MultiAffineAction,
     from_normal_alg, to_factor_grp
-import GroupTools
+import ManifoldGroupUtils as GU
 
 using GeometricFilter
 

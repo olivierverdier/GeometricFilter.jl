@@ -3,7 +3,6 @@ using GeometricFilter
 
 using Manifolds
 
-import GroupTools
 import MultiAffine: MultiDisplacement, MultiAffineAction
 import LinearAlgebra
 
@@ -23,7 +22,7 @@ rng = Random.default_rng()
     m = ZeroMotion(A)
     x = [1., 0, 0]
     @test m(x) ≈ zero_vector(G, identity_element(G))
-    ξ = rand(rng, GroupTools.algebra(G))
+    ξ = rand_lie(rng, G)
     @test isapprox(G, m'(x)(ξ), zero_vector(G, identity_element(G)))
     @test RigidMotion(A) isa ZeroMotion
 end
@@ -32,7 +31,7 @@ end
     G = MultiDisplacement(4,2)
     M = randn(rng, 2, 2)
     action = GroupOperationAction(G)
-    vel = rand(rng, GroupTools.algebra(G))
+    vel = rand_lie(rng, G)
     motions = [RigidMotion(action, vel),
                TranslationMotion(G,vel,RightAction()),
                AdjointLinearMotion(G, rand(rng, 2,2), LeftAction()),
@@ -58,7 +57,7 @@ end
 @testset "Motion Sum" begin
     G = MultiDisplacement(4,2)
     m1 = AdjointLinearMotion(G, ones(2,2), LeftAction())
-    ξ = rand(rng, GroupTools.algebra(G))
+    ξ = rand_lie(rng, (G))
 
     motions = (
     rm = RigidMotion(GroupOperationAction(G), ξ),

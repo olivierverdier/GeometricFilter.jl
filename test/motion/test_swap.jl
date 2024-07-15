@@ -18,7 +18,7 @@ end
     MultiDisplacement(3, 1),
     MultiDisplacement(3, 2),
     ]
-    ξ = rand(rng, GroupTools.algebra(G))
+    ξ = rand_lie(rng, G)
 
     # x0 = identity_element(G)
     x0 = rand(rng, G)
@@ -77,7 +77,7 @@ end
 
 @testset "Swap AdjointLinear sum" begin
     G = MultiDisplacement(3,2)
-    ξ = rand(rng, GroupTools.algebra(G))
+    ξ = rand_lie(rng, G)
     m1 = AdjointLinearMotion(G, [1.0 0;0 0], LeftAction())
     rm = RigidMotion(GroupOperationAction(G), ξ)
     @test swap_group_motion(m1+rm) isa GeometricFilter.AffineMotionSum

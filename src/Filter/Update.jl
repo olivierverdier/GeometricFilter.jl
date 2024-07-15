@@ -60,7 +60,7 @@ function get_obs_matrix(prior, observer, pred, obs_basis)
     obs_op = get_tan_observer(observer, action, x, pred)
 
     basis = get_lie_basis(prior)
-    H = GroupTools.get_op_matrix(G, observation_space(observer), pred, obs_op, basis, obs_basis)
+    H = GU.get_op_matrix(G, observation_space(observer), pred, obs_op, basis, obs_basis)
     return H
 end
 
