@@ -50,7 +50,6 @@ export AbstractNoise,
     get_covariance_at,
     update_cov
 
-export Covariance, covariance_from
 export AbstractProjLogNormal, ProjLogNormal,
     action_noise, scaled_distance,
     update_mean_cov, update_mean
@@ -84,6 +83,7 @@ using GeometricFilter
 import Random
 import Distributions
 import PDMats
+import PDMatsSingular: sample
 
 import LinearAlgebra
 
@@ -101,7 +101,6 @@ include("Utils.jl")
 
 include("Motion.jl")
 
-include("Aux/PDMats/Covariance.jl")
 include("ProjLogNormal.jl")
 include("ConstantFunction.jl")
 include("Noise.jl")

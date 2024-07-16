@@ -8,12 +8,13 @@ Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 ManifoldDiff = "af67fdf4-a580-4b9f-bbec-742ef357defd"
 ManifoldDiffEq = "1143c485-9b25-4e23-a65f-701df382ec90"
+ManifoldGroupUtils = "1a3c8808-2843-4c72-af8e-d50ed15039bf"
 Manifolds = "1cead3c2-87b3-11e9-0ccd-23c62b72b94e"
 ManifoldsBase = "3362f125-f0bb-47a3-aa74-596ffd7ef2fb"
-ManifoldGroupUtils = "1a3c8808-2843-4c72-af8e-d50ed15039bf"
 MultiAffine = "251e6cbc-5fb1-4602-bd1f-2bec286d6307"
 OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
 PDMats = "90014a1f-27ba-587c-ab20-58faa44d9150"
+PDMatsSingular = "8b9ac4da-30d1-49d3-a564-69a6ecc8b6d7"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
@@ -27,4 +28,4 @@ Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "NearestNeighbors", "Plots", "ManifoldGroupUtils", "MultiAffine"]
+test = ["Test", "NearestNeighbors", "Plots", "MultiAffine"]

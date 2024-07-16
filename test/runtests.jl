@@ -2,6 +2,7 @@ using Test
 using MultiAffine
 import ManifoldGroupUtils as GU
 import ManifoldGroupUtils: rand_lie
+import PDMatsSingular
 
 test_files = [
     # "test_filter_measure.jl",
@@ -12,7 +13,6 @@ test_files = [
     "test_observer.jl",
     "test_projlognormal.jl",
     "test_stochastic_motion.jl",
-    "aux/PDMats/test_covariance.jl",
 
     # "test_examples.jl",
     # "test_ex_inertial.jl",

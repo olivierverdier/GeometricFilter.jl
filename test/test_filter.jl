@@ -28,7 +28,7 @@ rng = Random.default_rng()
     pdiag[MultiAffine.normal_indices(G, idx; pos=1)] .= 1.
     pdiag[MultiAffine.factor_indices(G, idx)] .= 2.
     cov = PDiagMat(pdiag)
-    ccov = Covariance(PDiagMat(pdiag))
+    ccov = PDMatsSingular.Covariance(PDiagMat(pdiag))
     dist = ProjLogNormal(DualGroupOperationAction(G), identity_element(G), cov)
     pnoise = action_noise(dist)
     cdist = ProjLogNormal(DualGroupOperationAction(G), identity_element(G), ccov)
