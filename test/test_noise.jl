@@ -8,14 +8,6 @@ using PDMats
 import Random
 rng = Random.default_rng()
 
-function Manifolds.apply_diff_group(
-    ::RotationAction{LeftAction},
-    ::Identity,
-    X,
-    p,
-    ) 
-    return X * p
-end
 
 @testset "Constant Function" begin
     value = 2.0
@@ -96,9 +88,6 @@ end
     x = [1., 0, 0]
     BG = DefaultOrthogonalBasis()
     BM = DefaultOrthonormalBasis()
-    P = GU.get_proj_matrix(A, x, BG, BM)
-    @test P[:,1] ≈ [0,0]
-    # TODO: move this test to ManifoldGroupUtils
     # noise = ActionNoise(A, x->Matrix{Float64}(LinearAlgebra.I, 3, 3), BG)
     σ = 4.0
     noise = ActionNoise(A, PDMats.ScalMat(manifold_dimension(G), σ), BG)
