@@ -4,6 +4,7 @@ authors = ["Olivier Verdier"]
 version = "0.1.0"
 
 [deps]
+ConstantFunctions = "cf45d141-e7cd-45e6-bffc-f815329abbc7"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 ManifoldDiff = "af67fdf4-a580-4b9f-bbec-742ef357defd"

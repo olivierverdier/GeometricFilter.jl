@@ -9,12 +9,6 @@ import Random
 rng = Random.default_rng()
 
 
-@testset "Constant Function" begin
-    value = 2.0
-    f = GeometricFilter.ConstantFunction(value)
-    @test f(0) == value
-    @test (2*f)(0) == 2*value
-end
 
 
 @testset "Test Noise" begin

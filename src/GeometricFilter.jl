@@ -38,7 +38,6 @@ export AbstractObserver,
 
 export Observation, EmptyObservation
 
-export ConstantFunction
 
 # Noise
 export AbstractNoise,
@@ -72,7 +71,7 @@ import Manifolds: # Actions
 
 import ManifoldGroupUtils as GU
 
-using GeometricFilter
+using ConstantFunctions
 
 import Random
 import Distributions
@@ -92,11 +91,9 @@ _get_group_operation_action(G, ::RightAction) = DualGroupOperationAction(G)
 
 include("Utils.jl")
 
-
 include("Motion.jl")
 
 include("ProjLogNormal.jl")
-include("ConstantFunction.jl")
 include("Noise.jl")
 
 include("Observation.jl")
