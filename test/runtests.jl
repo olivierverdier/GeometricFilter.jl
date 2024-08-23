@@ -5,7 +5,7 @@ import ManifoldGroupUtils: rand_lie
 import PDMatsSingular
 
 test_files = [
-    # "test_filter_measure.jl",
+    "test_filter_measure.jl",
     "test_motion.jl",
     "test_noise.jl",
     "test_filter.jl",

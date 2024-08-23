@@ -1,6 +1,6 @@
 using Test
 using GeometricFilter
-import Manifolds: SpecialOrthogonal, GroupOperationAction, LeftAction, RightAction, Euclidean, RotationAction, base_group, group_manifold
+import Manifolds: SpecialOrthogonal, GroupOperationAction, LeftAction, RightAction, Euclidean, RotationAction, base_group, group_manifold, distance
 
 import LinearAlgebra
 using Distributions
