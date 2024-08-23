@@ -201,7 +201,6 @@ end
 
 include("Motion/Simple/Rigid.jl")
 include("Motion/Simple/Translation.jl")
-include("Motion/Simple/AdjointLinear.jl")
 include("Motion/Simple/FlatAffine.jl")
 include("Motion/Sum.jl")
 include("Motion/AffineMotion.jl")

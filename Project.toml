@@ -22,10 +22,9 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 julia = "1"
 
 [extras]
-MultiAffine = "251e6cbc-5fb1-4602-bd1f-2bec286d6307"
 NearestNeighbors = "b8a86587-4115-5ab1-83bc-aa920d37bbce"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "NearestNeighbors", "Plots", "MultiAffine"]
+test = ["Test", "NearestNeighbors", "Plots"]

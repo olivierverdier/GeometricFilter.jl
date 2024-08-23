@@ -4,7 +4,6 @@ module GeometricFilter
 # Motion
 export AbstractMotion, AbstractAffineMotion,
     RigidMotion, TranslationMotion,
-    AdjointLinearMotion,
     FlatAffineMotion,
     ZeroMotion,
     get_flat_action,
@@ -33,7 +32,6 @@ export predict,
 export AbstractObserver,
     ProductObserver,
     ActionObserver,
-    PositionObserver,
     LinearObserver,
     IdentityObserver,
     observation_space, observed_space
@@ -72,10 +70,6 @@ import Manifolds: # Groups
 import Manifolds: # Actions
     AbstractGroupAction, apply, apply!, adjoint_action, TranslationAction, LeftAction, RightAction, switch_direction, ActionDirection, GroupOperationAction, LeftSide, RightSide, base_group, group_manifold, apply_diff_group
 
-# weak dependency: only used in AdjointLinearMotion and PositionObserver
-import MultiAffine:
-    MultiAffineGroup, MultiAffineAction,
-    from_normal_alg, to_factor_grp
 import ManifoldGroupUtils as GU
 
 using GeometricFilter
@@ -116,7 +110,7 @@ include("Filter/Simulation.jl")
 
 include("Observer.jl")
 
-
+include("../ext/FilterMultiAffineExt/FilterMultiAffineExt.jl")
 
 
 
