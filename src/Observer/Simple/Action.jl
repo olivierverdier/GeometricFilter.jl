@@ -44,18 +44,9 @@ end
 # switch_sign(::LeftAction) = 1.
 # switch_sign(::RightAction) = -1.
 
-"""
-Compute ``η = v χ⁻¹``, or ``χ⁻¹ v`` depending on whether the observation action direction is `Left` or `Right` respectively.
-The previous version of `Manifolds.jl` (< v0.9.0) allowed to write:
-```julia
-η_ = inverse_translate_diff(G, χ, χ, v, switch_direction(AD()))
-```
-For the new version (≥ v0.9.0), we use that
-``v χ⁻¹`` is obtained by `translate_diff(G, inv(G,χ), χ, v, RightBackwardAction())`
-and ``χ⁻¹ v`` is obtained by `translate_diff(G, inv(G,χ), χ, v, LeftForwardAction())`.
-"""
-_translate_to_identity(G, χ, v, ::LeftAction) = translate_diff(G, inv(G,χ), χ, v, Manifolds.RightBackwardAction())
-_translate_to_identity(G, χ, v, ::RightAction) = translate_diff(G, inv(G, χ), χ, v, Manifolds.LeftForwardAction())
+_get_side_from_action_dir(::LeftAction) = RightSide()
+_get_side_from_action_dir(::RightAction) = LeftSide()
+
 
 """
 Translate infinitesimal action into the
@@ -76,8 +67,7 @@ function translate_action(
     v = apply_diff_group(action, Identity(H), ξ, χ)
 
     # compute η = v χ⁻¹, or χ⁻¹ v depending on observation action direction
-    # η_ = inverse_translate_diff(G, χ, χ, v, switch_direction(AD()))
-    η_ =_translate_to_identity(G, χ, v, AD())
+    η_ = GU.translate_to_id(G, χ, v, _get_side_from_action_dir(AD()))
 
     # η = switch_sign(AD()) * η_
     η = η_
