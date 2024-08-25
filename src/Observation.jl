@@ -19,7 +19,7 @@ struct Observation{TO,TN,TM} <: AbstractObservation
     function Observation(observer, noise, measurement)
         M = observation_space(observer)
         if M != sample_space(noise)
-            throw(ErrorException("Observation and noise manifolds should be the same"))
+            throw(ErrorException("Observation and noise manifolds should be the same, but\n\t$(M)\n\t≠\n\t$(sample_space(noise))"))
         end
         if !is_point(M, measurement)
             throw(ErrorException("Point should be on observation manifold"))
