@@ -32,7 +32,7 @@ function _update(
 
     H = get_obs_matrix(prior, observer, pred, obs_basis)
     Σ_, gain = prepare_correction(prior, H, noise, pred)
-    N = observation_space(observer)
+    N = plain_manifold(observation_space(observer))
     B = get_lie_basis(prior)
     action = get_action(prior)
 
@@ -60,7 +60,7 @@ function get_obs_matrix(prior, observer, pred, obs_basis)
     obs_op = get_tan_observer(observer, action, x, pred)
 
     basis = get_lie_basis(prior)
-    H = GU.get_op_matrix(G, observation_space(observer), pred, obs_op, basis, obs_basis)
+    H = GU.get_op_matrix(G, plain_manifold(observation_space(observer)), pred, obs_op, basis, obs_basis)
     return H
 end
 

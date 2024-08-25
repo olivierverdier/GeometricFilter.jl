@@ -173,7 +173,7 @@ end
     tobs = GeometricFilter.get_tan_observer(observer, action, x, measure)
     Mobs = observation_space(observer)
     B = get_basis(G, identity_element(G), DefaultOrthonormalBasis())
-    H = GU.get_op_matrix(G, observation_space(observer), measure, tobs, DefaultOrthonormalBasis(), DefaultOrthonormalBasis())
+    H = GU.get_op_matrix(G, GeometricFilter.plain_manifold(observation_space(observer)), measure, tobs, DefaultOrthonormalBasis(), DefaultOrthonormalBasis())
     # @show H
     # what should H look like?
     ob_noise = IsotropicNoise(Mobs, x -> .1)

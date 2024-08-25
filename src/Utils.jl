@@ -1,3 +1,5 @@
+plain_manifold(M::ProductManifold) = ProductManifold(plain_manifold.(M.manifolds)...)
+plain_manifold(M) = base_manifold(M)
 
 function assert_equal_actions(obj1, obj2, msg)
     a1 = get_action(obj1)

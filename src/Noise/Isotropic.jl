@@ -47,8 +47,8 @@ function add_noise(
     rng::Random.AbstractRNG,
     point
     )
-    M = sample_space(noise)
-    rv = isotropic_perturbation(rng, sample_space(noise), point)
+    M = plain_manifold(sample_space(noise))
+    rv = isotropic_perturbation(rng, M, point)
     σ = noise.deviation(point)
     return exp(M, point, σ*rv)
 end
