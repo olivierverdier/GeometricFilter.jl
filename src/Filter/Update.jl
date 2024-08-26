@@ -32,13 +32,13 @@ function _update(
 
     H = get_obs_matrix(prior, observer, pred, obs_basis)
     Σ_, gain = prepare_correction(prior, H, noise, pred)
-    N = plain_manifold(observation_space(observer))
+    N = observation_space(observer)
     B = get_lie_basis(prior)
     action = get_action(prior)
 
     innovation = log(N, pred, measurement)
     obs_basis = get_basis_at(noise, pred)
-    innovec = get_coordinates(N, pred, innovation, obs_basis)
+    innovec = get_coordinates(plain_manifold(N), pred, innovation, obs_basis)
     x_ = point_correction(x, action, gain, B, innovec)
     return update_mean_cov(prior, x_, Σ_)
 end
