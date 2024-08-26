@@ -43,24 +43,37 @@ run_filter(D0, N, observation) =
         return update(D, observation)
     end
 
-display_obs_type(::ProductObserver) = "ProductObserver"
-display_obs_type(::IdentityObserver) = "IdentityObserver"
-
-# @testset "Observer action: $OA; Action $A; Observer: $(display_obs_type(observer))" for OA in [
-@testset "oa$ioa ia$ia o$io" for (ioa,OA) in enumerate([
-    GroupOperationAction(SpecialOrthogonal(3)),
-    DualGroupOperationAction(SpecialOrthogonal(3)),
-    MultiAffineAction(MultiDisplacement(2), LeftAction()),
-    MultiAffineAction(MultiDisplacement(2), RightAction()),
-    RotationAction(Euclidean(3), SpecialOrthogonal(3), RightAction()),
-    ]), (ia,A) in enumerate([
-        GroupOperationAction(base_group(OA)),
-        DualGroupOperationAction(base_group(OA)),
-    ]), (io,observer) in
-    enumerate([
-        setup_action_observer(rng, OA, 10),
-        IdentityObserver(base_group(A)),
+dual_display(n) = ["", "*"][n]
+@testset "$ioa$(dual_display(dual))  $ia $io" for (ioa,OAL) in ([
+    ("SO", [GroupOperationAction(SpecialOrthogonal(3)),
+            DualGroupOperationAction(SpecialOrthogonal(3))]),
+    ("Mv", [MultiAffineAction(MultiDisplacement(2), LeftAction()),
+            MultiAffineAction(MultiDisplacement(2), RightAction())]),
+    ("Rv", [RotationAction(Euclidean(3), SpecialOrthogonal(3), RightAction())]),
+    ]),
+    (dual, OA) in enumerate(OAL),
+    (ia,A) in ([
+        ("G", GroupOperationAction(base_group(OA))),
+        ("G*", DualGroupOperationAction(base_group(OA))),
+    ]), io in
+    ([
+        :ao10,
+        :Id
     ])
+
+    # with the Identity observer, the observation action is not used,
+    # so run one test instead of another, identical one:
+    if io == "Id" && dual == 2
+        continue
+    end
+
+    Random.seed!(rng, 10)
+
+    if io == :ao10
+        observer = setup_action_observer(rng, OA, 10)
+    elseif io == :Id
+        observer = IdentityObserver(base_group(A))
+    end
 
     M = group_manifold(A)
 
@@ -87,7 +100,7 @@ display_obs_type(::IdentityObserver) = "IdentityObserver"
     dists = [distance(group_manifold(A), mean(D0), mean(D)) for D in [D1, D_]]
 
     improvement_dB = -10*log10(last(dists) / first(dists))
-    @test improvement_dB >= 10
+    @test improvement_dB >= 18
 end
 
 # why is the error not exponential as in the localisation test?!?
