@@ -1,6 +1,5 @@
 using Test
 using Manifolds
-using GeometricFilter
 
 """
 Helper function used for testing flat affine motions.
@@ -14,7 +13,7 @@ function flat_affine_motion(
     V = Euclidean(dim)
     A = TranslationAction(V, G)
     f(u) = lin * u + trans
-    return GeometricFilter.AffineMotion(A, f, x -> lin * x)
+    return AffineMotions.AffineMotion(A, f, x -> lin * x)
 end
 
 @testset "Flat Motion" begin

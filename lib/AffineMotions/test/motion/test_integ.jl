@@ -1,5 +1,4 @@
 using Test
-using GeometricFilter
 using Manifolds
 
 import LinearAlgebra
@@ -30,7 +29,7 @@ rng = Random.default_rng()
         # @show rm'(identity_element(G))
     end
 
-    sol = GeometricFilter.integrate_lift(1.0*rm, identity_element(G), .01)
+    sol = AffineMotions.integrate_lift(1.0*rm, identity_element(G), .01)
     # test that sol(1) ≡ exp(ξ), for a rigid motion ξ
     expected = exp_lie(G, vel)
 
@@ -40,16 +39,16 @@ rng = Random.default_rng()
         @test isapprox(G, computed, expected)
 
         rm_ = RigidMotion(action, -vel)
-        sol_ = GeometricFilter.integrate_lift(rm+rm_, identity_element(G), .01)
+        sol_ = AffineMotions.integrate_lift(rm+rm_, identity_element(G), .01)
         id = last(sol_)
         @test isapprox(G, id, identity_element(G))
 
         tm = TranslationMotion(G, vel, LeftAction())
-        sol = GeometricFilter.integrate_lift(tm, identity_element(G), .1)
+        sol = AffineMotions.integrate_lift(tm, identity_element(G), .1)
         # TODO: missing test here
     end
 
-    # vel_ = rand(rng, GeometricFilter.algebra(G))
+    # vel_ = rand_lie(rng, G)
     # v3 = lie_bracket(G, vel, vel_)
     # @show vel_
     # @show adjoint_action(G, inv(G, χ), v3)
@@ -57,8 +56,8 @@ rng = Random.default_rng()
     @testset "compose adjoint" begin
         B = DefaultOrthogonalBasis()
         # mm = get_adjoint_matrix(G, vel, B)
-        mm = GeometricFilter.get_lin_mat(rm, identity_element(G), B)
-        res_mat = GeometricFilter.compose_adjoint(G, inv(G, expected), exp(mm), B)
+        mm = AffineMotions.get_lin_mat(rm, identity_element(G), B)
+        res_mat = AffineMotions.compose_adjoint(G, inv(G, expected), exp(mm), B)
         # display(res_mat)
         @test isapprox(res_mat, LinearAlgebra.I)
     end

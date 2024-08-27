@@ -3,11 +3,20 @@ uuid = "4fe253f5-c7a7-4e36-a4a1-b5bab8c98bb8"
 authors = ["Olivier Verdier <olivier.verdier@gmail.com> and contributors"]
 version = "1.0.0-DEV"
 
+[deps]
+ManifoldDiffEq = "1143c485-9b25-4e23-a65f-701df382ec90"
+ManifoldGroupUtils = "1a3c8808-2843-4c72-af8e-d50ed15039bf"
+Manifolds = "1cead3c2-87b3-11e9-0ccd-23c62b72b94e"
+MultiAffine = "251e6cbc-5fb1-4602-bd1f-2bec286d6307"
+OrdinaryDiffEq = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
+
 [compat]
 julia = "1.6.7"
 
 [extras]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test"]
+test = ["LinearAlgebra", "Random", "Test"]

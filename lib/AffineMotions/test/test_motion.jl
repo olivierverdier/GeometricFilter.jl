@@ -1,5 +1,7 @@
 using Test
-using GeometricFilter
+using AffineMotions
+
+import ManifoldGroupUtils: rand_lie
 
 using Manifolds
 
@@ -44,10 +46,10 @@ end
         @test m ≈ m
         @test .5*m isa typeof(m)
         @test 2*(.5*m) ≈ m
-        @test 2*m ≈ m+m broken=isa(m, GeometricFilter.AffineMotionSum)
+        @test 2*m ≈ m+m broken=isa(m, AffineMotions.AffineMotionSum)
         # if m is AffineMotionSum{TA, TV}, the sum is AffineMotionSum{TA, TV'} with another TV, hence the following two cases:
-        if m isa GeometricFilter.AffineMotionSum
-            @test m+m isa GeometricFilter.AffineMotionSum
+        if m isa AffineMotions.AffineMotionSum
+            @test m+m isa AffineMotions.AffineMotionSum
         else
             @test m+m isa typeof(m)
         end
@@ -74,7 +76,7 @@ end
 
     @test (rm + tm) + lm ≈ rm + (tm + lm)
 
-    @test (rm + tm) + (rm + tm) isa GeometricFilter.AffineMotionSum
+    @test (rm + tm) + (rm + tm) isa AffineMotions.AffineMotionSum
 end
 
 

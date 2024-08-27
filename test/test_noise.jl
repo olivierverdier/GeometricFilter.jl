@@ -53,7 +53,7 @@ end
     lin = [0 1.0; 0 0]
     trans = zeros(2)
     motion = FlatAffineMotion(lin, trans)
-    A = get_action(motion)
+    A = AffineMotions.get_action(motion)
 
     x0 = [0.0, 20]
     observer = LinearObserver([1.0 0])

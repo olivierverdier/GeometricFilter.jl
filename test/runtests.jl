@@ -3,10 +3,10 @@ using MultiAffine
 import ManifoldGroupUtils as GU
 import ManifoldGroupUtils: rand_lie
 import PDMatsSingular
+using AffineMotions
 
 test_files = [
     "test_filter_measure.jl",
-    "test_motion.jl",
     "test_noise.jl",
     "test_filter.jl",
     "test_generic_filter.jl",

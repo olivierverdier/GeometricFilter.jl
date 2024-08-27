@@ -44,7 +44,7 @@ end
 	  lin = [0 1.;0 0]
     trans = zeros(2)
     motion = GeometricFilter.FlatAffineMotion(lin, trans)
-    A = get_action(motion)
+    A = AffineMotions.get_action(motion)
     x0 = [0.0, 20]
     # pnoise = ActionNoise(A, x->[1. 0;0 3.], DefaultOrthonormalBasis())
     # pnoise = ActionNoise(A, [1. 0;0 3.], DefaultOrthonormalBasis())
@@ -83,7 +83,7 @@ end
     lin = [0.5;;]
     trans = [0.]
     motion = GeometricFilter.FlatAffineMotion(lin, trans)
-    A = get_action(motion)
+    A = AffineMotions.get_action(motion)
     V = group_manifold(A)
     G = base_group(A)
     x0 = zeros(1)
@@ -107,10 +107,10 @@ end
 
 @testset "Test Simulation" begin
     motion = FlatAffineMotion([0. 1.;0 0 ], [0.,0])
-    pnoise = ActionNoise(get_action(motion), 1.)
+    pnoise = ActionNoise(AffineMotions.get_action(motion), 1.)
     observer = LinearObserver([1. 0])
     onoise = IsotropicNoise(observation_space(observer), 1.)
-    D0 = ProjLogNormal(get_action(motion), [0., 0], 1.)
+    D0 = ProjLogNormal(AffineMotions.get_action(motion), [0., 0], 1.)
     T = 10
     signal_ = generate_signal(fill(motion, T), D0.μ)
     @testset "Signal" begin

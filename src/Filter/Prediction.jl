@@ -29,12 +29,12 @@ function _predict(
     process_noise=nothing;
     dt=0.1 # discretisation time step
 ) where {TA}
-    assert_equal_actions(distribution, motion, "Different distribution and motion actions")
+    assert_equal_properties(distribution, get_action, motion, AffineMotions.get_action, "Different distribution and motion actions")
     x = Distributions.mean(distribution)
 
-    χ, morph = compute_morphism(motion, x, get_lie_basis(distribution); dt=dt)
+    χ, morph = AffineMotions.compute_morphism(motion, x, get_lie_basis(distribution); dt=dt)
 
-    x_ = apply(get_action(motion), χ, x)
+    x_ = apply(AffineMotions.get_action(motion), χ, x)
 
     Σ = Distributions.cov(distribution)
     if process_noise === nothing

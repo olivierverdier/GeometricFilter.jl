@@ -49,6 +49,7 @@ velocity drawn from the stochastic motions noise.
 sensor_perturbation(rng::Random.AbstractRNG, sm::AbstractStochasticMotion, x) = StochasticMotion(get_motion(sm) + rigid_perturbation(rng, get_noise(sm), x), get_noise(sm))
 
 
+import AffineMotions: integrate
 """
     integrate(::FilteringMode, s::StochasticMotion, x::TM) ::TM
 

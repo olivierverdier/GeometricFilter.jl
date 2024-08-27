@@ -1,5 +1,5 @@
 
-struct AdjointLinearMotion{TAD<:ActionDirection, TA, TG,TM} <: GeometricFilter.SimpleAffineMotion{TA}
+struct AdjointLinearMotion{TAD<:ActionDirection, TA, TG,TM} <: AffineMotions.SimpleAffineMotion{TA}
     G::TG # MultiAffine{H, dim, size, 𝔽}
     M::TM # Array{𝔽, 2}; size×size array
 end
