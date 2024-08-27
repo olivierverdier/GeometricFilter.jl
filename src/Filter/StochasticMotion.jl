@@ -65,3 +65,18 @@ simulate(::DataMode, s::AbstractStochasticMotion, x) = integrate(get_motion(s), 
 simulate(fm::SimulationMode{PositionPerturbationMode}, s::AbstractStochasticMotion, x) = get_noise(s)(fm.rng, simulate(DataMode(), s, x))
 simulate(fm::SimulationMode{SensorPerturbationMode}, s::AbstractStochasticMotion, x) = simulate(DataMode(), sensor_perturbation(fm.rng, s, x), x)
 
+
+"""
+    rigid_perturbation(rng::RNG, noise::ActionNoise, x) :: RigidMotion
+
+Compute a random rigid motion using the covariance of the
+stochastic motion at ``x``, where ``x`` is a point on the sample
+space of the noise.
+"""
+function rigid_perturbation(rng::Random.AbstractRNG, pnoise::AbstractActionNoise, x)
+    action = pnoise.action
+    Σ = get_lie_covariance_at(pnoise, x)
+    vec = sample(rng, Σ)
+    ξ = get_vector_lie(base_group(action), vec, pnoise.basis)
+    return RigidMotion(action, ξ)
+end
