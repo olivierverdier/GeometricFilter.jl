@@ -37,7 +37,7 @@ function simple_params(rng, action, pdev=1, odev=1, ddev=1)
 end
 
 function run_filter(rng, D0, sm, obs, onoise)
-    x1 = integrate(DataMode(), sm, D0.μ)
+    x1 = simulate(DataMode(), sm, D0.μ)
 
     # motion_ = noisy_motion(A, rng, x1)
     smotion_ = sensor_perturbation(rng, sm, x1)

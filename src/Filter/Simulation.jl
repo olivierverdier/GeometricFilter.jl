@@ -36,7 +36,7 @@ generate_signal(
     stoch_motions::AbstractVector{<:AbstractStochasticMotion},
     x0 # initial point
 ) = generate_signal_from(stoch_motions, x0) do x, sm
-        return integrate(fm, sm, x)
+        return simulate(fm, sm, x)
     end
 
 

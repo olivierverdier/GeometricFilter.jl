@@ -3,7 +3,7 @@ module GeometricFilter
 using AffineMotions
 
 # Simulation
-export integrate, generate_signal,
+export simulate, generate_signal,
     AbstractStochasticMotion, StochasticMotion,
     DataMode,
     SensorPerturbation, PositionPerturbation,

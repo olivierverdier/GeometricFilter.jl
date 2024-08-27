@@ -48,10 +48,8 @@ velocity drawn from the stochastic motions noise.
 """
 sensor_perturbation(rng::Random.AbstractRNG, sm::AbstractStochasticMotion, x) = StochasticMotion(get_motion(sm) + rigid_perturbation(rng, get_noise(sm), x), get_noise(sm))
 
-
-import AffineMotions: integrate
 """
-    integrate(::FilteringMode, s::StochasticMotion, x::TM) ::TM
+    simulate(::FilteringMode, s::StochasticMotion, x::TM) ::TM
 
 Integrate the stochastic motion: deterministically integrate
 the underlying motion, and adds noise on the result.
@@ -61,9 +59,9 @@ The `FilterMode` can be the following:
 - With `PositionPerturbation(rng)`, the noise is added after exact integration.
 - With `SensorPerturbation(rng)`, the noise is applied to the motion, followed by an exact integration.
 """
-integrate(fm::FilteringMode, s::AbstractStochasticMotion, x)
+simulate(fm::FilteringMode, s::AbstractStochasticMotion, x)
 
-integrate(::DataMode, s::AbstractStochasticMotion, x) = integrate(get_motion(s), x)
-integrate(fm::SimulationMode{PositionPerturbationMode}, s::AbstractStochasticMotion, x) = get_noise(s)(fm.rng, integrate(DataMode(), s, x))
-integrate(fm::SimulationMode{SensorPerturbationMode}, s::AbstractStochasticMotion, x) = integrate(DataMode(), sensor_perturbation(fm.rng, s, x), x)
+simulate(::DataMode, s::AbstractStochasticMotion, x) = integrate(get_motion(s), x)
+simulate(fm::SimulationMode{PositionPerturbationMode}, s::AbstractStochasticMotion, x) = get_noise(s)(fm.rng, simulate(DataMode(), s, x))
+simulate(fm::SimulationMode{SensorPerturbationMode}, s::AbstractStochasticMotion, x) = simulate(DataMode(), sensor_perturbation(fm.rng, s, x), x)
 
