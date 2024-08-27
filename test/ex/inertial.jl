@@ -1,4 +1,5 @@
 using Manifolds
+using AffineMotions
 
 
 """
@@ -7,8 +8,8 @@ Return the Lie Algebra element (0,a;ω)
 function make_velocity(G, a, ω=nothing; pos=1)
     vector = zeros(manifold_dimension(G))
     idx = first(axes(vector))
-    a_idx = GeometricFilter.normal_indices(G, idx; pos=pos)
-    ω_idx = GeometricFilter.factor_indices(G, idx)
+    a_idx = MultiAffine.normal_indices(G, idx; pos=pos)
+    ω_idx = MultiAffine.factor_indices(G, idx)
     vector[a_idx] = a
     if ω !== nothing
         vector[ω_idx] = ω * sqrt(2)
@@ -29,8 +30,8 @@ the matrix ``M``.
 function get_inertial_motions(G, ::LeftAction, ξ_body, ξ_nav; M=[0 1;0 0])
     action = GroupOperationAction(G)
     m_nav = RigidMotion(action, ξ_nav)
-    m_body = TranslationMotion(G, -ξ_body, LeftAction())
-    m_ma = AdjointLinearMotion(G, M, LeftAction())
+    m_body = TranslationMotion(G, -ξ_body, LeftSide())
+    m_ma = AdjointLinearMotion(G, M, LeftSide())
     return (m_body, m_nav, m_ma)
 end
 

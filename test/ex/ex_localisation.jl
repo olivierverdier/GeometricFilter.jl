@@ -1,5 +1,7 @@
 using Test
 using GeometricFilter
+using AffineMotions
+using MultiAffine
 using Manifolds
 
 τ = 2 * π
@@ -91,8 +93,8 @@ make_tree(scale, landmarks=LANDMARKS) = KDTree(make_landmarks(scale, landmarks))
 
 Distance and bearing observer corresponding to one landmark.
 """
-landmark_observer(G::MultiAffine, landmark) = ActionObserver(MultiAffineAction(G, RightAction()), landmark)
-# make_observer(G::MultiAffine, landmark) = ActionObserver(MultiAffineAction(G, LeftAction()), landmark)
+landmark_observer(G::MultiAffineGroup, landmark) = ActionObserver(MultiAffineAction(G, RightAction()), landmark)
+# make_observer(G::MultiAffineGroup, landmark) = ActionObserver(MultiAffineAction(G, LeftAction()), landmark)
 
 """
     full_observer(G, pose, tree, k=2) :: AbstractObserver

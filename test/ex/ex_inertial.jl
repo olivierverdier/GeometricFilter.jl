@@ -1,5 +1,6 @@
 using GeometricFilter
 using Manifolds
+using MultiAffine
 
 using PDMats
 using LinearAlgebra
@@ -98,12 +99,13 @@ vel_observer = PositionObserver(MultiAffineAction(G, [0, 1]))
 # Singular Process Covariance
 #--------------------------------
 
+using PDMatsSingular
 
 function make_diag_cov(G::MultiDisplacement, a_std, ω_std)
     D = spzeros(manifold_dimension(G))
     idx = first(axes(D))
-    D[GeometricFilter.normal_indices(G, idx; pos=1)] .= a_std^2
-    D[GeometricFilter.factor_indices(G, idx)] .= ω_std^2
+    D[MultiAffine.normal_indices(G, idx; pos=1)] .= a_std^2
+    D[MultiAffine.factor_indices(G, idx)] .= ω_std^2
     return Covariance(PDMats.PDiagMat(D))
 end
 
