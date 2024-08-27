@@ -35,13 +35,13 @@ end
     action = GroupOperationAction(G)
     vel = rand_lie(rng, G)
     motions = [RigidMotion(action, vel),
-               TranslationMotion(G,vel,RightAction()),
-               AdjointLinearMotion(G, rand(rng, 2,2), LeftAction()),
+               TranslationMotion(G,vel,RightSide()),
+               AdjointLinearMotion(G, rand(rng, 2,2), LeftSide()),
                FlatAffineMotion(M, zeros(2)),
                ZeroMotion(action),
-               RigidMotion(action, vel) + TranslationMotion(G, vel, LeftAction()),
+               RigidMotion(action, vel) + TranslationMotion(G, vel, LeftSide()),
                ]
-    @test_throws MethodError RigidMotion(action, vel) + TranslationMotion(G, vel, RightAction())
+    @test_throws MethodError RigidMotion(action, vel) + TranslationMotion(G, vel, RightSide())
     @testset "Sum/Rescale $m" for m in motions
         @test m ≈ m
         @test .5*m isa typeof(m)
@@ -58,13 +58,13 @@ end
 
 @testset "Motion Sum" begin
     G = MultiDisplacement(4,2)
-    m1 = AdjointLinearMotion(G, ones(2,2), LeftAction())
+    m1 = AdjointLinearMotion(G, ones(2,2), LeftSide())
     ξ = rand_lie(rng, (G))
 
     motions = (
     rm = RigidMotion(GroupOperationAction(G), ξ),
-    tm = TranslationMotion(G, ξ, LeftAction()),
-    lm = AdjointLinearMotion(G, randn(rng, 2,2), LeftAction()),
+    tm = TranslationMotion(G, ξ, LeftSide()),
+    lm = AdjointLinearMotion(G, randn(rng, 2,2), LeftSide()),
     )
 
     @testset "Sum type" for m in motions

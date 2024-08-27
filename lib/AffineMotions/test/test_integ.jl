@@ -43,7 +43,7 @@ rng = Random.default_rng()
         id = last(sol_)
         @test isapprox(G, id, identity_element(G))
 
-        tm = TranslationMotion(G, vel, LeftAction())
+        tm = TranslationMotion(G, vel, LeftSide())
         sol = AffineMotions.integrate_lift(tm, identity_element(G), .1)
         # TODO: missing test here
     end

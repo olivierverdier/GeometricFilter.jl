@@ -63,8 +63,6 @@ import LinearAlgebra
 
 
 DualGroupOperationAction(G) = GroupOperationAction(G, Manifolds.LeftBackwardAction())
-_get_group_operation_action(G, ::LeftAction) = GroupOperationAction(G, (LeftAction(), LeftSide()))
-_get_group_operation_action(G, ::RightAction) = DualGroupOperationAction(G)
 
 
 include("Utils.jl")

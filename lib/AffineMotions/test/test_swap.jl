@@ -25,7 +25,7 @@ end
     @testset "Rigid/Translation" begin
 
         R1 = RigidMotion(GroupOperationAction(G), ξ)
-        T1 = TranslationMotion(G, ξ, RightAction())
+        T1 = TranslationMotion(G, ξ, RightSide())
         M1 = Dict(
             :R1 => R1,
             :R1_ => swap_group_motion(R1),
@@ -43,7 +43,7 @@ end
 
         # R2 = RigidMotion(DualGroupOperationAction(G), ξ)
         R2 = RigidMotion(GroupOperationAction(G, (LeftAction(), RightSide())), ξ)
-        T2 = TranslationMotion(G, ξ, LeftAction())
+        T2 = TranslationMotion(G, ξ, LeftSide())
         M2 = Dict(
             :R2 => R2,
             :R2_ => swap_group_motion(R2),
@@ -66,7 +66,7 @@ end
 @testset "Swap AdjointLinearMotion" begin
     G = MultiDisplacement(3,2)
     x0 = rand(rng, G)
-    m1 = AdjointLinearMotion(G, [1.0 0;0 0], LeftAction())
+    m1 = AdjointLinearMotion(G, [1.0 0;0 0], LeftSide())
     m2 = swap_group_motion(m1)
     MAM = Dict(
         :m1 => integrate(m1, x0),
@@ -78,7 +78,7 @@ end
 @testset "Swap AdjointLinear sum" begin
     G = MultiDisplacement(3,2)
     ξ = rand_lie(rng, G)
-    m1 = AdjointLinearMotion(G, [1.0 0;0 0], LeftAction())
+    m1 = AdjointLinearMotion(G, [1.0 0;0 0], LeftSide())
     rm = RigidMotion(GroupOperationAction(G), ξ)
     @test swap_group_motion(m1+rm) isa AffineMotions.AffineMotionSum
 end

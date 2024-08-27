@@ -1,8 +1,6 @@
-DualGroupOperationAction(G) = GroupOperationAction(G, Manifolds.LeftBackwardAction())
-_get_group_operation_action(G, ::LeftAction) = GroupOperationAction(G, (LeftAction(), LeftSide()))
-_get_group_operation_action(G, ::RightAction) = DualGroupOperationAction(G)
+_get_group_operation_action(G, side) = GroupOperationAction(G, (LeftAction(), side))
 
-struct TranslationMotion{TAD<:ActionDirection,TA,TG,TV} <: SimpleAffineMotion{TA}
+struct TranslationMotion{TAD<:Manifolds.GroupActionSide,TA,TG,TV} <: SimpleAffineMotion{TA}
     G::TG
     vel::TV # in Alg(G)
 end
@@ -12,7 +10,7 @@ Base.show(io::IO, m::TranslationMotion) = print(io, "TranslationMotion($(m.G), $
 rescale_motion(s::Number, m::TranslationMotion{TAD}) where {TAD} = TranslationMotion(m.G, s*m.vel, TAD())
 
 @doc raw"""
-    TranslationMotion(G,vel,dir=LeftAction())
+    TranslationMotion(G,vel,side=LeftSide())
 
 A translation motion defined on Lie groups.
 There is a left and a right version.
@@ -21,13 +19,13 @@ The right version is associated to the right multiplication action of ``G`` on i
 
 In both cases, the linear part is the zero operator.
 """
-TranslationMotion(G, vel, conv) = TranslationMotion{typeof(conv),typeof(_get_group_operation_action(G, conv)),typeof(G),typeof(vel)}(G, vel)
+TranslationMotion(G, vel, conv::Manifolds.GroupActionSide) = TranslationMotion{typeof(conv),typeof(_get_group_operation_action(G, conv)),typeof(G),typeof(vel)}(G, vel)
 
 get_action(m::TranslationMotion{TAD}) where {TAD} = _get_group_operation_action(m.G, TAD())
 
-get_dynamics(m::TranslationMotion{LeftAction}, u) =  -adjoint_action(m.G, u, m.vel)
+get_dynamics(m::TranslationMotion{LeftSide}, u) =  -adjoint_action(m.G, u, m.vel)
 # TODO: should be inverse adjoint action here?
-get_dynamics(m::TranslationMotion{RightAction}, u) =  -adjoint_action(m.G, inv(m.G, u), m.vel)
+get_dynamics(m::TranslationMotion{RightSide}, u) =  -adjoint_action(m.G, inv(m.G, u), m.vel)
 
 function get_lin(m::TranslationMotion)
     G = base_group(get_action(m))
