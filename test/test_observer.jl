@@ -35,7 +35,7 @@ end
     A = GroupOperationAction(G)
     H = GeometricFilter.get_tan_observer(obs, A, x)
     ξ = rand_lie(rng, G)
-    expected = apply_diff_group(get_action(obs), Identity(G), ξ, ref)
+    expected = apply_diff_group(GeometricFilter.get_action(obs), Identity(G), ξ, ref)
     computed = H(ξ)
     @test computed ≈ expected
     oobs = ProductObserver(obs, obs)
@@ -60,7 +60,7 @@ Dual group action
 """
 
 function inf_action(O::ActionObserver, χ, ξ)
-    obact = get_action(O)
+    obact = GeometricFilter.get_action(O)
     id = Identity(base_group(obact))
     return apply_diff_group(obact, id, ξ, O(χ))
 end

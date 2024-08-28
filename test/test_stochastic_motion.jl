@@ -33,3 +33,24 @@ rng = Random.default_rng()
     pert = GeometricFilter.sensor_perturbation(rng, sm, x)
     @test pert isa StochasticMotion
 end
+
+
+
+@testset "Rigid Perturbation" begin
+    G = SpecialOrthogonal(3)
+    S = Sphere(2)
+    A = RotationAction(S, G)
+    x = [1.0, 0, 0]
+    σ = 4.0
+    BG = DefaultOrthogonalBasis()
+    noise = ActionNoise(A, PDMats.ScalMat(manifold_dimension(G), σ), BG)
+    @test GeometricFilter.rigid_perturbation(rng, noise, x) isa RigidMotion
+
+    @testset "Degenerate Covariance $cov" for cov in [
+        PDMatsSingular.Covariance(PDiagMat(SparseArrays.sparsevec([1, 0, 0]))),
+        PDiagMat([1, 0, 0])
+    ]
+        dnoise = ActionNoise(A, cov)
+        rmot = GeometricFilter.rigid_perturbation(rng, dnoise, x)
+    end
+end

@@ -29,10 +29,10 @@ function _predict(
     process_noise=nothing;
     dt=0.1 # discretisation time step
 ) where {TA}
-    assert_equal_properties(distribution, get_action, motion, AffineMotions.get_action, "Different distribution and motion actions")
+    assert_equal_properties(distribution, ManifoldNormal.get_action, motion, AffineMotions.get_action, "Different distribution and motion actions")
     x = Distributions.mean(distribution)
 
-    χ, morph = AffineMotions.compute_morphism(motion, x, get_lie_basis(distribution); dt=dt)
+    χ, morph = AffineMotions.compute_morphism(motion, x, ManifoldNormal.get_lie_basis(distribution); dt=dt)
 
     x_ = apply(AffineMotions.get_action(motion), χ, x)
 
@@ -40,7 +40,7 @@ function _predict(
     if process_noise === nothing
         Σ_ = Σ
     else
-        Σ_ = Σ + get_lie_covariance_at(process_noise, x_, get_lie_basis(distribution))
+        Σ_ = Σ + ManifoldNormal.get_lie_covariance_at(process_noise, x_, ManifoldNormal.get_lie_basis(distribution))
     end
     Σ__ = PDMats.X_A_Xt(Σ_, morph)
     return update_mean_cov(distribution, x_, PDMats.AbstractPDMat(Σ__))

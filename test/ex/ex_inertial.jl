@@ -1,4 +1,5 @@
 using GeometricFilter
+using ManifoldNormal
 using Manifolds
 using MultiAffine
 

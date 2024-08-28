@@ -28,16 +28,16 @@ function _update(
     x = Distributions.mean(prior)
     pred = observer(x)
 
-    obs_basis = get_basis_at(noise, pred)
+    obs_basis = ManifoldNormal.get_basis_at(noise, pred)
 
     H = get_obs_matrix(prior, observer, pred, obs_basis)
     Σ_, gain = prepare_correction(prior, H, noise, pred)
     N = observation_space(observer)
-    B = get_lie_basis(prior)
-    action = get_action(prior)
+    B = ManifoldNormal.get_lie_basis(prior)
+    action = ManifoldNormal.get_action(prior)
 
     innovation = log(N, pred, measurement)
-    obs_basis = get_basis_at(noise, pred)
+    obs_basis = ManifoldNormal.get_basis_at(noise, pred)
     innovec = get_coordinates(plain_manifold(N), pred, innovation, obs_basis)
     x_ = point_correction(x, action, gain, B, innovec)
     return update_mean_cov(prior, x_, Σ_)
@@ -54,12 +54,12 @@ update(prior, ::EmptyObservation) = prior
 
 function get_obs_matrix(prior, observer, pred, obs_basis)
     x = Distributions.mean(prior)
-    action = get_action(prior)
+    action = ManifoldNormal.get_action(prior)
     G = base_group(action)
 
     obs_op = get_tan_observer(observer, action, x, pred)
 
-    basis = get_lie_basis(prior)
+    basis = ManifoldNormal.get_lie_basis(prior)
     H = GU.get_op_matrix(G, plain_manifold(observation_space(observer)), pred, obs_op, basis, obs_basis)
     return H
 end

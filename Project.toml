@@ -5,11 +5,10 @@ version = "0.1.0"
 
 [deps]
 AffineMotions = "4fe253f5-c7a7-4e36-a4a1-b5bab8c98bb8"
-ConstantFunctions = "cf45d141-e7cd-45e6-bffc-f815329abbc7"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-ManifoldDiff = "af67fdf4-a580-4b9f-bbec-742ef357defd"
 ManifoldGroupUtils = "1a3c8808-2843-4c72-af8e-d50ed15039bf"
+ManifoldNormal = "5fcb9600-4313-48cf-863b-acbfec9160af"
 Manifolds = "1cead3c2-87b3-11e9-0ccd-23c62b72b94e"
 ManifoldsBase = "3362f125-f0bb-47a3-aa74-596ffd7ef2fb"
 MultiAffine = "251e6cbc-5fb1-4602-bd1f-2bec286d6307"

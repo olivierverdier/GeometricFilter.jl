@@ -4,14 +4,13 @@ import ManifoldGroupUtils as GU
 import ManifoldGroupUtils: rand_lie
 import PDMatsSingular
 using AffineMotions
+using ManifoldNormal
 
 test_files = [
     "test_filter_measure.jl",
-    "test_noise.jl",
     "test_filter.jl",
     "test_generic_filter.jl",
     "test_observer.jl",
-    "test_projlognormal.jl",
     "test_stochastic_motion.jl",
 
     # "test_examples.jl",

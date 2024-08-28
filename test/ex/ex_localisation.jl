@@ -1,6 +1,7 @@
 using Test
 using GeometricFilter
 using AffineMotions
+using ManifoldNormal
 using MultiAffine
 using Manifolds
 

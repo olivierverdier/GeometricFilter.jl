@@ -70,7 +70,7 @@ param_list = [
 
 @testset "Generic Filter" for params in param_list
     D0, sm, obs, onoise = params
-    M = group_manifold(get_action(D0))
+    M = group_manifold(ManifoldNormal.get_action(D0))
     D1,D1_ = run_filter(rng, D0, sm, obs, onoise)
 
     i_dist = distance(M, D1.μ, D0.μ)

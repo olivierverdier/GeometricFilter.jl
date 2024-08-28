@@ -1,6 +1,7 @@
 module GeometricFilter
 
 using AffineMotions
+using ManifoldNormal
 
 # Simulation
 export simulate, generate_signal,
@@ -24,24 +25,13 @@ export AbstractObserver,
     ActionObserver,
     LinearObserver,
     IdentityObserver,
-    observation_space, observed_space
+    observation_space, observed_space,
+    get_action
 
 export Observation, EmptyObservation
 
 
-# Noise
-export AbstractNoise,
-    ActionNoise, IsotropicNoise,
-    NoNoise,
-    sample_space,
-    get_covariance_at,
-    update_cov
 
-export AbstractProjLogNormal, ProjLogNormal,
-    action_noise, scaled_distance,
-    update_mean_cov, update_mean
-
-export get_action
 
 export DualGroupOperationAction
 
@@ -50,12 +40,10 @@ import ManifoldsBase
 using Manifolds
 
 
-using ConstantFunctions
 
 import Random
 import Distributions
 import PDMats
-import PDMatsSingular: sample
 import ManifoldGroupUtils as GU
 
 import LinearAlgebra
@@ -67,8 +55,6 @@ DualGroupOperationAction(G) = GroupOperationAction(G, Manifolds.LeftBackwardActi
 
 include("Utils.jl")
 
-include("ProjLogNormal.jl")
-include("Noise.jl")
 
 include("Observation.jl")
 include("Filter/SimulationMode.jl")
