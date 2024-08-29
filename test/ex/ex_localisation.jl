@@ -136,7 +136,7 @@ let
     poses = fill(identity_element(G), 3)
     vels = compute_velocities(G, poses)
     motions = compute_motions(A, vels)
-    simulate_filter(SensorPerturbation(rng), dist, [StochasticMotion(first(motions), process_noise)], [Observation()])
+    simulate_filter(dist, [StochasticMotion(first(motions), process_noise)], [Observation()], SensorPerturbation(rng))
     " "
 end
 

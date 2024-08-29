@@ -33,7 +33,7 @@ rng = Random.default_rng()
     pnoise = action_noise(dist)
     cdist = ProjLogNormal(DualGroupOperationAction(G), identity_element(G), ccov)
     cpnoise = action_noise(cdist)
-    run_simulation(d,n) = simulate_filter(PositionPerturbation(rng), d, [StochasticMotion(ZeroMotion(A), n)], [Observation()])
+    run_simulation(d, n) = simulate_filter(d, [StochasticMotion(ZeroMotion(A), n)], [Observation()], PositionPerturbation(rng))
     @test_throws PosDefException run_simulation(dist, pnoise)
     @test_throws PosDefException run_simulation(cdist, pnoise)
     @test_throws PosDefException run_simulation(dist, cpnoise)
@@ -123,17 +123,17 @@ end
     observations = [selector(i,T÷2) ? Observation(observer, onoise, onoise(rng, observer(s))) : EmptyObservation() for (i,s) in enumerate(signal_)]
     sms = fill(StochasticMotion(motion, pnoise), T)
     @testset "Simulation Mode $mode" for mode in [PositionPerturbation, SensorPerturbation]
-        nbs, dists = simulate_filter(mode(rng), D0, sms, observations)
+        nbs, dists = simulate_filter(D0, sms, observations, mode(rng))
         length(dists) == T
         @test length(unique(nbs)) == 3
     end
     @testset "Wrong nb of observations" begin
-        nbs, dists = @test_logs (:info,) simulate_filter(DataMode(), D0, sms, observations[begin:end-2])
+        nbs, dists = @test_logs (:info,) simulate_filter(D0, sms, observations[begin:end-2], DataMode())
         @test all(isassigned(dists, i) for i in eachindex(dists))
     end
     @testset "Wrong nb of motions" begin
         k = 2
-        nbs, dists = @test_logs (:warn,) simulate_filter(DataMode(), D0, sms[begin:end-k], observations)
+        nbs, dists = @test_logs (:warn,) simulate_filter(D0, sms[begin:end-k], observations, DataMode())
         @test length(dists) == length(sms) - k
     end
 
@@ -159,7 +159,7 @@ end
     @test_throws MethodError predict(ProjLogNormal(DualGroupOperationAction(G), x0, 1.), stoch_motion)
     sms = fill(stoch_motion, T)
     rng = Random.default_rng()
-    signal = generate_signal(PositionPerturbation(rng), sms, x0)
+    signal = generate_signal(sms, x0, PositionPerturbation(rng))
     # @show signal
     # @show length(signal)
 

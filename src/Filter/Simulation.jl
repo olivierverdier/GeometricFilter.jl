@@ -26,17 +26,19 @@ generate_signal(
 end
 
 """
-    generate_signal(rng::AbstractRNG,
-      motions::AbstractVector{<:AbstractStochasticMotion}, x0)
+    generate_signal(
+      motions::AbstractVector{<:AbstractStochasticMotion}, x0,
+      ::FilteringMode
+    )
 
-Integrate one sample path the sequence of stochastic motions, starting at the point ``x_0``.
+Integrate one sample path the sequence of stochastic motions, starting at the point ``x0``.
 """
 generate_signal(
-    fm::FilteringMode,
     stoch_motions::AbstractVector{<:AbstractStochasticMotion},
-    x0 # initial point
+    x0, # initial point
+    fm::FilteringMode,
 ) = generate_signal_from(stoch_motions, x0) do x, sm
-        return simulate(fm, sm, x)
+        return simulate(sm, x, fm)
     end
 
 
@@ -54,11 +56,12 @@ _increase_if_observation(::EmptyObservation, k) = k
 
 
 """
-    simulate_filter(::FilteringMode,
+    simulate_filter(
         ::ProjLogNormal,
         ::Vector{<:StochasticMotion},
-        ::Vector{<:Observation})
-          :: Tuple{Vector(Int), Vector(ProjLogNormal)}
+        ::Vector{<:Observation},
+        ::FilteringMode,
+          ) :: Tuple{Vector(Int), Vector(ProjLogNormal)}
 
 Runs a simulation of the filter, given a starting distribution,
  a vector of stochastic motions, and a vector of observations.
@@ -69,7 +72,8 @@ There are three main mode to use as `FilterMode`:
 - `SensorPerturbation(rng)` for simulated perturbation of sensor inputs
 - `PositionPerturbation(rng)` for simulated perturbations of positions
 """
-simulate_filter(fm::FilteringMode, D0::AbstractProjLogNormal, stochastic_motions, observations) = simulate_filter_from(D0, stochastic_motions, observations) do D, sm
+simulate_filter(D0::AbstractProjLogNormal, stochastic_motions, observations, fm::FilteringMode) =
+    simulate_filter_from(D0, stochastic_motions, observations) do D, sm
     return prediction_step(fm, D, sm)
 end
 

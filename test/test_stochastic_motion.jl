@@ -21,9 +21,9 @@ rng = Random.default_rng()
     sm = StochasticMotion(motion, noise)
     @test_throws MethodError StochasticMotion(motion, IsotropicNoise(M, 1.0))
     D = ProjLogNormal(A, x, 1.0)
-    x0 = simulate(DataMode(), sm, x)
-    xs = simulate(PositionPerturbation(rng), sm, x)
-    xp = simulate(SensorPerturbation(rng), sm, x)
+    x0 = simulate(sm, x, DataMode())
+    xs = simulate(sm, x, PositionPerturbation(rng))
+    xp = simulate(sm, x, SensorPerturbation(rng))
     @test x0 == x
     @test xs != x
     @test xp != x
