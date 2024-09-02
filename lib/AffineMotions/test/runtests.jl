@@ -36,6 +36,14 @@ end
     @test RigidMotion(A) isa ZeroMotion
 end
 
+@testset "RigidMotion Exceptions" begin
+    G = SpecialOrthogonal(3)
+    M = Sphere(2)
+    A = RotationAction(M, G)
+    @test_throws ErrorException RigidMotion(A, 0)
+    @test_throws TypeError RigidMotion(GroupOperationAction(G,(RightAction(), RightSide())), rand_lie(rng, G))
+end
+
 @testset "Motion Composition" begin
     G = MultiDisplacement(4,2)
     M = randn(rng, 2, 2)

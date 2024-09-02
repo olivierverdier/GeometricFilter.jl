@@ -18,11 +18,6 @@ rng = Random.default_rng()
     # rm = make_rigid_motion(action, vel)
     rm = RigidMotion(action, vel)
 
-    @testset "RigidMotion Exceptions" begin
-        @test_throws ErrorException RigidMotion(action, 0)
-        @test_throws TypeError RigidMotion(GroupOperationAction(G,(RightAction(), RightSide())), vel)
-        # @show rm'(identity_element(G))
-    end
 
     sol = AffineMotions.integrate_lift(1.0*rm, identity_element(G), .01)
     # test that sol(1) ≡ exp(ξ), for a rigid motion ξ
