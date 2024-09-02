@@ -15,6 +15,7 @@ MultiAffine = "251e6cbc-5fb1-4602-bd1f-2bec286d6307"
 PDMats = "90014a1f-27ba-587c-ab20-58faa44d9150"
 PDMatsSingular = "8b9ac4da-30d1-49d3-a564-69a6ecc8b6d7"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+RecursiveArrayTools = "731186ca-8d62-57ce-b412-fbd966d074cd"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [compat]

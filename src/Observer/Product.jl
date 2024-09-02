@@ -27,6 +27,6 @@ end
 observation_space(obs::ProductObserver) = ProductManifold([observation_space(o) for o in obs.observers]...)
 observed_space(obs::ProductObserver) = observed_space(first(obs.observers))
 
-get_measurement(obs::ProductObserver, x) = ArrayPartition([ob(x) for ob in obs.observers]...)
+get_measurement(obs::ProductObserver, x) = RecursiveArrayTools.ArrayPartition([ob(x) for ob in obs.observers]...)
 
-get_tan_observer(obs::ProductObserver, A, x, ys) = ξ -> ArrayPartition([get_tan_observer(ob, A, x, y)(ξ) for (ob,y) in zip(obs.observers, submanifold_components(ys))]...)
+get_tan_observer(obs::ProductObserver, A, x, ys) = ξ -> RecursiveArrayTools.ArrayPartition([get_tan_observer(ob, A, x, y)(ξ) for (ob, y) in zip(obs.observers, submanifold_components(ys))]...)

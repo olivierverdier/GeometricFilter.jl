@@ -3,6 +3,8 @@ module GeometricFilter
 using AffineMotions
 using ManifoldNormal
 
+import RecursiveArrayTools
+
 # Simulation
 export simulate, generate_signal,
     AbstractStochasticMotion, StochasticMotion,
