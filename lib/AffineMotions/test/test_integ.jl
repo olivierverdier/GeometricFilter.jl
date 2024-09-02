@@ -6,22 +6,17 @@ import Random
 
 rng = Random.default_rng()
 
+
 @testset "Integration $G" for G in [SpecialOrthogonal(4),
-                            MultiDisplacement(4),
-                            MultiDisplacement(4,2),
-                            SpecialEuclidean(4),
-                            ]
+    MultiDisplacement(4),
+    MultiDisplacement(4, 2),
+    SpecialEuclidean(4),
+]
     action = GroupOperationAction(G)
     vel = rand_lie(rng, G)
     # submanifold_component(vel, 1) .= 0
     # rm = make_rigid_motion(action, vel)
     rm = RigidMotion(action, vel)
-
-    @testset "ZeroMotion" begin
-        rm0 = rm + ZeroMotion(GroupOperationAction(G))
-        @test rm0 isa RigidMotion
-        @test rm0 ≈ rm
-    end
 
     @testset "RigidMotion Exceptions" begin
         @test_throws ErrorException RigidMotion(action, 0)

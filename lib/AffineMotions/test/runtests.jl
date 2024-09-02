@@ -17,6 +17,12 @@ rng = Random.default_rng()
 # Base.convert(::Type{ProductRepr}, x::ArrayPartition) = ProductRepr(submanifold_components(x)...)
 
 
+check_zero_motion(rm::RigidMotion) = begin
+    A = AffineMotions.get_action(rm)
+    rm0 = rm + ZeroMotion(A)
+    return (rm0 isa RigidMotion) && (rm0 ≈ rm)
+end
+
 @testset "Zero Motion" begin
     G = SpecialOrthogonal(3)
     M = Sphere(2)
@@ -25,6 +31,7 @@ rng = Random.default_rng()
     x = [1., 0, 0]
     @test m(x) ≈ zero_vector(G, identity_element(G))
     ξ = rand_lie(rng, G)
+    @test check_zero_motion(RigidMotion(A, ξ))
     @test isapprox(G, m'(x)(ξ), zero_vector(G, identity_element(G)))
     @test RigidMotion(A) isa ZeroMotion
 end
