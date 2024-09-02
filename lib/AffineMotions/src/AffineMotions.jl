@@ -18,6 +18,6 @@ export AbstractMotion, AbstractAffineMotion,
 
 include("Motion.jl")
 
-include("../ext/FilterMultiAffineExt/FilterMultiAffineExt.jl")
+include("../ext/AdjointLinearExt/AdjointLinearExt.jl")
 
 end
