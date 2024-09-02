@@ -6,10 +6,10 @@ import Random
 
 rng = Random.default_rng()
 
-@testset "Motion $G" for G in [SpecialOrthogonal(4),
-                            SpecialEuclidean(4),
+@testset "Integration $G" for G in [SpecialOrthogonal(4),
                             MultiDisplacement(4),
                             MultiDisplacement(4,2),
+                            SpecialEuclidean(4),
                             ]
     action = GroupOperationAction(G)
     vel = rand_lie(rng, G)
@@ -44,8 +44,8 @@ rng = Random.default_rng()
         @test isapprox(G, id, identity_element(G))
 
         tm = TranslationMotion(G, vel, LeftSide())
-        sol = AffineMotions.integrate_lift(tm, identity_element(G), .1)
-        # TODO: missing test here
+        sol = AffineMotions.integrate_lift(tm, identity_element(G), .01)
+        @test isapprox(G, last(sol), exp_lie(G, -vel))
     end
 
     # vel_ = rand_lie(rng, G)
