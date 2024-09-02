@@ -18,7 +18,6 @@ export simulate, generate_signal,
 
 # Filter
 export predict,
-    add_process_noise,
     update
 
 # Observation

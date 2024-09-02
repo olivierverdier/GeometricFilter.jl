@@ -187,7 +187,6 @@ end
     clean = predict(istate, rm)
     # process_noise = IsotropicNoise(G, x->.1)
     process_noise = ActionNoise(GroupOperationAction(G), .1)
-    # noisy = GeometricFilter.add_process_noise(clean, process_noise)
 
 
     obnoise = IsotropicNoise(group_manifold(A), x -> .1)
