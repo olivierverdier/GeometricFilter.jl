@@ -28,7 +28,7 @@ end
     M = Sphere(2)
     A = RotationAction(M, G)
     m = ZeroMotion(A)
-    x = [1., 0, 0]
+    x = [1.0, 0, 0]
     @test m(x) ≈ zero_vector(G, identity_element(G))
     ξ = rand_lie(rng, G)
     @test check_zero_motion(RigidMotion(A, ξ))

@@ -4,6 +4,7 @@ using AffineMotions
 using ManifoldNormal
 using MultiAffine
 using Manifolds
+using RecursiveArrayTools
 
 τ = 2 * π
 G = MultiDisplacement(2)
@@ -136,6 +137,7 @@ let
     poses = fill(identity_element(G), 3)
     vels = compute_velocities(G, poses)
     motions = compute_motions(A, vels)
+    # just checking that it works in principle:
     simulate_filter(dist, [StochasticMotion(first(motions), process_noise)], [Observation()], SensorPerturbation(rng))
     " "
 end
