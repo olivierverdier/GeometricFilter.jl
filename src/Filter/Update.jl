@@ -1,6 +1,6 @@
 
 """
-    update(prior::AbstractProjLogNormal, observation::AbstractObservation)
+    update(prior::AbstractActionDistribution, observation::AbstractObservation)
 
 Update the uncertainty (the prior) given an observation.
 Typically, it is used as
@@ -10,17 +10,17 @@ update(prior, Observation(observer, noise, measurement))
  with a given observer, an associated noise, and a measurement
 on the observation manifold (the manifold of the `observer`).
 """
-update(prior::AbstractProjLogNormal, ob::Observation) = _update(prior, ob.observer, ob.noise, ob.measurement)
+update(prior::AbstractActionDistribution, ob::Observation) = _update(prior, ob.observer, ob.noise, ob.measurement)
 
 @deprecate update(
-    prior::AbstractProjLogNormal,
+    prior::AbstractActionDistribution,
     observer, # Observer
     noise, # Observation noise
     measurement, # Actual measurement
     )  update(prior, Observation(observer, noise, measurement))
 
 function _update(
-    prior::AbstractProjLogNormal,
+    prior::AbstractActionDistribution,
     observer, # Observer
     noise, # Observation noise
     measurement, # Actual measurement
@@ -65,7 +65,7 @@ function get_obs_matrix(prior, observer, pred, obs_basis)
 end
 
 function prepare_correction(
-    prior::AbstractProjLogNormal, # prior from forecasting
+    prior::AbstractActionDistribution, # prior from forecasting
     obs_matrix,
     noise, # observation noise
     pred,

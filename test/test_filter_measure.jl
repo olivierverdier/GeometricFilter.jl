@@ -27,7 +27,7 @@ rng = Random.default_rng()
 
 function setup_initial_dist(rng, A, dev=1.)
     x0 = rand(rng, group_manifold(A))
-    D0 = ProjLogNormal(A, x0, dev^2)
+    D0 = ActionDistribution(A, x0, dev^2)
     return D0
 end
 

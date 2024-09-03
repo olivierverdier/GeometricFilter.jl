@@ -1,30 +1,30 @@
 
 
 """
-    predict(distribution::AbstractProjLogNormal, stochastic_motion::StochasticMotion)
+    predict(distribution::AbstractActionDistribution, stochastic_motion::StochasticMotion)
 
 Compute the update of the uncertainty (the distribution),
 given a motion and its associated process noise (a stochastic motion).
 """
 predict(
-    distribution::AbstractProjLogNormal,
+    distribution::AbstractActionDistribution,
     stochastic_motion
 )
 
-predict(distribution::AbstractProjLogNormal{TA}, sm::AbstractStochasticMotion{TA}) where {TA} = _predict(distribution, sm.motion, sm.noise)
+predict(distribution::AbstractActionDistribution{TA}, sm::AbstractStochasticMotion{TA}) where {TA} = _predict(distribution, sm.motion, sm.noise)
 @deprecate predict(distribution, motion, noise) predict(distribution, StochasticMotion(motion, noise))
-predict(d::AbstractProjLogNormal{TA}, m::AbstractMotion{TA}) where {TA} = _predict(d, m)
+predict(d::AbstractActionDistribution{TA}, m::AbstractMotion{TA}) where {TA} = _predict(d, m)
 
 #--------------------------------
 # Prediction Helpers
 #--------------------------------
 """
-    _predict(distribution::ProjLogNormal, motion::Motion, process_noise::ActionNoise) :: ProjLogNormal
+    _predict(distribution::ActionDistribution, motion::Motion, process_noise::ActionNoise) :: ActionDistribution
 
 Updates the distribution according to the motion and the process noise.
 """
 function _predict(
-    distribution::AbstractProjLogNormal{TA}, # filtering distribution
+    distribution::AbstractActionDistribution{TA}, # filtering distribution
     motion::AbstractMotion{TA}, # abstract model with the relevant motion
     process_noise=nothing;
     dt=0.1 # discretisation time step
@@ -47,14 +47,14 @@ function _predict(
 end
 
 """
-    add_process_noise(dist::AbstractProjLogNormal, noise::AbstractActionNoise)
+    add_process_noise(dist::AbstractActionDistribution, noise::AbstractActionNoise)
 
 [Deprecated]
 
-Add process noise to a distribution of type `AbstractProjLogNormal`.
+Add process noise to a distribution of type `AbstractActionDistribution`.
 """
 function add_process_noise(
-    distribution::AbstractProjLogNormal,
+    distribution::AbstractActionDistribution,
     process_noise,
 )
     x = Distributions.mean(distribution)

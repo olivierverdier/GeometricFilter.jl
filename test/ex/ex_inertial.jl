@@ -148,7 +148,7 @@ function make_initial_dist(pose, process_noise)
     #     # make_proc_cov(G, 1.0, 10 * τ / 360 * sqrt(2)),
     #     make_diag_cov(G, 1.0, 10 * τ / 360 * sqrt(2)),
     #     DefaultOrthonormalBasis(),)
-    dist = ProjLogNormal(pose_,
+    dist = ActionDistribution(pose_,
         update_cov(process_noise, make_diag_cov(G, 1.0, 10 * τ / 360 * sqrt(2))))
     return dist
 end

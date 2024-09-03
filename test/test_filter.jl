@@ -29,9 +29,9 @@ rng = Random.default_rng()
     pdiag[MultiAffine.factor_indices(G, idx)] .= 2.
     cov = PDiagMat(pdiag)
     ccov = PDMatsSingular.Covariance(PDiagMat(pdiag))
-    dist = ProjLogNormal(DualGroupOperationAction(G), identity_element(G), cov)
+    dist = ActionDistribution(DualGroupOperationAction(G), identity_element(G), cov)
     pnoise = action_noise(dist)
-    cdist = ProjLogNormal(DualGroupOperationAction(G), identity_element(G), ccov)
+    cdist = ActionDistribution(DualGroupOperationAction(G), identity_element(G), ccov)
     cpnoise = action_noise(cdist)
     run_simulation(d, n) = simulate_filter(d, [StochasticMotion(ZeroMotion(A), n)], [Observation()], PositionPerturbation(rng))
     @test_throws PosDefException run_simulation(dist, pnoise)
@@ -53,10 +53,10 @@ end
     observer = LinearObserver([1. 0])
     onoise = IsotropicNoise(observation_space(observer), sqrt(10.0))
 
-    # D0 = ProjLogNormal(A, x0, 5*PDMats.PDiagMat([1.,1.]), DefaultOrthonormalBasis())
-    D0 = ProjLogNormal(A, x0, PDMats.ScalMat(2, 5.0), DefaultOrthonormalBasis())
-    D0_ = ProjLogNormal(A, x0, 5)
-    D0__ = ProjLogNormal(A, x0, 5, DefaultOrthonormalBasis())
+    # D0 = ActionDistribution(A, x0, 5*PDMats.PDiagMat([1.,1.]), DefaultOrthonormalBasis())
+    D0 = ActionDistribution(A, x0, PDMats.ScalMat(2, 5.0), DefaultOrthonormalBasis())
+    D0_ = ActionDistribution(A, x0, 5)
+    D0__ = ActionDistribution(A, x0, 5, DefaultOrthonormalBasis())
     dt = .02
     predict(D0, StochasticMotion(dt*motion, pnoise))
     update(D0, Observation(observer, onoise, [1.]))
@@ -97,7 +97,7 @@ end
     z1 = onoise(rng, y1)
     # @show z1
 
-    D0 = ProjLogNormal(A, x0, PDMats.ScalMat(1,1.), DefaultOrthonormalBasis())
+    D0 = ActionDistribution(A, x0, PDMats.ScalMat(1,1.), DefaultOrthonormalBasis())
     D1 = predict(D0, StochasticMotion(motion, pnoise))
     # @code_warntype predict(D0, StochasticMotion(motion, pnoise))
     D1_ = update(D1, Observation(observer, onoise, z1))
@@ -110,7 +110,7 @@ end
     pnoise = ActionNoise(AffineMotions.get_action(motion), 1.)
     observer = LinearObserver([1. 0])
     onoise = IsotropicNoise(observation_space(observer), 1.)
-    D0 = ProjLogNormal(AffineMotions.get_action(motion), [0., 0], 1.)
+    D0 = ActionDistribution(AffineMotions.get_action(motion), [0., 0], 1.)
     T = 10
     signal_ = generate_signal(fill(motion, T), D0.μ)
     @testset "Signal" begin
@@ -156,7 +156,7 @@ end
     T = 10
     process_noise = ActionNoise(action, 0.5)
     stoch_motion = StochasticMotion(rm, process_noise)
-    @test_throws MethodError predict(ProjLogNormal(DualGroupOperationAction(G), x0, 1.), stoch_motion)
+    @test_throws MethodError predict(ActionDistribution(DualGroupOperationAction(G), x0, 1.), stoch_motion)
     sms = fill(stoch_motion, T)
     rng = Random.default_rng()
     signal = generate_signal(sms, x0, PositionPerturbation(rng))
@@ -182,8 +182,8 @@ end
 
     # start new test set here?
 
-    # istate = ProjLogNormal(action, x0, initial_uncertainty, B)
-    istate = ProjLogNormal(action, x0, 1.0)
+    # istate = ActionDistribution(action, x0, initial_uncertainty, B)
+    istate = ActionDistribution(action, x0, 1.0)
     clean = predict(istate, rm)
     # process_noise = IsotropicNoise(G, x->.1)
     process_noise = ActionNoise(GroupOperationAction(G), .1)
@@ -204,7 +204,7 @@ end
     A = GroupOperationAction(G)
     ξ = rand(rng, TangentSpace(G, identity_element(G)))
     m = TranslationMotion(G, ξ, LeftSide())
-    D = ProjLogNormal(A, identity_element(G), 1.)
+    D = ActionDistribution(A, identity_element(G), 1.)
     # pnoise = IsotropicNoise(G, x->1.)
     pnoise = ActionNoise(GroupOperationAction(G), 1.)
     predict(D, StochasticMotion(m, pnoise))

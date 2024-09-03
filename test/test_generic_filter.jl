@@ -24,7 +24,7 @@ end
 
 function setup_initial_dist(rng, pnoise, dev=1.)
     x0 = rand(rng, sample_space(pnoise))
-    D0 = ProjLogNormal(x0, update_cov(pnoise, dev^2))
+    D0 = ActionDistribution(x0, update_cov(pnoise, dev^2))
     return D0
 end
 

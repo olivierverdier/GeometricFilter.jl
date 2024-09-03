@@ -57,11 +57,11 @@ _increase_if_observation(::EmptyObservation, k) = k
 
 """
     simulate_filter(
-        ::ProjLogNormal,
+        ::ActionDistribution,
         ::Vector{<:StochasticMotion},
         ::Vector{<:Observation},
         ::FilteringMode,
-          ) :: Tuple{Vector(Int), Vector(ProjLogNormal)}
+          ) :: Tuple{Vector(Int), Vector(ActionDistribution)}
 
 Runs a simulation of the filter, given a starting distribution,
  a vector of stochastic motions, and a vector of observations.
@@ -72,7 +72,7 @@ There are three main mode to use as `FilterMode`:
 - `SensorPerturbation(rng)` for simulated perturbation of sensor inputs
 - `PositionPerturbation(rng)` for simulated perturbations of positions
 """
-simulate_filter(D0::AbstractProjLogNormal, stochastic_motions, observations, fm::FilteringMode) =
+simulate_filter(D0::AbstractActionDistribution, stochastic_motions, observations, fm::FilteringMode) =
     simulate_filter_from(D0, stochastic_motions, observations) do D, sm
     return prediction_step(fm, D, sm)
 end
@@ -89,7 +89,7 @@ modify the standard behaviour of `predict`,
 for instance by adding sensor noise, position noise,
 or both.
 """
-function simulate_filter_from(prediction_step, D0::AbstractProjLogNormal, stochastic_motions, observations)
+function simulate_filter_from(prediction_step, D0::AbstractActionDistribution, stochastic_motions, observations)
     N = length(stochastic_motions)
     nb_missing_obs = N - length(observations)
     if nb_missing_obs > 0
@@ -102,7 +102,7 @@ function simulate_filter_from(prediction_step, D0::AbstractProjLogNormal, stocha
         observations_ = observations
     end
     # dists = Vector{typeof(D0)}(undef, N)
-    dists = Vector{AbstractProjLogNormal}(undef, N)
+    dists = Vector{AbstractActionDistribution}(undef, N)
     obs_count = Vector{Int}(undef, N)
     foldl(zip(axes(obs_count, 1), axes(dists, 1), stochastic_motions, observations_); init=(0=>D0)) do (k, D), (ki, di, sm, obs)
         new_k = _increase_if_observation(obs, k)
