@@ -10,12 +10,12 @@ Base.show(io::IO, m::TranslationMotion) = print(io, "TranslationMotion($(m.G), $
 rescale_motion(s::Number, m::TranslationMotion{TAD}) where {TAD} = TranslationMotion(m.G, s*m.vel, TAD())
 
 @doc raw"""
-    TranslationMotion(G,vel,side=LeftSide())
+    TranslationMotion(G, ξ, side=LeftSide())
 
-A translation motion defined on Lie groups.
+A translation motion ``φ : G → Alg(G)`` defined on Lie groups.
 There is a left and a right version.
-The left version is associated to the left multiplication action of ``G`` on itself. The motion is equal to ``φ(χ) = -χξχ^{-1}``.
-The right version is associated to the right multiplication action of ``G`` on itself. The motion is equal to ``φ(χ) = -χ^{-1}ξχ``.
+- Left: ``φ(χ) = -χξχ^{-1}``.
+- Right: ``φ(χ) = -χ^{-1}ξχ``.
 
 In both cases, the linear part is the zero operator.
 """

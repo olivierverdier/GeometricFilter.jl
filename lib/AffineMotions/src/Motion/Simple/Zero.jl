@@ -1,6 +1,6 @@
 
 """
-    ZeroMotion
+    ZeroMotion(::GroupAction)
 
 Trivial rigid motion equal to zero everywhere.
 """
