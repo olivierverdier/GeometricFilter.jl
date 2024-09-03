@@ -37,7 +37,7 @@ function _predict(
     x_ = apply(AffineMotions.get_action(motion), χ, x)
 
     Σ = Distributions.cov(distribution)
-    if process_noise === nothing
+    if isnothing(process_noise)
         Σ_ = Σ
     else
         Σ_ = Σ + ManifoldNormal.get_lie_covariance_at(process_noise, x_, ManifoldNormal.get_lie_basis(distribution))
