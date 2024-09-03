@@ -1,20 +1,25 @@
 using Manifolds
 using AffineMotions
 
+using ManifoldGroupUtils
+using RecursiveArrayTools
+
 
 """
+    make_velocity(G::MultiAffineGroup, a, ω=nothing; pos=1)
+
 Return the Lie Algebra element (0,a;ω)
 """
-function make_velocity(G, a, ω=nothing; pos=1)
-    vector = zeros(manifold_dimension(G))
-    idx = first(axes(vector))
-    a_idx = MultiAffine.normal_indices(G, idx; pos=pos)
-    ω_idx = MultiAffine.factor_indices(G, idx)
-    vector[a_idx] = a
-    if ω !== nothing
-        vector[ω_idx] = ω * sqrt(2)
+function make_velocity(G::MultiAffineGroup, a, ω=nothing; pos=1)
+    normal = zero_vector(algebra(normal_group(G)))
+    col_nb = first(Iterators.drop(axes(normal, 1), pos))
+    normal[:,col_nb] = a
+    if isnothing(ω)
+        factor = zero_vector(algebra(factor_group(G)))
+    else
+        factor = get_vector_lie(factor_group(G), ω * sqrt(2), DefaultOrthonormalBasis())
     end
-    return get_vector_lie(G, vector, DefaultOrthonormalBasis())
+    return ArrayPartition(normal, factor)
 end
 
 """
