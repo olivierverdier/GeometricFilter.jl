@@ -37,7 +37,6 @@ export Observation, EmptyObservation
 export DualGroupOperationAction
 
 
-import ManifoldsBase
 using Manifolds
 
 
