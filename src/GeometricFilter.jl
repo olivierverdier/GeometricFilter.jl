@@ -45,6 +45,7 @@ import Random
 import Distributions
 import PDMats
 import ManifoldGroupUtils as GU
+import SparseArrays: SparseVector
 
 import LinearAlgebra
 
