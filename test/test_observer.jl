@@ -9,7 +9,7 @@ import Base.Iterators
 rng = default_rng()
 
 @testset "Observer init" begin
-    G = MultiDisplacement(2, 2)
+    G = MultiDisplacementGroup(2, 2)
     A = MultiAffineAction(G, [1.0, 0])
     # ref must be on the manifold:
     @test_throws ErrorException ActionObserver(A, zeros(3))
@@ -24,7 +24,7 @@ end
 end
 
 @testset "Test Observers" begin
-    G = MultiDisplacement(2, 2)
+    G = MultiDisplacementGroup(2, 2)
     M = G
     pos_obs = PositionObserver(MultiAffineAction(G, [1,0]))
     @test pos_obs(identity_element(G)) == zeros(2)
@@ -120,7 +120,7 @@ end
 
 @testset "Test tan_action" begin
     dim = 2
-    G = MultiDisplacement(dim,1)
+    G = MultiDisplacementGroup(dim,1)
     V = submanifold(G, 1)
     χ = rand(rng, G)
     ξ = rand_lie(rng, G)

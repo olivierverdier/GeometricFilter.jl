@@ -21,7 +21,7 @@ rng = Random.default_rng()
 @testset "Degenerate Process Noise" begin
     dim = 3
     size = 2
-    G = MultiDisplacement(dim,size)
+    G = MultiDisplacementGroup(dim,size)
     A =DualGroupOperationAction(G)
     pdiag = spzeros(manifold_dimension(G))
     idx = first(axes(pdiag))
@@ -142,7 +142,7 @@ end
 @testset "Test Filter" begin
     rng = Random.default_rng(3)
     dim = 2
-    G = MultiDisplacement(dim, 1)
+    G = MultiDisplacementGroup(dim, 1)
     action = GroupOperationAction(G)
     # vel = rand(rng, GeometricFilter.algebra(G))
     vel = zero_vector(G, identity_element(G))
@@ -200,7 +200,7 @@ end
 end
 
 @testset "Test Translation" begin
-    G = MultiDisplacement(2)
+    G = MultiDisplacementGroup(2)
     A = GroupOperationAction(G)
     ξ = rand(rng, TangentSpace(G, identity_element(G)))
     m = TranslationMotion(G, ξ, LeftSide())

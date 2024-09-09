@@ -47,8 +47,8 @@ dual_display(n) = ["", "*"][n]
 @testset "$ioa$(dual_display(dual))  $ia $io" for (ioa,OAL) in ([
     ("SO", [GroupOperationAction(SpecialOrthogonal(3)),
             DualGroupOperationAction(SpecialOrthogonal(3))]),
-    ("Mv", [MultiAffineAction(MultiDisplacement(2), LeftAction()),
-            MultiAffineAction(MultiDisplacement(2), RightAction())]),
+    ("Mv", [MultiAffineAction(MultiDisplacementGroup(2), LeftAction()),
+            MultiAffineAction(MultiDisplacementGroup(2), RightAction())]),
     ("Rv", [RotationAction(Euclidean(3), SpecialOrthogonal(3), RightAction())]),
     ]),
     (dual, OA) in enumerate(OAL),

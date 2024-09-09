@@ -51,8 +51,8 @@ function run_filter(rng, D0, sm, obs, onoise)
 end
 
 param_list = [
-    simple_params(rng, GroupOperationAction(MultiDisplacement(2,1))),
-    simple_params(rng, DualGroupOperationAction(MultiDisplacement(2))),
+    simple_params(rng, GroupOperationAction(MultiDisplacementGroup(2,1))),
+    simple_params(rng, DualGroupOperationAction(MultiDisplacementGroup(2))),
     let
         G = MultiDisplacement(2)
         OA = MultiAffineAction(G, RightAction())
