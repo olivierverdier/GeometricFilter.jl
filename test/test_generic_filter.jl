@@ -9,20 +9,29 @@ using Random
 
 rng = Random.default_rng()
 
+"""
+Zero stochastic motion
+"""
 function setup_static_motion(action, dev=0)
     motion = ZeroMotion(action)
     pnoise = ActionNoise(action, dev)
     return StochasticMotion(motion, pnoise)
 end
 
-function setup_id_observer(action, dev=1.)
+"""
+Identity observer
+"""
+function setup_id_observer(action, dev=1.0)
     M = group_manifold(action)
     obs = IdentityObserver(M) # or specified?
     onoise = IsotropicNoise(observation_space(obs), dev)
     return obs, onoise
 end
 
-function setup_initial_dist(rng, pnoise, dev=1.)
+"""
+Distribution from random point.
+"""
+function setup_initial_dist(rng, pnoise, dev=1.0)
     x0 = rand(rng, sample_space(pnoise))
     D0 = ActionDistribution(x0, update_cov(pnoise, dev^2))
     return D0
@@ -37,27 +46,27 @@ function simple_params(rng, action, pdev=1, odev=1, ddev=1)
 end
 
 function run_filter(rng, D0, sm, obs, onoise)
-    x1 = simulate(sm, D0.μ, DataMode())
+    x1 = simulate(sm, D0.μ, PositionPerturbation(rng))
+    y1 = onoise(rng, obs(x1))
 
     # motion_ = noisy_motion(A, rng, x1)
-    smotion_ = sensor_perturbation(rng, sm, x1)
+    # smotion_ = sensor_perturbation(rng, sm, x1)
 
-    D1 = predict(D0, smotion_)
+    D1 = predict(D0, sm)
 
-    y1 = onoise(rng, obs(x1))
     D1_ = update(D1, Observation(obs, onoise, y1))
 
-    return D1,D1_
+    return x1, D1,D1_
 end
 
 param_list = [
     simple_params(rng, GroupOperationAction(MultiDisplacementGroup(2,1))),
     simple_params(rng, DualGroupOperationAction(MultiDisplacementGroup(2))),
     let
-        G = MultiDisplacement(2)
+        G = MultiDisplacementGroup(2)
         OA = MultiAffineAction(G, RightAction())
-        ref = ones(manifold_dimension(group_manifold(OA)))
-        obs = ActionObserver(OA, ref)
+        landmarks = [randn(rng, manifold_dimension(group_manifold(OA))) for k in 1:5]
+        obs = ProductObserver([ActionObserver(OA, ref) for ref in landmarks]...)
         onoise = IsotropicNoise(observation_space(obs), 1.)
         action = GroupOperationAction(G)
         pnoise = ActionNoise(action, 1.)
@@ -71,9 +80,7 @@ param_list = [
 @testset "Generic Filter" for params in param_list
     D0, sm, obs, onoise = params
     M = group_manifold(ManifoldNormal.get_action(D0))
-    D1,D1_ = run_filter(rng, D0, sm, obs, onoise)
+    x1, D1,D1_ = run_filter(rng, D0, sm, obs, onoise)
 
-    i_dist = distance(M, D1.μ, D0.μ)
-    c_dist = distance(M, D0.μ, D1_.μ)
 end
 
