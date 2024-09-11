@@ -1,4 +1,6 @@
 using GeometricFilter
+using AffineMotions
+using ManifoldNormal
 using Manifolds
 
 import PDMats

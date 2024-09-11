@@ -14,9 +14,9 @@ test_files = [
     "test_observer.jl",
     "test_stochastic_motion.jl",
 
-    # "test_examples.jl",
     # "test_ex_inertial.jl",
     "test_observation.jl",
+    "test_examples.jl",
 ]
 
 @time @testset " " for path in test_files

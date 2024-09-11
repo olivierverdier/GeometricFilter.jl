@@ -1,5 +1,7 @@
 using GeometricFilter
 using Manifolds
+using MultiAffine
+using AffineMotions
 
 τ = 2*π
 
