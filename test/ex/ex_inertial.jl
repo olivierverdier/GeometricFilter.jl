@@ -102,7 +102,7 @@ vel_observer = PositionObserver(MultiAffineAction(G, [0, 1]))
 
 using PDMatsSingular
 
-function make_diag_cov(G::MultiDisplacement, a_std, ω_std)
+function make_diag_cov(G::MultiDisplacementGroup, a_std, ω_std)
     D = spzeros(manifold_dimension(G))
     idx = first(axes(D))
     D[MultiAffine.normal_indices(G, idx; pos=1)] .= a_std^2

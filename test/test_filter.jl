@@ -25,7 +25,7 @@ rng = Random.default_rng()
     A =DualGroupOperationAction(G)
     pdiag = spzeros(manifold_dimension(G))
     idx = first(axes(pdiag))
-    pdiag[MultiAffine.normal_indices(G, idx; pos=1)] .= 1.
+    pdiag[MultiAffine.normal_indices_at(G, idx, 1)] .= 1.
     pdiag[MultiAffine.factor_indices(G, idx)] .= 2.
     cov = PDiagMat(pdiag)
     ccov = PDMatsSingular.Covariance(PDiagMat(pdiag))

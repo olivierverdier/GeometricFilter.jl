@@ -158,7 +158,7 @@ end
 
 function make_gravity(g)
     dim = length(g)
-    G = MultiDisplacement(dim, 2)
+    G = MultiDisplacementGroup(dim, 2)
     return (G=G, g=g, Ξ=make_velocity(G, g))
 end
 
