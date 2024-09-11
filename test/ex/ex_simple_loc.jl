@@ -14,7 +14,7 @@ init_pose = identity_element(G)
 poses = generate_signal(motions, init_pose)
 
 noisy_trajectory = accumulate(smotions; init=init_pose) do pose, sm
-    return integrate(PositionPerturbation(rng), sm, pose)
+    return simulate(sm, pose, PositionPerturbation(rng))
 end
 
 

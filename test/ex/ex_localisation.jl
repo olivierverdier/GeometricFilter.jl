@@ -7,7 +7,7 @@ using Manifolds
 using RecursiveArrayTools
 
 τ = 2 * π
-G = MultiDisplacement(2)
+G = MultiDisplacementGroup(2)
 
 #--------------------------------
 # Create path
