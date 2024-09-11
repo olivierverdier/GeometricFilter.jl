@@ -105,7 +105,7 @@ using PDMatsSingular
 function make_diag_cov(G::MultiDisplacementGroup, a_std, ω_std)
     D = spzeros(manifold_dimension(G))
     idx = first(axes(D))
-    D[MultiAffine.normal_indices(G, idx; pos=1)] .= a_std^2
+    D[MultiAffine.normal_indices_at(G, idx, 1)] .= a_std^2
     D[MultiAffine.factor_indices(G, idx)] .= ω_std^2
     return Covariance(PDMats.PDiagMat(D))
 end
