@@ -1,4 +1,5 @@
-using Test
+include("header.jl")
+
 using MultiAffine
 import ManifoldGroupUtils as GU
 import ManifoldGroupUtils: rand_lie

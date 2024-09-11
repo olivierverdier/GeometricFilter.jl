@@ -1,4 +1,3 @@
-using Test
 
 @testset "$name" for name in [
     "flatfilter",

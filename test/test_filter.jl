@@ -1,4 +1,3 @@
-using Test
 using GeometricFilter
 using Manifolds
 
