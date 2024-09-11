@@ -16,6 +16,7 @@ test_files = [
 
     # "test_examples.jl",
     # "test_ex_inertial.jl",
+    "test_observation.jl",
 ]
 
 @time @testset " " for path in test_files
